@@ -1,0 +1,673 @@
+{
+    "solutions": {
+        "two-sum": {
+            "title": "Two Sum",
+            "pattern": "Hash Map",
+            "patternEmoji": "🗂️",
+            "timeComplexity": "O(n)",
+            "spaceComplexity": "O(n)",
+            "oneliner": "Use a hash map to find the complement in one pass!",
+            "intuition": [
+                "🎯 For each number, we need to find if its 'partner' exists",
+                "🧠 Partner = target - current number",
+                "💡 Hash map lets us check in O(1) time!"
+            ],
+            "testCases": [
+                {
+                    "input": "nums = [2,7,11,15], target = 9",
+                    "output": "[0, 1]"
+                },
+                {
+                    "input": "nums = [3,2,4], target = 6",
+                    "output": "[1, 2]"
+                },
+                {
+                    "input": "nums = [3,3], target = 6",
+                    "output": "[0, 1]"
+                }
+            ],
+            "steps": [
+                {
+                    "step": 1,
+                    "title": "Create Empty Hash Map",
+                    "visual": "{ }",
+                    "explanation": "This will store numbers we've seen and their indices"
+                },
+                {
+                    "step": 2,
+                    "title": "Loop Through Array",
+                    "visual": "[2, 7, 11, 15] → target = 9\n     ↑\n   i = 0",
+                    "explanation": "For each number, calculate what we need to find"
+                },
+                {
+                    "step": 3,
+                    "title": "Calculate Complement",
+                    "visual": "complement = 9 - 2 = 7\n                ↓\n           Need to find 7!",
+                    "explanation": "If complement exists in map → FOUND IT!"
+                },
+                {
+                    "step": 4,
+                    "title": "Check & Store",
+                    "visual": "7 not in map → store {2: 0}\n\nNext: 9 - 7 = 2 ✅ Found in map!",
+                    "explanation": "If not found, add current to map and continue"
+                }
+            ],
+            "code": "def twoSum(nums, target):\n    seen = {}  # num → index\n    for i, num in enumerate(nums):\n        complement = target - num\n        if complement in seen:\n            return [seen[complement], i]\n        seen[num] = i",
+            "keyInsight": "Hash map trades space for speed - O(1) lookup instead of O(n) search!"
+        },
+        "best-time-to-buy-and-sell-stock": {
+            "title": "Best Time to Buy and Sell Stock",
+            "pattern": "Track Minimum",
+            "patternEmoji": "📈",
+            "timeComplexity": "O(n)",
+            "spaceComplexity": "O(1)",
+            "oneliner": "Track the minimum price seen so far, maximize profit at each step!",
+            "intuition": [
+                "🎯 Buy LOW, Sell HIGH",
+                "🧠 Keep track of the cheapest day to buy",
+                "💡 At each day, calculate: what if I sold today?"
+            ],
+            "steps": [
+                {
+                    "step": 1,
+                    "title": "Initialize Trackers",
+                    "visual": "min_price = ∞\nmax_profit = 0",
+                    "explanation": "Start with infinity as min (first price will always be lower)"
+                },
+                {
+                    "step": 2,
+                    "title": "Walk Through Prices",
+                    "visual": "prices: [7, 1, 5, 3, 6, 4]\n         ↑\n       Day 1: price = 7",
+                    "explanation": "Visit each day's price"
+                },
+                {
+                    "step": 3,
+                    "title": "Update Minimum",
+                    "visual": "Day 1: min = min(∞, 7) = 7\nDay 2: min = min(7, 1) = 1 ⭐ NEW LOW!",
+                    "explanation": "Always track the best buying opportunity"
+                },
+                {
+                    "step": 4,
+                    "title": "Calculate Profit",
+                    "visual": "Day 5: price = 6\n        profit = 6 - 1 = 5 💰\n        max_profit = 5",
+                    "explanation": "At each step: profit = today - min_so_far"
+                }
+            ],
+            "code": "def maxProfit(prices):\n    min_price = float('inf')\n    max_profit = 0\n    \n    for price in prices:\n        min_price = min(min_price, price)\n        profit = price - min_price\n        max_profit = max(max_profit, profit)\n    \n    return max_profit",
+            "keyInsight": "One pass solution - no need to compare every pair!"
+        },
+        "valid-palindrome": {
+            "title": "Valid Palindrome",
+            "pattern": "Two Pointers",
+            "patternEmoji": "👆",
+            "timeComplexity": "O(n)",
+            "spaceComplexity": "O(1)",
+            "oneliner": "Use two pointers from both ends, skip non-alphanumeric!",
+            "intuition": [
+                "🎯 Palindrome reads same forwards & backwards",
+                "🧠 Compare characters from outside → inside",
+                "💡 Skip spaces and punctuation!"
+            ],
+            "steps": [
+                {
+                    "step": 1,
+                    "title": "Set Up Pointers",
+                    "visual": "\"A man, a plan, a canal: Panama\"\n ↑                              ↑\nleft                          right",
+                    "explanation": "Start from both ends of the string"
+                },
+                {
+                    "step": 2,
+                    "title": "Skip Non-Letters",
+                    "visual": "\"...canal: Panama\"\n         ↑      ↑\n     skip ':'  'a'",
+                    "explanation": "Move pointer if not alphanumeric"
+                },
+                {
+                    "step": 3,
+                    "title": "Compare (Case-Insensitive)",
+                    "visual": "'A' == 'a' ✅ (lowercase both)\n'M' == 'm' ✅\n'N' == 'n' ✅",
+                    "explanation": "Convert to lowercase and compare"
+                },
+                {
+                    "step": 4,
+                    "title": "Move Inward",
+                    "visual": "left → ←     → ← right\n      Meet in middle = VALID!",
+                    "explanation": "Continue until pointers cross"
+                }
+            ],
+            "code": "def isPalindrome(s):\n    left, right = 0, len(s) - 1\n    \n    while left < right:\n        while left < right and not s[left].isalnum():\n            left += 1\n        while left < right and not s[right].isalnum():\n            right -= 1\n        \n        if s[left].lower() != s[right].lower():\n            return False\n        \n        left += 1\n        right -= 1\n    \n    return True",
+            "keyInsight": "Two pointers = no extra space needed for reversed string!"
+        },
+        "merge-sorted-array": {
+            "title": "Merge Sorted Array",
+            "pattern": "Three Pointers (Reverse)",
+            "patternEmoji": "🔀",
+            "timeComplexity": "O(m + n)",
+            "spaceComplexity": "O(1)",
+            "oneliner": "Fill from the END to avoid overwriting!",
+            "intuition": [
+                "🎯 Can't start from front - would overwrite nums1!",
+                "🧠 Start from back - empty space is there for us!",
+                "💡 Three pointers: end of nums1, end of nums2, write position"
+            ],
+            "steps": [
+                {
+                    "step": 1,
+                    "title": "Set Up 3 Pointers",
+                    "visual": "nums1: [1,2,3,0,0,0]  nums2: [2,5,6]\n            ↑     ↑              ↑\n           p1    write           p2",
+                    "explanation": "p1 at last real element, p2 at end of nums2, write at end"
+                },
+                {
+                    "step": 2,
+                    "title": "Compare & Place Larger",
+                    "visual": "3 vs 6 → 6 wins!\n[1,2,3,0,0,6] ← place 6",
+                    "explanation": "Bigger goes to write position"
+                },
+                {
+                    "step": 3,
+                    "title": "Move Pointers",
+                    "visual": "[1,2,3,0,0,6]\n            ↑ ↑\n           p1 write\n           ← moved left",
+                    "explanation": "Decrement write and the pointer that was used"
+                },
+                {
+                    "step": 4,
+                    "title": "Continue Until Done",
+                    "visual": "Result: [1,2,2,3,5,6] ✅",
+                    "explanation": "If nums2 remaining, copy them. nums1 remaining? Already in place!"
+                }
+            ],
+            "code": "def merge(nums1, m, nums2, n):\n    p1, p2 = m - 1, n - 1\n    write = m + n - 1\n    \n    while p2 >= 0:\n        if p1 >= 0 and nums1[p1] > nums2[p2]:\n            nums1[write] = nums1[p1]\n            p1 -= 1\n        else:\n            nums1[write] = nums2[p2]\n            p2 -= 1\n        write -= 1",
+            "keyInsight": "Reverse iteration = in-place without overwriting!"
+        },
+        "valid-parentheses": {
+            "title": "Valid Parentheses",
+            "pattern": "Stack",
+            "patternEmoji": "📚",
+            "timeComplexity": "O(n)",
+            "spaceComplexity": "O(n)",
+            "oneliner": "Push opening brackets, pop and match for closing!",
+            "intuition": [
+                "🎯 Every opening needs matching closing in correct order",
+                "🧠 Most recent open must close first = LIFO = Stack!",
+                "💡 Opening → push, Closing → pop & check match"
+            ],
+            "steps": [
+                {
+                    "step": 1,
+                    "title": "Create Stack + Mapping",
+                    "visual": "stack = []\nmapping = { ')':'(', '}':'{', ']':'[' }",
+                    "explanation": "Map each closing bracket to its opening pair"
+                },
+                {
+                    "step": 2,
+                    "title": "Process Opening Bracket",
+                    "visual": "\"([)]\"\n ↑\n'(' → push → stack: ['(']",
+                    "explanation": "Opening brackets go on the stack"
+                },
+                {
+                    "step": 3,
+                    "title": "Process Closing Bracket",
+                    "visual": "\"([)]\"\n   ↑\n')' → pop → got '[' ❌ Expected '('",
+                    "explanation": "Pop and check if it matches!"
+                },
+                {
+                    "step": 4,
+                    "title": "Final Check",
+                    "visual": "Valid: stack empty ✅\nInvalid: stack has leftovers ❌",
+                    "explanation": "All brackets matched = empty stack"
+                }
+            ],
+            "code": "def isValid(s):\n    stack = []\n    mapping = {')': '(', '}': '{', ']': '['}\n    \n    for char in s:\n        if char in mapping:  # closing bracket\n            if not stack or stack.pop() != mapping[char]:\n                return False\n        else:  # opening bracket\n            stack.append(char)\n    \n    return len(stack) == 0",
+            "keyInsight": "Stack naturally handles nested matching - LIFO property!"
+        },
+        "maximum-subarray": {
+            "title": "Maximum Subarray",
+            "pattern": "Kadane's Algorithm",
+            "patternEmoji": "📈",
+            "timeComplexity": "O(n)",
+            "spaceComplexity": "O(1)",
+            "oneliner": "Extend current sum OR start fresh - pick the better option!",
+            "intuition": [
+                "🎯 At each position: should I continue or restart?",
+                "🧠 If current_sum < 0, better to start fresh!",
+                "💡 Track both current sum and overall maximum"
+            ],
+            "steps": [
+                {
+                    "step": 1,
+                    "title": "Initialize",
+                    "visual": "current_sum = nums[0]\nmax_sum = nums[0]",
+                    "explanation": "Start with first element as both"
+                },
+                {
+                    "step": 2,
+                    "title": "The Key Decision",
+                    "visual": "[-2,1,-3,4,-1,2,1,-5,4]\n         ↑\ncurrent = -2 + 1 = -1\n   OR\nstart fresh = 1 ← WINNER!",
+                    "explanation": "current_sum = max(num, current_sum + num)"
+                },
+                {
+                    "step": 3,
+                    "title": "Update Maximum",
+                    "visual": "current: 1 → -2 → 4 → 3 → 5 → 6 → 1 → 5\n                   ↑           ↑\n                 reset       max=6!",
+                    "explanation": "max_sum = max(max_sum, current_sum)"
+                },
+                {
+                    "step": 4,
+                    "title": "Result",
+                    "visual": "[4,-1,2,1] = 6 ✅\n ↑ max subarray",
+                    "explanation": "Return max_sum"
+                }
+            ],
+            "code": "def maxSubArray(nums):\n    current_sum = nums[0]\n    max_sum = nums[0]\n    \n    for num in nums[1:]:\n        # Either extend current subarray or start new\n        current_sum = max(num, current_sum + num)\n        max_sum = max(max_sum, current_sum)\n    \n    return max_sum",
+            "keyInsight": "The magic: negative prefix sum is never worth keeping!"
+        },
+        "climbing-stairs": {
+            "title": "Climbing Stairs",
+            "pattern": "Dynamic Programming (Fibonacci)",
+            "patternEmoji": "📐",
+            "timeComplexity": "O(n)",
+            "spaceComplexity": "O(1)",
+            "oneliner": "Ways to reach step n = ways to reach (n-1) + ways to reach (n-2)!",
+            "intuition": [
+                "🎯 From step n, you either came from n-1 or n-2",
+                "🧠 This is just Fibonacci in disguise!",
+                "💡 Only need to track last 2 values"
+            ],
+            "steps": [
+                {
+                    "step": 1,
+                    "title": "Base Cases",
+                    "visual": "Step 1: 1 way [1]\nStep 2: 2 ways [1+1] or [2]",
+                    "explanation": "Starting points for our pattern"
+                },
+                {
+                    "step": 2,
+                    "title": "See The Pattern",
+                    "visual": "     Step 1  Step 2  Step 3  Step 4\nWays:   1      2       3       5\n                     ↗ ↗    ↗ ↗\n                    1+2    2+3",
+                    "explanation": "Each = sum of previous two!"
+                },
+                {
+                    "step": 3,
+                    "title": "Build Up",
+                    "visual": "a, b = 1, 2\nStep 3: a, b = 2, 3  (1+2)\nStep 4: a, b = 3, 5  (2+3)",
+                    "explanation": "Slide the window forward"
+                },
+                {
+                    "step": 4,
+                    "title": "Result",
+                    "visual": "n=5: [1,2,3,5,8] → 8 ways!",
+                    "explanation": "Return b (or a depending on implementation)"
+                }
+            ],
+            "code": "def climbStairs(n):\n    if n <= 2:\n        return n\n    \n    a, b = 1, 2  # ways for step 1 and 2\n    \n    for i in range(3, n + 1):\n        a, b = b, a + b\n    \n    return b",
+            "keyInsight": "Recognizing Fibonacci pattern = O(1) space solution!"
+        },
+        "linked-list-cycle": {
+            "title": "Linked List Cycle",
+            "pattern": "Floyd's Tortoise & Hare",
+            "patternEmoji": "🐢🐇",
+            "timeComplexity": "O(n)",
+            "spaceComplexity": "O(1)",
+            "oneliner": "Slow moves 1 step, fast moves 2 - if they meet, there's a cycle!",
+            "intuition": [
+                "🎯 If there's a loop, fast will catch up to slow",
+                "🐢 Slow: 1 step at a time",
+                "🐇 Fast: 2 steps at a time → WILL lap slow if cycle exists!"
+            ],
+            "steps": [
+                {
+                    "step": 1,
+                    "title": "Initialize Runners",
+                    "visual": "1 → 2 → 3 → 4 → 2 (cycle!)\n↑       \nS,F start here",
+                    "explanation": "Both start at head"
+                },
+                {
+                    "step": 2,
+                    "title": "Move At Different Speeds",
+                    "visual": "After 1 round:\n1 → 2 → 3 → 4\n    S       F",
+                    "explanation": "Slow += 1, Fast += 2"
+                },
+                {
+                    "step": 3,
+                    "title": "In A Cycle...",
+                    "visual": "  → 2 → 3\n  ↑     ↓\n  4 ← ← ┘\n  SF meet! ✅",
+                    "explanation": "Fast catches up in the cycle"
+                },
+                {
+                    "step": 4,
+                    "title": "No Cycle?",
+                    "visual": "1 → 2 → 3 → None\n            F hits None ❌",
+                    "explanation": "Fast reaches null = no cycle"
+                }
+            ],
+            "code": "def hasCycle(head):\n    slow = fast = head\n    \n    while fast and fast.next:\n        slow = slow.next        # 1 step\n        fast = fast.next.next   # 2 steps\n        \n        if slow == fast:\n            return True\n    \n    return False",
+            "keyInsight": "No extra space needed - just two pointers at different speeds!"
+        },
+        "binary-search": {
+            "title": "Binary Search",
+            "pattern": "Divide & Conquer",
+            "patternEmoji": "🎯",
+            "timeComplexity": "O(log n)",
+            "spaceComplexity": "O(1)",
+            "oneliner": "Half the search space each time by checking the middle!",
+            "intuition": [
+                "🎯 Array is SORTED - exploit this!",
+                "🧠 Check middle: too big? go left. Too small? go right.",
+                "💡 Halving = log₂(n) steps maximum"
+            ],
+            "steps": [
+                {
+                    "step": 1,
+                    "title": "Set Boundaries",
+                    "visual": "[1, 3, 5, 7, 9, 11, 13]\n ↑                    ↑\nleft                right",
+                    "explanation": "Start with full array range"
+                },
+                {
+                    "step": 2,
+                    "title": "Find Middle",
+                    "visual": "[1, 3, 5, 7, 9, 11, 13]\n          ↑\n         mid (index 3, value 7)",
+                    "explanation": "mid = (left + right) // 2"
+                },
+                {
+                    "step": 3,
+                    "title": "Compare & Narrow",
+                    "visual": "target = 11\n7 < 11 → search RIGHT half\n[_, _, _, _, 9, 11, 13]\n             ↑       ↑\n           left    right",
+                    "explanation": "Eliminate half the options!"
+                },
+                {
+                    "step": 4,
+                    "title": "Repeat Until Found",
+                    "visual": "mid = 11 ✅ FOUND!\nOR left > right = Not found",
+                    "explanation": "Continue halving until match or exhausted"
+                }
+            ],
+            "code": "def search(nums, target):\n    left, right = 0, len(nums) - 1\n    \n    while left <= right:\n        mid = (left + right) // 2\n        \n        if nums[mid] == target:\n            return mid\n        elif nums[mid] < target:\n            left = mid + 1   # search right\n        else:\n            right = mid - 1  # search left\n    \n    return -1",
+            "keyInsight": "Each step eliminates HALF - that's why it's O(log n)!"
+        },
+        "number-of-islands": {
+            "title": "Number of Islands",
+            "pattern": "DFS/BFS Flood Fill",
+            "patternEmoji": "🏝️",
+            "timeComplexity": "O(m × n)",
+            "spaceComplexity": "O(m × n)",
+            "oneliner": "Find a '1', flood-fill/sink the whole island, count it!",
+            "intuition": [
+                "🎯 Each connected group of 1s = one island",
+                "🧠 When you find land, explore ALL connected land",
+                "💡 Mark visited cells to avoid counting twice"
+            ],
+            "steps": [
+                {
+                    "step": 1,
+                    "title": "Scan Grid",
+                    "visual": "1 1 0 0 0\n1 1 0 0 0\n0 0 1 0 0\n0 0 0 1 1\n↑ Found '1'!",
+                    "explanation": "Look for unvisited land"
+                },
+                {
+                    "step": 2,
+                    "title": "Flood Fill (DFS/BFS)",
+                    "visual": "X X 0 0 0\nX X 0 0 0\n0 0 1 0 0\n0 0 0 1 1\nMark all connected as 'X'",
+                    "explanation": "Visit all 4 directions, mark as visited"
+                },
+                {
+                    "step": 3,
+                    "title": "Count It!",
+                    "visual": "count = 1 ✅",
+                    "explanation": "One complete flood fill = one island"
+                },
+                {
+                    "step": 4,
+                    "title": "Continue Scanning",
+                    "visual": "X X 0 0 0\nX X 0 0 0\n0 0 X 0 0  ← island 2\n0 0 0 X X  ← island 3\nTotal: 3 islands",
+                    "explanation": "Find next '1', repeat until done"
+                }
+            ],
+            "code": "def numIslands(grid):\n    if not grid:\n        return 0\n    \n    count = 0\n    \n    def dfs(i, j):\n        if i < 0 or i >= len(grid) or j < 0 or j >= len(grid[0]):\n            return\n        if grid[i][j] != '1':\n            return\n        \n        grid[i][j] = '0'  # mark visited\n        dfs(i+1, j)  # down\n        dfs(i-1, j)  # up\n        dfs(i, j+1)  # right\n        dfs(i, j-1)  # left\n    \n    for i in range(len(grid)):\n        for j in range(len(grid[0])):\n            if grid[i][j] == '1':\n                dfs(i, j)\n                count += 1\n    \n    return count",
+            "keyInsight": "Flood fill groups connected components - used everywhere in graphs!"
+        },
+        "reverse-linked-list": {
+            "title": "Reverse Linked List",
+            "pattern": "Iterative Pointer Swap",
+            "patternEmoji": "🔄",
+            "timeComplexity": "O(n)",
+            "spaceComplexity": "O(1)",
+            "oneliner": "Change each node's pointer to point backwards!",
+            "intuition": [
+                "🎯 Each node.next should point to previous node",
+                "🧠 Need to save 'next' before changing pointer",
+                "💡 Use 3 pointers: prev, current, next"
+            ],
+            "steps": [
+                {
+                    "step": 1,
+                    "title": "Initialize",
+                    "visual": "None ← 1 → 2 → 3 → None\n ↑    ↑\nprev  curr",
+                    "explanation": "prev starts at None (new tail)"
+                },
+                {
+                    "step": 2,
+                    "title": "Save Next",
+                    "visual": "1 → 2 → 3\n    ↑\n   next_node (save before we lose it!)",
+                    "explanation": "Must save before changing pointer"
+                },
+                {
+                    "step": 3,
+                    "title": "Reverse Pointer",
+                    "visual": "None ← 1   2 → 3\n ↑    ↑   ↑\nprev curr next",
+                    "explanation": "curr.next = prev"
+                },
+                {
+                    "step": 4,
+                    "title": "Move Forward",
+                    "visual": "None ← 1 ← 2 ← 3\n               ↑\n              prev (new head!)",
+                    "explanation": "Shift all pointers right, repeat"
+                }
+            ],
+            "code": "def reverseList(head):\n    prev = None\n    curr = head\n    \n    while curr:\n        next_node = curr.next  # save next\n        curr.next = prev       # reverse pointer\n        prev = curr            # move prev forward\n        curr = next_node       # move curr forward\n    \n    return prev  # prev is new head",
+            "keyInsight": "Three-pointer technique is fundamental for linked list operations!"
+        },
+        "contains-duplicate": {
+            "title": "Contains Duplicate",
+            "pattern": "Hash Set",
+            "patternEmoji": "🗂️",
+            "timeComplexity": "O(n)",
+            "spaceComplexity": "O(n)",
+            "oneliner": "Put numbers in a set - sets don't allow duplicates!",
+            "intuition": [
+                "🎯 Need to check if any number appears twice",
+                "🧠 Set = O(1) lookup + only unique values",
+                "💡 If set size < array size → duplicates exist!"
+            ],
+            "steps": [
+                {
+                    "step": 1,
+                    "title": "The Insight",
+                    "visual": "[1, 2, 3, 1]\n     ↓\n{1, 2, 3} ← only 3 unique!\n4 ≠ 3 → HAS DUPLICATES",
+                    "explanation": "Set removes duplicates automatically"
+                },
+                {
+                    "step": 2,
+                    "title": "One-Liner!",
+                    "visual": "len(set(nums)) < len(nums)",
+                    "explanation": "Compare sizes"
+                },
+                {
+                    "step": 3,
+                    "title": "Alternative: Check While Adding",
+                    "visual": "for num in nums:\n  if num in seen: return True\n  seen.add(num)",
+                    "explanation": "Early exit if duplicate found"
+                },
+                {
+                    "step": 4,
+                    "title": "Result",
+                    "visual": "[1,2,3,4] → False\n[1,2,3,1] → True",
+                    "explanation": "Simple!"
+                }
+            ],
+            "code": "def containsDuplicate(nums):\n    # One-liner:\n    return len(set(nums)) < len(nums)\n    \n    # Or with early exit:\n    seen = set()\n    for num in nums:\n        if num in seen:\n            return True\n        seen.add(num)\n    return False",
+            "keyInsight": "Sets are your best friend for duplicate detection!"
+        },
+        "invert-binary-tree": {
+            "title": "Invert Binary Tree",
+            "pattern": "Tree Recursion",
+            "patternEmoji": "🌳",
+            "timeComplexity": "O(n)",
+            "spaceComplexity": "O(h)",
+            "oneliner": "Swap left and right children at every node!",
+            "intuition": [
+                "🎯 Mirror the tree: every left becomes right",
+                "🧠 Recursively swap children at each node",
+                "💡 Base case: null node needs no swap"
+            ],
+            "steps": [
+                {
+                    "step": 1,
+                    "title": "Visualize",
+                    "visual": "    4          4\n   / \\   →   / \\\n  2   7     7   2\n / \\ / \\   / \\ / \\\n1  3 6  9 9  6 3  1",
+                    "explanation": "Mirror image of the tree"
+                },
+                {
+                    "step": 2,
+                    "title": "At Each Node",
+                    "visual": "  4\n / \\\n2   7  ← swap these!\n\n  4\n / \\\n7   2  ✅",
+                    "explanation": "Swap left and right children"
+                },
+                {
+                    "step": 3,
+                    "title": "Recurse",
+                    "visual": "Then invert(7) and invert(2)\n  ↓           ↓\nswap 6,9   swap 1,3",
+                    "explanation": "Do the same for all subtrees"
+                },
+                {
+                    "step": 4,
+                    "title": "Base Case",
+                    "visual": "if node is None:\n    return None\n    \n(Leaf's children are None - nothing to swap)",
+                    "explanation": "Stop at null nodes"
+                }
+            ],
+            "code": "def invertTree(root):\n    if root is None:\n        return None\n    \n    # Swap children\n    root.left, root.right = root.right, root.left\n    \n    # Recurse on subtrees\n    invertTree(root.left)\n    invertTree(root.right)\n    \n    return root",
+            "keyInsight": "The famous interview question Max Howell couldn't solve! Now you can 😄"
+        },
+        "coin-change": {
+            "title": "Coin Change",
+            "pattern": "Dynamic Programming",
+            "patternEmoji": "🪙",
+            "timeComplexity": "O(amount × coins)",
+            "spaceComplexity": "O(amount)",
+            "oneliner": "Build up from amount 0, using each coin to reach new amounts!",
+            "intuition": [
+                "🎯 For each amount: what's minimum coins needed?",
+                "🧠 dp[i] = min coins to make amount i",
+                "💡 For each coin: dp[i] = min(dp[i], dp[i-coin] + 1)"
+            ],
+            "steps": [
+                {
+                    "step": 1,
+                    "title": "Initialize DP Array",
+                    "visual": "coins = [1,2,5], amount = 11\n\ndp = [0, ∞, ∞, ∞, ∞, ∞, ∞, ∞, ∞, ∞, ∞, ∞]\n      ↑\n   0 coins for amount 0",
+                    "explanation": "dp[0] = 0, everything else = infinity"
+                },
+                {
+                    "step": 2,
+                    "title": "Fill Using Each Coin",
+                    "visual": "For coin = 1:\ndp[1] = dp[0] + 1 = 1\ndp[2] = dp[1] + 1 = 2\n...",
+                    "explanation": "If we can reach amount i-coin, we can reach i!"
+                },
+                {
+                    "step": 3,
+                    "title": "Update With Better Options",
+                    "visual": "For coin = 2:\ndp[2] = min(2, dp[0]+1) = 1 ✅ better!\n\nFor coin = 5:\ndp[5] = min(5, dp[0]+1) = 1 ✅ much better!",
+                    "explanation": "Take the minimum across all coin choices"
+                },
+                {
+                    "step": 4,
+                    "title": "Final Answer",
+                    "visual": "dp[11] = 3 (5+5+1)\n\n[0,1,1,2,2,1,2,2,3,3,2,3]\n                        ↑",
+                    "explanation": "dp[amount] is the answer!"
+                }
+            ],
+            "code": "def coinChange(coins, amount):\n    dp = [float('inf')] * (amount + 1)\n    dp[0] = 0\n    \n    for i in range(1, amount + 1):\n        for coin in coins:\n            if coin <= i:\n                dp[i] = min(dp[i], dp[i - coin] + 1)\n    \n    return dp[amount] if dp[amount] != float('inf') else -1",
+            "keyInsight": "Classic unbounded knapsack - build solutions from smaller subproblems!"
+        },
+        "two-sum": {
+            "title": "Two Sum",
+            "pattern": "Hashmap",
+            "patternEmoji": "🗺️",
+            "timeComplexity": "O(n)",
+            "spaceComplexity": "O(n)",
+            "oneliner": "Use a hashmap to store seen complements.",
+            "intuition": [
+                "Map value -> index for O(1) lookups.",
+                "Check if target - current exists in map.",
+                "If yes, return indices. If no, add current."
+            ],
+            "visualizationType": "array",
+            "initialState": [
+                2,
+                7,
+                11,
+                15
+            ],
+            "animationSteps": [
+                {
+                    "type": "highlight",
+                    "indices": [
+                        0
+                    ],
+                    "color": "accent",
+                    "pointers": [
+                        {
+                            "index": 0,
+                            "label": "i"
+                        }
+                    ],
+                    "transientMessage": "Checking 2. Complement = 7."
+                },
+                {
+                    "type": "highlight",
+                    "indices": [
+                        0
+                    ],
+                    "color": "default",
+                    "pointers": [],
+                    "transientMessage": "7 not in map. Store 2:0."
+                },
+                {
+                    "type": "highlight",
+                    "indices": [
+                        1
+                    ],
+                    "color": "accent",
+                    "pointers": [
+                        {
+                            "index": 1,
+                            "label": "i"
+                        }
+                    ],
+                    "transientMessage": "Checking 7. Complement = 2."
+                },
+                {
+                    "type": "highlight",
+                    "indices": [
+                        1
+                    ],
+                    "color": "success",
+                    "pointers": [
+                        {
+                            "index": 1,
+                            "label": "i"
+                        }
+                    ],
+                    "transientMessage": "2 is in map! Found pair."
+                }
+            ],
+            "code": "def twoSum(nums, target):\\n    seen = {}\\n    for i, num in enumerate(nums):\\n        complement = target - num\\n        if complement in seen:\\n            return [seen[complement], i]\\n        seen[num] = i\\n    return []",
+            "keyInsight": "Trading space for speed: Hashmap gives O(1) lookup.",
+            "testCases": [
+                {
+                    "input": "numbers = [2,7,11,15], target = 9",
+                    "output": "[1, 2]"
+                }
+            ]
+        }
+    }
+}

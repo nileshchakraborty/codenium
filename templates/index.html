@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeetCode Top Interview 150 Visualizer</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">🎯</span>
+                    <h1>LeetCode Top Interview 150</h1>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-pill total">
+                        <span class="stat-value">{{ stats.total }}</span>
+                        <span class="stat-label">Total</span>
+                    </div>
+                    <div class="stat-pill easy">
+                        <span class="stat-value">{{ stats.easy }}</span>
+                        <span class="stat-label">Easy</span>
+                    </div>
+                    <div class="stat-pill medium">
+                        <span class="stat-value">{{ stats.medium }}</span>
+                        <span class="stat-label">Medium</span>
+                    </div>
+                    <div class="stat-pill hard">
+                        <span class="stat-value">{{ stats.hard }}</span>
+                        <span class="stat-label">Hard</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="chart-card">
+                    <h3>Difficulty Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="difficultyChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card wide">
+                    <h3>Problems by Category</h3>
+                    <div class="chart-container">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Search and Filter -->
+            <section class="filter-section">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="Search problems...">
+                </div>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn easy" data-filter="Easy">Easy</button>
+                    <button class="filter-btn medium" data-filter="Medium">Medium</button>
+                    <button class="filter-btn hard" data-filter="Hard">Hard</button>
+                </div>
+            </section>
+
+            <!-- Categories Grid -->
+            <section class="categories-section">
+                {% for category in categories %}
+                <div class="category-card" data-category="{{ category.name }}">
+                    <div class="category-header" onclick="toggleCategory(this)">
+                        <div class="category-title">
+                            <span class="category-icon">{{ category.icon }}</span>
+                            <h3>{{ category.name }}</h3>
+                        </div>
+                        <div class="category-meta">
+                            <span class="problem-count">{{ category.problems|length }} problems</span>
+                            <span class="expand-icon">▼</span>
+                        </div>
+                    </div>
+                    <div class="category-difficulty-bar">
+                        {% set easy_count = category.problems|selectattr('difficulty', 'equalto', 'Easy')|list|length %}
+                        {% set medium_count = category.problems|selectattr('difficulty', 'equalto',
+                        'Medium')|list|length %}
+                        {% set hard_count = category.problems|selectattr('difficulty', 'equalto', 'Hard')|list|length %}
+                        {% set total = category.problems|length %}
+                        <div class="bar-segment easy" style="width: {{ (easy_count / total * 100)|round(1) }}%"></div>
+                        <div class="bar-segment medium" style="width: {{ (medium_count / total * 100)|round(1) }}%">
+                        </div>
+                        <div class="bar-segment hard" style="width: {{ (hard_count / total * 100)|round(1) }}%"></div>
+                    </div>
+                    <div class="problems-list collapsed">
+                        {% for problem in category.problems %}
+                        <div class="problem-item {% if problem.has_solution %}has-solution{% endif %}"
+                            data-difficulty="{{ problem.difficulty }}" data-slug="{{ problem.slug }}"
+                            onclick="showSolution('{{ problem.slug }}')">
+                            <div class="problem-info">
+                                <span class="problem-title">{{ problem.title }}</span>
+                                {% if problem.has_solution %}
+                                <span class="solution-badge">📖 Visual Solution</span>
+                                {% endif %}
+                            </div>
+                            <div class="problem-meta">
+                                <span class="difficulty-badge {{ problem.difficulty|lower }}">{{ problem.difficulty
+                                    }}</span>
+                                <a href="{{ problem.url }}" target="_blank" class="leetcode-link"
+                                    onclick="event.stopPropagation()">↗</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Built with FastAPI & Chart.js • Click problems with 📖 for visual solutions!</p>
+        </footer>
+    </div>
+
+    <!-- Solution Modal -->
+    <div id="solutionModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+
+            <div class="modal-tabs">
+                <button class="tab-btn active" data-tab="explanation" onclick="switchTab('explanation')">📖
+                    Explanation</button>
+                <button class="tab-btn" data-tab="playground" onclick="switchTab('playground')">💻 Playground</button>
+            </div>
+
+            <div id="solutionContent" class="tab-content active">
+                <!-- Content injected by JS -->
+            </div>
+
+            <div id="playgroundContent" class="tab-content">
+                <div class="playground-layout">
+                    <div class="code-section">
+                        <div class="editor-header">
+                            <span>Python 3</span>
+                            <button class="run-btn" onclick="runCode()">▶ Run Code</button>
+                        </div>
+                        <textarea id="codeEditor" spellcheck="false" placeholder="# Write your code here..."></textarea>
+                    </div>
+                    <div class="output-section">
+                        <div class="output-header">Output</div>
+                        <div id="codeOutput" class="console-output">Click Run to execute...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const stats = {
+            easy: {{ stats.easy }},
+        medium: { { stats.medium } },
+        hard: { { stats.hard } },
+        categories: { { stats.categories | tojson } }
+        };
+        const solutions = {{ solutions | tojson }};
+    </script>
+    <script src="/static/js/visualizer_engine.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+
+</html>
