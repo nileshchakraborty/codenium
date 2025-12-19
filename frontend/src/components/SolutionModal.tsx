@@ -99,80 +99,82 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
     if (!isOpen || !solution) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-            <div className="relative w-full max-w-5xl max-h-[90vh] bg-[#1a1a2e] border border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 dark:bg-black/80 backdrop-blur-sm sm:p-4 animate-in fade-in duration-200">
+            <div className="relative w-full h-full sm:h-auto sm:max-w-5xl sm:max-h-[90vh] bg-white dark:bg-slate-900 sm:border border-slate-200 dark:border-slate-700 sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col">
 
                 {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors z-50"
+                    className="absolute top-3 right-3 sm:top-4 sm:right-4 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors z-50"
                 >
-                    <X size={24} />
+                    <X size={20} className="sm:w-6 sm:h-6" />
                 </button>
 
                 {/* Header */}
-                <div className="px-8 py-6 border-b border-slate-700 bg-[#16162a]">
-                    <div className="flex items-center gap-3 mb-2">
-                        <span className="text-2xl">{solution.patternEmoji || '💡'}</span>
-                        <h2 className="text-2xl font-bold text-white">{solution.title}</h2>
+                <div className="px-4 sm:px-8 py-4 sm:py-6 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 pr-12">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            <span className="text-xl sm:text-2xl">{solution.patternEmoji || '💡'}</span>
+                            <h2 className="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white line-clamp-2">{solution.title}</h2>
+                        </div>
                         {solution.pattern && (
-                            <span className="px-3 py-1 text-sm font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-full">
+                            <span className="self-start px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm font-semibold bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 border border-indigo-500/30 rounded-full">
                                 {solution.pattern}
                             </span>
                         )}
                     </div>
 
-                    <div className="flex gap-4 text-sm text-slate-400">
-                        <div className="flex gap-2">
-                            <span className="font-semibold text-emerald-400">Time:</span> {solution.timeComplexity}
+                    <div className="flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                        <div className="flex gap-1 sm:gap-2">
+                            <span className="font-semibold text-emerald-600 dark:text-emerald-400">Time:</span> {solution.timeComplexity}
                         </div>
-                        <div className="flex gap-2">
-                            <span className="font-semibold text-emerald-400">Space:</span> {solution.spaceComplexity}
+                        <div className="flex gap-1 sm:gap-2">
+                            <span className="font-semibold text-emerald-600 dark:text-emerald-400">Space:</span> {solution.spaceComplexity}
                         </div>
                     </div>
 
                     {/* External Link removed - moved to bottom */}
                 </div>
 
-                {/* Tabs */}
-                <div className="flex items-center gap-1 px-8 py-2 border-b border-slate-700 bg-[#131320]">
+                {/* Tabs - Scrollable on mobile */}
+                <div className="flex items-center gap-1 px-3 sm:px-8 py-2 border-b border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 overflow-x-auto custom-scrollbar">
                     <button
                         onClick={() => setActiveTab('problem')}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'problem' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                        className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${activeTab === 'problem' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/5'}`}
                     >
-                        <FileText size={16} /> Problem
+                        <FileText size={14} className="sm:w-4 sm:h-4" /> Problem
                     </button>
                     <button
                         onClick={() => setActiveTab('explanation')}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'explanation' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                        className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${activeTab === 'explanation' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/5'}`}
                     >
-                        <BookOpen size={16} /> Explanation
+                        <BookOpen size={14} className="sm:w-4 sm:h-4" /> Explain
                     </button>
                     <button
                         onClick={() => setActiveTab('playground')}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'playground' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                        className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${activeTab === 'playground' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/5'}`}
                     >
-                        <Terminal size={16} /> Playground
+                        <Terminal size={14} className="sm:w-4 sm:h-4" /> Code
                     </button>
                     <button
                         onClick={() => setActiveTab('tutor')}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'tutor' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                        className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${activeTab === 'tutor' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/5'}`}
                     >
-                        <MessageCircle size={16} /> AI Tutor
+                        <MessageCircle size={14} className="sm:w-4 sm:h-4" /> Tutor
                     </button>
                 </div>
 
                 {/* Scrollable Content */}
-                <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                <div className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar">
                     {activeTab === 'problem' ? (
-                        <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-300">
+                        <div className="space-y-6 sm:space-y-8 animate-in slide-in-from-bottom-4 duration-300">
                             {/* Problem Description */}
-                            <div className="space-y-4">
-                                <h3 className="text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
+                            <div className="space-y-3 sm:space-y-4">
+                                <h3 className="text-xs sm:text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
                                     📋 Problem Description
                                 </h3>
-                                <div className="p-6 rounded-xl bg-slate-800/50 border border-slate-700/50">
-                                    <p className="text-slate-200 text-lg leading-relaxed whitespace-pre-line">
+                                <div className="p-4 sm:p-6 rounded-xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50">
+                                    <p className="text-slate-700 dark:text-slate-200 text-sm sm:text-lg leading-relaxed whitespace-pre-line">
                                         {solution.problemStatement || solution.description || 'No description available.'}
                                     </p>
                                 </div>
@@ -185,29 +187,29 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                                 </h3>
                                 <div className="space-y-3">
                                     {(solution.examples || solution.testCases || []).map((ex, i) => (
-                                        <div key={i} className="p-4 rounded-xl bg-slate-800 border border-slate-700">
+                                        <div key={i} className="p-4 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
                                             <div className="flex items-center gap-2 mb-3">
-                                                <span className="px-2 py-1 text-xs font-bold bg-emerald-500/20 text-emerald-300 rounded">
+                                                <span className="px-2 py-1 text-xs font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 rounded">
                                                     Example {i + 1}
                                                 </span>
                                             </div>
                                             <div className="space-y-2">
                                                 <div>
                                                     <span className="text-xs uppercase text-slate-500 font-semibold">Input:</span>
-                                                    <pre className="mt-1 p-3 bg-slate-900 rounded-lg text-sm text-cyan-300 overflow-x-auto">
+                                                    <pre className="mt-1 p-3 bg-slate-200 dark:bg-slate-900 rounded-lg text-sm text-cyan-600 dark:text-cyan-300 overflow-x-auto">
                                                         <code>{ex.input}</code>
                                                     </pre>
                                                 </div>
                                                 <div>
                                                     <span className="text-xs uppercase text-slate-500 font-semibold">Output:</span>
-                                                    <pre className="mt-1 p-3 bg-slate-900 rounded-lg text-sm text-emerald-300 overflow-x-auto">
+                                                    <pre className="mt-1 p-3 bg-slate-200 dark:bg-slate-900 rounded-lg text-sm text-emerald-600 dark:text-emerald-300 overflow-x-auto">
                                                         <code>{ex.output}</code>
                                                     </pre>
                                                 </div>
                                                 {'explanation' in ex && typeof (ex as { explanation?: string }).explanation === 'string' && (
                                                     <div>
                                                         <span className="text-xs uppercase text-slate-500 font-semibold">Explanation:</span>
-                                                        <p className="mt-1 text-slate-300 text-sm">{(ex as { explanation: string }).explanation}</p>
+                                                        <p className="mt-1 text-slate-600 dark:text-slate-300 text-sm">{(ex as { explanation: string }).explanation}</p>
                                                     </div>
                                                 )}
                                             </div>
@@ -222,11 +224,11 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                                     <h3 className="text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
                                         📏 Constraints
                                     </h3>
-                                    <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50">
+                                    <div className="p-4 rounded-xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50">
                                         <ul className="space-y-1">
                                             {solution.constraints.map((c, i) => (
-                                                <li key={i} className="text-slate-300 font-mono text-sm flex items-start gap-2">
-                                                    <span className="text-indigo-400">•</span> {c}
+                                                <li key={i} className="text-slate-600 dark:text-slate-300 font-mono text-sm flex items-start gap-2">
+                                                    <span className="text-indigo-500 dark:text-indigo-400">•</span> {c}
                                                 </li>
                                             ))}
                                         </ul>
@@ -243,10 +245,10 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                                     <div className="space-y-2">
                                         {solution.hints.map((hint, i) => (
                                             <details key={i} className="group">
-                                                <summary className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 cursor-pointer hover:bg-amber-500/20 transition-colors">
+                                                <summary className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-300 cursor-pointer hover:bg-amber-500/20 transition-colors">
                                                     <span className="ml-2 font-medium">Hint {i + 1}</span>
                                                 </summary>
-                                                <div className="mt-2 p-4 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300">
+                                                <div className="mt-2 p-4 rounded-lg bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 text-slate-600 dark:text-slate-300">
                                                     {hint}
                                                 </div>
                                             </details>
@@ -256,18 +258,18 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                             )}
 
                             {/* Complexity Analysis */}
-                            <div className="space-y-4">
-                                <h3 className="text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
+                            <div className="space-y-3 sm:space-y-4">
+                                <h3 className="text-xs sm:text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
                                     ⚡ Complexity Analysis
                                 </h3>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/30">
-                                        <div className="text-sm text-emerald-400 font-semibold mb-1">Time Complexity</div>
-                                        <div className="text-xl text-white font-mono">{solution.timeComplexity || 'N/A'}</div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                    <div className="p-3 sm:p-4 rounded-xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/30">
+                                        <div className="text-xs sm:text-sm text-emerald-600 dark:text-emerald-400 font-semibold mb-1">Time Complexity</div>
+                                        <div className="text-lg sm:text-xl text-slate-800 dark:text-white font-mono">{solution.timeComplexity || 'N/A'}</div>
                                     </div>
-                                    <div className="p-4 rounded-xl bg-gradient-to-r from-blue-500/10 to-indigo-500/10 border border-blue-500/30">
-                                        <div className="text-sm text-blue-400 font-semibold mb-1">Space Complexity</div>
-                                        <div className="text-xl text-white font-mono">{solution.spaceComplexity || 'N/A'}</div>
+                                    <div className="p-3 sm:p-4 rounded-xl bg-gradient-to-r from-blue-500/10 to-indigo-500/10 border border-blue-500/30">
+                                        <div className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 font-semibold mb-1">Space Complexity</div>
+                                        <div className="text-lg sm:text-xl text-slate-800 dark:text-white font-mono">{solution.spaceComplexity || 'N/A'}</div>
                                     </div>
                                 </div>
                             </div>
@@ -275,8 +277,8 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                             {/* Key Insight */}
                             {solution.keyInsight && (
                                 <div className="p-6 rounded-xl border-l-4 border-amber-500 bg-gradient-to-r from-amber-500/10 to-orange-500/10">
-                                    <h3 className="text-lg font-semibold text-amber-300 mb-1">🔑 Key Insight</h3>
-                                    <p className="text-slate-200 text-lg leading-relaxed">{solution.keyInsight}</p>
+                                    <h3 className="text-lg font-semibold text-amber-600 dark:text-amber-300 mb-1">🔑 Key Insight</h3>
+                                    <p className="text-slate-700 dark:text-slate-200 text-lg leading-relaxed">{solution.keyInsight}</p>
                                 </div>
                             )}
 
@@ -288,7 +290,7 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                                     </h3>
                                     <div className="flex flex-wrap gap-2">
                                         {solution.relatedProblems.map((related, i) => (
-                                            <span key={i} className="px-3 py-1.5 text-sm bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-full hover:bg-indigo-500/30 transition-colors cursor-pointer">
+                                            <span key={i} className="px-3 py-1.5 text-sm bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 border border-indigo-500/30 rounded-full hover:bg-indigo-500/30 transition-colors cursor-pointer">
                                                 {related.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                                             </span>
                                         ))}
@@ -297,36 +299,36 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                             )}
 
                             {/* External Resources */}
-                            <div className="space-y-4">
-                                <h3 className="text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
+                            <div className="space-y-3 sm:space-y-4">
+                                <h3 className="text-xs sm:text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
                                     📚 External Resources
                                 </h3>
-                                <div className="flex flex-wrap gap-3">
+                                <div className="flex flex-wrap gap-2 sm:gap-3">
                                     {slug && (
                                         <>
                                             <a
                                                 href={`https://leetcode.com/problems/${slug}/`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="flex items-center gap-2 px-4 py-2 bg-orange-500/20 text-orange-300 border border-orange-500/30 rounded-lg hover:bg-orange-500/30 transition-colors"
+                                                className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-sm bg-orange-500/20 text-orange-300 border border-orange-500/30 rounded-lg hover:bg-orange-500/30 transition-colors"
                                             >
-                                                <ExternalLink size={16} /> LeetCode
+                                                <ExternalLink size={14} /> LeetCode
                                             </a>
                                             <a
                                                 href={`https://neetcode.io/problems/${slug}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="flex items-center gap-2 px-4 py-2 bg-green-500/20 text-green-300 border border-green-500/30 rounded-lg hover:bg-green-500/30 transition-colors"
+                                                className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-sm bg-green-500/20 text-green-300 border border-green-500/30 rounded-lg hover:bg-green-500/30 transition-colors"
                                             >
-                                                <ExternalLink size={16} /> NeetCode
+                                                <ExternalLink size={14} /> NeetCode
                                             </a>
                                             <a
                                                 href={`https://takeuforward.org/plus/dsa/all-problems`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="flex items-center gap-2 px-4 py-2 bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-lg hover:bg-purple-500/30 transition-colors"
+                                                className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-sm bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-lg hover:bg-purple-500/30 transition-colors"
                                             >
-                                                <ExternalLink size={16} /> TakeUForward
+                                                <ExternalLink size={14} /> TakeUForward
                                             </a>
                                         </>
                                     )}
@@ -335,24 +337,24 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                                             href={`https://www.youtube.com/watch?v=${solution.videoId}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="flex items-center gap-2 px-4 py-2 bg-red-500/20 text-red-300 border border-red-500/30 rounded-lg hover:bg-red-500/30 transition-colors"
+                                            className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-sm bg-red-500/20 text-red-300 border border-red-500/30 rounded-lg hover:bg-red-500/30 transition-colors"
                                         >
-                                            <Youtube size={16} /> Video Solution
+                                            <Youtube size={14} /> Video
                                         </a>
                                     )}
                                 </div>
                             </div>
                         </div>
                     ) : activeTab === 'explanation' ? (
-                        <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-300">
+                        <div className="space-y-6 sm:space-y-8 animate-in slide-in-from-bottom-4 duration-300">
 
                             {/* YouTube Video Player */}
                             {solution.videoId && (
-                                <div className="space-y-4">
-                                    <h3 className="text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
-                                        <Youtube size={16} className="text-red-500" /> Video Explanation
+                                <div className="space-y-3 sm:space-y-4">
+                                    <h3 className="text-xs sm:text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
+                                        <Youtube size={14} className="sm:w-4 sm:h-4 text-red-500" /> Video Explanation
                                     </h3>
-                                    <div className="relative w-full rounded-xl overflow-hidden border border-slate-700 shadow-2xl" style={{ paddingBottom: '56.25%' }}>
+                                    <div className="relative w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-2xl" style={{ paddingBottom: '56.25%' }}>
                                         <iframe
                                             className="absolute top-0 left-0 w-full h-full"
                                             src={`https://www.youtube.com/embed/${solution.videoId}`}
@@ -365,19 +367,19 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                             )}
 
                             {/* One-liner */}
-                            <div className="p-6 rounded-xl border-l-4 border-indigo-500 bg-gradient-to-r from-indigo-500/10 to-purple-500/10">
-                                <h3 className="text-lg font-semibold text-indigo-300 mb-1">💡 Quick Summary</h3>
-                                <p className="text-slate-200 text-lg leading-relaxed">{solution.oneliner}</p>
+                            <div className="p-4 sm:p-6 rounded-xl border-l-4 border-indigo-500 bg-gradient-to-r from-indigo-500/10 to-purple-500/10">
+                                <h3 className="text-base sm:text-lg font-semibold text-indigo-600 dark:text-indigo-300 mb-1">💡 Quick Summary</h3>
+                                <p className="text-slate-700 dark:text-slate-200 text-sm sm:text-lg leading-relaxed">{solution.oneliner}</p>
                             </div>
 
                             {/* Intuition */}
-                            <div className="space-y-4">
-                                <h3 className="text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
+                            <div className="space-y-3 sm:space-y-4">
+                                <h3 className="text-xs sm:text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
                                     🧠 Core Intuition
                                 </h3>
-                                <div className="grid gap-3">
+                                <div className="grid gap-2 sm:gap-3">
                                     {solution.intuition?.map((item, i) => (
-                                        <div key={i} className="p-4 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300">
+                                        <div key={i} className="p-3 sm:p-4 rounded-lg bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 text-slate-600 dark:text-slate-300 text-sm sm:text-base">
                                             {item}
                                         </div>
                                     ))}
@@ -385,8 +387,8 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                             </div>
 
                             {/* Visualization */}
-                            <div className="space-y-4">
-                                <h3 className="text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
+                            <div className="space-y-3 sm:space-y-4">
+                                <h3 className="text-xs sm:text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
                                     📝 Visualization
                                 </h3>
 
@@ -394,17 +396,17 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                                     <SmartVisualizer solution={solution} />
                                 ) : (
                                     // Fallback for legacy visual/steps
-                                    <div className="space-y-4">
+                                    <div className="space-y-3 sm:space-y-4">
                                         {solution.steps?.map((step) => (
-                                            <div key={step.step} className="p-4 rounded-xl bg-slate-800 border border-slate-700">
-                                                <div className="flex items-center gap-3 mb-3">
-                                                    <span className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white shadow-lg">{step.step}</span>
-                                                    <h4 className="font-semibold text-white">{step.title}</h4>
+                                            <div key={step.step} className="p-3 sm:p-4 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                                <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                                                    <span className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white text-sm sm:text-base shadow-lg">{step.step}</span>
+                                                    <h4 className="font-semibold text-slate-800 dark:text-white text-sm sm:text-base">{step.title}</h4>
                                                 </div>
-                                                <pre className="font-mono text-sm bg-black/30 p-4 rounded-lg text-emerald-300 overflow-x-auto mb-2 whitespace-pre-wrap leading-relaxed border border-slate-700/50">
+                                                <pre className="font-mono text-xs sm:text-sm bg-slate-200 dark:bg-black/30 p-3 sm:p-4 rounded-lg text-emerald-600 dark:text-emerald-300 overflow-x-auto mb-2 whitespace-pre-wrap leading-relaxed border border-slate-300 dark:border-slate-700/50">
                                                     {step.visual}
                                                 </pre>
-                                                <p className="text-slate-400 ml-1">{step.explanation}</p>
+                                                <p className="text-slate-500 dark:text-slate-400 ml-1 text-sm sm:text-base">{step.explanation}</p>
                                             </div>
                                         ))}
                                     </div>
@@ -412,15 +414,15 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                             </div>
 
                             {/* Code Read-only */}
-                            <div className="space-y-4">
-                                <h3 className="text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
-                                    <CodeIcon size={16} /> Python Code
+                            <div className="space-y-3 sm:space-y-4">
+                                <h3 className="text-xs sm:text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
+                                    <CodeIcon size={14} className="sm:w-4 sm:h-4" /> Python Code
                                 </h3>
-                                <div className="rounded-xl overflow-hidden border border-slate-700">
+                                <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
                                     <SyntaxHighlighter
                                         language="python"
                                         style={vscDarkPlus}
-                                        customStyle={{ margin: 0, padding: '1.5rem', background: '#0d0d15' }}
+                                        customStyle={{ margin: 0, padding: '1rem', fontSize: '0.8rem' }}
                                     >
                                         {solution.code}
                                     </SyntaxHighlighter>
@@ -529,9 +531,9 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                             )}
                         </div>
                     ) : (
-                        <div className="h-full min-h-[600px] flex flex-col gap-4 animate-in slide-in-from-bottom-4 duration-300">
-                            <div className="flex-1 bg-[#0d0d15] rounded-xl border border-slate-700 overflow-hidden relative group min-h-[400px]">
-                                <div className="absolute top-0 left-0 right-0 px-4 py-2 bg-[#1a1a2e] border-b border-slate-700 text-xs text-slate-500 font-mono flex justify-between items-center z-10">
+                        <div className="h-full min-h-[400px] sm:min-h-[600px] flex flex-col gap-3 sm:gap-4 animate-in slide-in-from-bottom-4 duration-300">
+                            <div className="flex-1 bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-700 overflow-hidden relative group min-h-[200px] sm:min-h-[400px]">
+                                <div className="absolute top-0 left-0 right-0 px-3 sm:px-4 py-2 bg-slate-800 border-b border-slate-700 text-xs text-slate-400 font-mono flex justify-between items-center z-10">
                                     <span>main.py</span>
                                 </div>
                                 <div className="absolute inset-0 top-[37px] w-full">
@@ -543,7 +545,7 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                                         theme="vs-dark"
                                         options={{
                                             minimap: { enabled: false },
-                                            fontSize: 14,
+                                            fontSize: 12,
                                             lineNumbers: 'on',
                                             scrollBeyondLastLine: false,
                                             automaticLayout: true,
@@ -552,95 +554,87 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                                             renderLineHighlight: 'none',
                                             hideCursorInOverviewRuler: true,
                                             overviewRulerBorder: false,
+                                            wordWrap: 'on',
                                             scrollbar: {
-                                                vertical: 'hidden',
-                                                horizontal: 'hidden'
+                                                vertical: 'auto',
+                                                horizontal: 'auto'
                                             }
                                         }}
-                                        loading={<div className="text-slate-500 p-4">Loading Editor...</div>}
+                                        loading={<div className="text-slate-500 p-4 text-sm">Loading Editor...</div>}
                                     />
                                 </div>
                             </div>
-                            <div className="flex justify-between items-center bg-[#16162a] p-2 rounded-lg border border-slate-700">
-                                <span className="text-sm text-slate-400 font-mono pl-2">
-                                    {solution.testCases?.length || 0} Test Cases Available
+                            <div className="flex justify-between items-center bg-slate-100 dark:bg-slate-800 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
+                                <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-mono pl-2">
+                                    {solution.testCases?.length || 0} Tests
                                 </span>
                                 <button
                                     onClick={handleRunCode}
                                     disabled={isRunning}
-                                    className={`px-6 py-2 font-semibold rounded-lg shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2 ${isRunning ? 'bg-slate-700 cursor-not-allowed text-slate-400' : 'bg-emerald-600 hover:bg-emerald-500 text-white'}`}
+                                    className={`px-4 sm:px-6 py-2 font-semibold rounded-lg shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2 text-sm ${isRunning ? 'bg-slate-400 dark:bg-slate-700 cursor-not-allowed text-slate-300 dark:text-slate-400' : 'bg-emerald-600 hover:bg-emerald-500 text-white'}`}
                                 >
-                                    <Play size={16} /> {isRunning ? 'Running...' : 'Run Code'}
+                                    <Play size={14} /> {isRunning ? 'Running...' : 'Run'}
                                 </button>
                             </div>
 
                             {/* Test Cases & Output Area */}
-                            <div className="flex-1 bg-black rounded-xl border border-slate-800 overflow-hidden flex flex-col md:flex-row">
-                                {/* Test Cases List */}
-                                <div className="md:w-1/3 border-b md:border-b-0 md:border-r border-slate-800 p-4 bg-[#0d0d15] overflow-y-auto custom-scrollbar flex flex-col">
-                                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Test Cases</h4>
+                            <div className="flex-1 min-h-[200px] bg-slate-100 dark:bg-black rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col">
+                                {/* Test Cases List - Collapsible on mobile */}
+                                <div className="max-h-[150px] sm:max-h-[200px] border-b border-slate-200 dark:border-slate-800 p-3 sm:p-4 bg-slate-50 dark:bg-slate-900 overflow-y-auto custom-scrollbar">
+                                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 sm:mb-3">Test Cases</h4>
 
-                                    <div className="space-y-3 flex-1">
+                                    <div className="flex gap-2 overflow-x-auto pb-2 sm:flex-wrap sm:gap-3">
                                         {/* Built-in Test Cases */}
                                         {solution.testCases?.map((testCase, i) => (
-                                            <div key={`builtin-${i}`} className="p-3 rounded-lg bg-slate-900 border border-slate-800">
-                                                <div className="text-xs text-slate-500 mb-1 font-mono">Built-in {i + 1}</div>
-                                                <div className="text-xs text-slate-400 mb-1 font-mono">Input:</div>
-                                                <div className="text-sm text-indigo-300 font-mono break-all mb-2">{testCase.input}</div>
-                                                <div className="text-xs text-slate-400 mb-1 font-mono">Expected:</div>
-                                                <div className="text-sm text-emerald-300 font-mono break-all">{testCase.output}</div>
+                                            <div key={`builtin-${i}`} className="flex-shrink-0 p-2 sm:p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 min-w-[150px] sm:min-w-[180px]">
+                                                <div className="text-xs text-slate-500 mb-1 font-mono">Test {i + 1}</div>
+                                                <div className="text-xs text-indigo-600 dark:text-indigo-300 font-mono truncate">{testCase.input}</div>
+                                                <div className="text-xs text-emerald-600 dark:text-emerald-300 font-mono truncate mt-1">→ {testCase.output}</div>
                                             </div>
                                         ))}
 
-                                        {/* Single Editable Custom Test Case */}
-                                        <div className="p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/30">
-                                            <div className="flex justify-between items-center mb-2">
-                                                <div className="text-xs text-indigo-400 font-mono font-bold">Custom Test</div>
+                                        {/* Custom Test Case */}
+                                        <div className="flex-shrink-0 p-2 sm:p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/30 min-w-[150px] sm:min-w-[180px]">
+                                            <div className="flex justify-between items-center mb-1">
+                                                <div className="text-xs text-indigo-600 dark:text-indigo-400 font-mono font-bold">Custom</div>
                                                 {customTestCase ? (
                                                     <button
                                                         onClick={() => setCustomTestCase(null)}
-                                                        className="p-1 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded transition-colors"
+                                                        className="p-0.5 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded transition-colors"
                                                         title="Remove custom test"
                                                     >
-                                                        <Trash2 size={14} />
+                                                        <Trash2 size={12} />
                                                     </button>
                                                 ) : (
                                                     <button
                                                         onClick={() => setCustomTestCase({ input: '', output: '' })}
-                                                        className="flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+                                                        className="flex items-center gap-1 text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors"
                                                     >
-                                                        <Plus size={14} />
-                                                        <span>Add</span>
+                                                        <Plus size={12} />
                                                     </button>
                                                 )}
                                             </div>
 
                                             {customTestCase && (
-                                                <div className="space-y-2">
-                                                    <div>
-                                                        <label className="text-xs text-slate-400 font-mono block mb-1">Input:</label>
-                                                        <input
-                                                            value={customTestCase.input}
-                                                            onChange={(e) => setCustomTestCase(prev => prev ? ({
-                                                                ...prev,
-                                                                input: e.target.value
-                                                            }) : null)}
-                                                            className="w-full bg-black/50 border border-slate-700 rounded px-2 py-1.5 text-sm font-mono text-indigo-300 focus:border-indigo-500 outline-none placeholder:text-slate-700"
-                                                            placeholder="hand = [1,2,3], groupSize = 3"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="text-xs text-slate-400 font-mono block mb-1">Expected:</label>
-                                                        <input
-                                                            value={customTestCase.output}
-                                                            onChange={(e) => setCustomTestCase(prev => prev ? ({
-                                                                ...prev,
-                                                                output: e.target.value
-                                                            }) : null)}
-                                                            className="w-full bg-black/50 border border-slate-700 rounded px-2 py-1.5 text-sm font-mono text-emerald-300 focus:border-emerald-500 outline-none placeholder:text-slate-700"
-                                                            placeholder="True"
-                                                        />
-                                                    </div>
+                                                <div className="space-y-1">
+                                                    <input
+                                                        value={customTestCase.input}
+                                                        onChange={(e) => setCustomTestCase(prev => prev ? ({
+                                                            ...prev,
+                                                            input: e.target.value
+                                                        }) : null)}
+                                                        className="w-full bg-white dark:bg-black/50 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-xs font-mono text-indigo-600 dark:text-indigo-300 focus:border-indigo-500 outline-none placeholder:text-slate-400 dark:placeholder:text-slate-700"
+                                                        placeholder="Input"
+                                                    />
+                                                    <input
+                                                        value={customTestCase.output}
+                                                        onChange={(e) => setCustomTestCase(prev => prev ? ({
+                                                            ...prev,
+                                                            output: e.target.value
+                                                        }) : null)}
+                                                        className="w-full bg-white dark:bg-black/50 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-xs font-mono text-emerald-600 dark:text-emerald-300 focus:border-emerald-500 outline-none placeholder:text-slate-400 dark:placeholder:text-slate-700"
+                                                        placeholder="Expected"
+                                                    />
                                                 </div>
                                             )}
                                         </div>
@@ -648,14 +642,14 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                                 </div>
 
                                 {/* Execution Results */}
-                                <div className="flex-1 p-4 bg-[#0a0a12] overflow-y-auto custom-scrollbar font-mono text-sm">
-                                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Output</h4>
+                                <div className="flex-1 p-3 sm:p-4 bg-white dark:bg-slate-900 overflow-y-auto custom-scrollbar font-mono text-xs sm:text-sm">
+                                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 sm:mb-3">Output</h4>
                                     {output ? (
-                                        <div className="whitespace-pre-wrap text-slate-300">{output}</div>
+                                        <div className="whitespace-pre-wrap text-slate-700 dark:text-slate-300">{output}</div>
                                     ) : (
-                                        <div className="text-slate-600 italic flex flex-col items-center justify-center h-40">
-                                            <Terminal size={32} className="mb-2 opacity-50" />
-                                            <span>Run code to see results...</span>
+                                        <div className="text-slate-400 dark:text-slate-600 italic flex flex-col items-center justify-center h-20 sm:h-40">
+                                            <Terminal size={24} className="sm:w-8 sm:h-8 mb-2 opacity-50" />
+                                            <span className="text-xs sm:text-sm">Run code to see results...</span>
                                         </div>
                                     )}
                                 </div>

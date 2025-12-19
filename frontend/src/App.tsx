@@ -105,159 +105,168 @@ function App() {
   }
 
   return (
-    <div className="app max-w-7xl mx-auto px-4 py-8 bg-slate-50 dark:bg-slate-950 min-h-screen transition-colors">
-      {/* Header */}
-      <header className="mb-12 border-b border-slate-200 dark:border-slate-800 pb-8">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-4">
-            <Brain className="text-indigo-500 w-10 h-10" />
-            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-500">
-              Codenium
-            </h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <div className="flex flex-col items-center px-4 py-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 min-w-[90px] shadow-sm">
-              <span className="text-2xl font-bold text-slate-900 dark:text-white">{stats.easy + stats.medium + stats.hard}</span>
-              <span className="text-xs uppercase text-slate-500 font-bold tracking-wide">Total</span>
+    <div className="bg-slate-50 dark:bg-slate-950 min-h-screen transition-colors">
+      <div className="app max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+        {/* Header */}
+        <header className="mb-6 sm:mb-8 border-b border-slate-200 dark:border-slate-800 pb-4 sm:pb-6">
+          {/* Desktop: Logo + Theme + Stats in one row | Mobile: Stacked */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            {/* Logo */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Brain className="text-indigo-500 w-8 h-8 sm:w-10 sm:h-10" />
+              <h1 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-500">
+                Codenium
+              </h1>
             </div>
-            <div className="flex flex-col items-center px-4 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl min-w-[90px]">
-              <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{stats.easy}</span>
-              <span className="text-xs uppercase text-slate-500 font-bold tracking-wide">Easy</span>
-            </div>
-            <div className="flex flex-col items-center px-4 py-3 bg-amber-500/10 border border-amber-500/20 rounded-xl min-w-[90px]">
-              <span className="text-2xl font-bold text-amber-600 dark:text-amber-400">{stats.medium}</span>
-              <span className="text-xs uppercase text-slate-500 font-bold tracking-wide">Med</span>
-            </div>
-            <div className="flex flex-col items-center px-4 py-3 bg-rose-500/10 border border-rose-500/20 rounded-xl min-w-[90px]">
-              <span className="text-2xl font-bold text-rose-600 dark:text-rose-400">{stats.hard}</span>
-              <span className="text-xs uppercase text-slate-500 font-bold tracking-wide">Hard</span>
-            </div>
-          </div>
-        </div>
-      </header>
 
-      {/* Filters */}
-      <div className="mb-8 flex flex-col gap-4">
-        <div className="flex flex-col sm:flex-row justify-between gap-4">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={20} />
-            <input
-              type="text"
-              placeholder="Search problems..."
-              className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl py-3 pl-10 pr-4 text-slate-900 dark:text-slate-200 focus:outline-none focus:border-indigo-500 transition-colors"
-              value={problems.filter.search}
-              onChange={(e) => problems.updateFilter({ search: e.target.value })}
-            />
+            {/* Theme Toggle + Stats Row */}
+            <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto pb-2 lg:pb-0 -mx-3 px-3 lg:mx-0 lg:px-0 custom-scrollbar">
+              <ThemeToggle />
+              <div className="flex flex-col items-center px-4 py-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 min-w-[80px] shadow-sm flex-shrink-0">
+                <span className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">{stats.easy + stats.medium + stats.hard}</span>
+                <span className="text-[10px] uppercase text-slate-500 font-bold tracking-wide">Total</span>
+              </div>
+              <div className="flex flex-col items-center px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl min-w-[70px] flex-shrink-0">
+                <span className="text-lg sm:text-xl font-bold text-emerald-600 dark:text-emerald-400">{stats.easy}</span>
+                <span className="text-[10px] uppercase text-slate-500 font-bold tracking-wide">Easy</span>
+              </div>
+              <div className="flex flex-col items-center px-4 py-2 bg-amber-500/10 border border-amber-500/20 rounded-xl min-w-[70px] flex-shrink-0">
+                <span className="text-lg sm:text-xl font-bold text-amber-600 dark:text-amber-400">{stats.medium}</span>
+                <span className="text-[10px] uppercase text-slate-500 font-bold tracking-wide">Med</span>
+              </div>
+              <div className="flex flex-col items-center px-4 py-2 bg-rose-500/10 border border-rose-500/20 rounded-xl min-w-[70px] flex-shrink-0">
+                <span className="text-lg sm:text-xl font-bold text-rose-600 dark:text-rose-400">{stats.hard}</span>
+                <span className="text-[10px] uppercase text-slate-500 font-bold tracking-wide">Hard</span>
+              </div>
+            </div>
           </div>
-          <div className="flex gap-2">
-            {(['All', 'Easy', 'Medium', 'Hard'] as const).map(diff => (
-              <button
-                key={diff}
-                onClick={() => problems.updateFilter({ difficulty: diff })}
-                className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${problems.filter.difficulty === diff
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
-                  : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600'
-                  }`}
-              >
-                {diff}
-              </button>
-            ))}
-          </div>
-        </div>
+        </header>
 
-        {/* Subtopic Filter */}
-        {allSubTopics.length > 0 && (
-          <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
-            <button
-              onClick={() => setSubTopicFilter('All')}
-              className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${subTopicFilter === 'All'
-                ? 'bg-purple-500/20 text-purple-700 dark:text-purple-300 border-purple-500/50'
-                : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600'
-                }`}
-            >
-              All Subtopics
-            </button>
-            {allSubTopics.map(st => (
+        {/* Filters */}
+        <div className="mb-4 sm:mb-8 flex flex-col gap-3 sm:gap-4">
+          {/* Search and Difficulty Row */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+            {/* Search */}
+            <div className="relative w-full sm:w-80 lg:w-96">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={18} />
+              <input
+                type="text"
+                placeholder="Search problems..."
+                className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-sm text-slate-900 dark:text-slate-200 focus:outline-none focus:border-indigo-500 transition-colors"
+                value={problems.filter.search}
+                onChange={(e) => problems.updateFilter({ search: e.target.value })}
+              />
+            </div>
+            {/* Difficulty Filter - Right aligned on desktop */}
+            <div className="flex gap-2 overflow-x-auto pb-1 -mx-3 px-3 sm:mx-0 sm:px-0 custom-scrollbar">
+              {(['All', 'Easy', 'Medium', 'Hard'] as const).map(diff => (
+                <button
+                  key={diff}
+                  onClick={() => problems.updateFilter({ difficulty: diff })}
+                  className={`px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all flex-shrink-0 ${problems.filter.difficulty === diff
+                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
+                    : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600'
+                    }`}
+                >
+                  {diff}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Subtopic Filter */}
+          {allSubTopics.length > 0 && (
+            <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
               <button
-                key={st}
-                onClick={() => setSubTopicFilter(st)}
-                className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${subTopicFilter === st
+                onClick={() => setSubTopicFilter('All')}
+                className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${subTopicFilter === 'All'
                   ? 'bg-purple-500/20 text-purple-700 dark:text-purple-300 border-purple-500/50'
                   : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600'
                   }`}
               >
-                {st}
+                All Subtopics
               </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Categories Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {stats.categories.map((cat) => {
-          const visibleProblems = filterProblems(cat.problems);
-          if (visibleProblems.length === 0) return null;
-
-          return (
-            <div key={cat.name} className="bg-white dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden hover:border-slate-300 dark:hover:border-slate-700 transition-all group shadow-sm">
-              <div className="p-6 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80 group-hover:bg-slate-100 dark:group-hover:bg-slate-800 transition-colors">
-                <div className="flex justify-between items-center mb-2">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{cat.icon}</span>
-                    <h3 className="font-bold text-lg text-slate-800 dark:text-slate-200">{cat.name}</h3>
-                  </div>
-                  <span className="text-sm text-slate-500 bg-slate-200 dark:bg-slate-950 px-2 py-1 rounded-md">{visibleProblems.length}</span>
-                </div>
-                <div className="h-1 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden flex mt-3">
-                  <div className="bg-emerald-500 h-full" style={{ width: '30%' }}></div>
-                  <div className="bg-amber-500 h-full" style={{ width: '50%' }}></div>
-                  <div className="bg-rose-500 h-full" style={{ width: '20%' }}></div>
-                </div>
-              </div>
-
-              <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
-                {visibleProblems.map(p => (
-                  <div
-                    key={p.slug}
-                    onClick={() => handleProblemClick(p.slug)}
-                    className={`flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800/50 hover:bg-indigo-500/10 hover:border-l-4 hover:border-l-indigo-500 cursor-pointer transition-all ${loadingSlug === p.slug ? 'opacity-50 pointer-events-none' : ''}`}
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-medium text-slate-700 dark:text-slate-300">{p.title}</h4>
-                        {p.has_solution && (
-                          <Zap size={14} className="text-amber-400 fill-amber-400" />
-                        )}
-                        {loadingSlug === p.slug && <span className="text-xs text-indigo-400 animate-pulse">Generating...</span>}
-                      </div>
-                    </div>
-                    <span className={`text-xs font-bold px-2 py-1 rounded-full ${p.difficulty === 'Easy' ? 'bg-emerald-500/10 text-emerald-400' :
-                      p.difficulty === 'Medium' ? 'bg-amber-500/10 text-amber-400' :
-                        'bg-rose-500/10 text-rose-400'
-                      }`}>
-                      {p.difficulty}
-                    </span>
-                  </div>
-                ))}
-              </div>
+              {allSubTopics.map(st => (
+                <button
+                  key={st}
+                  onClick={() => setSubTopicFilter(st)}
+                  className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${subTopicFilter === st
+                    ? 'bg-purple-500/20 text-purple-700 dark:text-purple-300 border-purple-500/50'
+                    : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600'
+                    }`}
+                >
+                  {st}
+                </button>
+              ))}
             </div>
-          );
-        })}
+          )}
+        </div>
+
+        {/* Categories Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {stats.categories.map((cat) => {
+            const visibleProblems = filterProblems(cat.problems);
+            if (visibleProblems.length === 0) return null;
+
+            return (
+              <div key={cat.name} className="bg-white dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden hover:border-slate-300 dark:hover:border-slate-700 transition-all group shadow-sm">
+                <div className="p-6 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80 group-hover:bg-slate-100 dark:group-hover:bg-slate-800 transition-colors">
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{cat.icon}</span>
+                      <h3 className="font-bold text-lg text-slate-800 dark:text-slate-200">{cat.name}</h3>
+                    </div>
+                    <span className="text-sm text-slate-500 bg-slate-200 dark:bg-slate-950 px-2 py-1 rounded-md">{visibleProblems.length}</span>
+                  </div>
+                  <div className="h-1 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden flex mt-3">
+                    <div className="bg-emerald-500 h-full" style={{ width: '30%' }}></div>
+                    <div className="bg-amber-500 h-full" style={{ width: '50%' }}></div>
+                    <div className="bg-rose-500 h-full" style={{ width: '20%' }}></div>
+                  </div>
+                </div>
+
+                <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
+                  {visibleProblems.map(p => (
+                    <div
+                      key={p.slug}
+                      onClick={() => handleProblemClick(p.slug)}
+                      className={`flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800/50 hover:bg-indigo-500/10 hover:border-l-4 hover:border-l-indigo-500 cursor-pointer transition-all ${loadingSlug === p.slug ? 'opacity-50 pointer-events-none' : ''}`}
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-medium text-slate-700 dark:text-slate-300">{p.title}</h4>
+                          {p.has_solution && (
+                            <Zap size={14} className="text-amber-400 fill-amber-400" />
+                          )}
+                          {loadingSlug === p.slug && <span className="text-xs text-indigo-400 animate-pulse">Generating...</span>}
+                        </div>
+                      </div>
+                      <span className={`text-xs font-bold px-2 py-1 rounded-full ${p.difficulty === 'Easy' ? 'bg-emerald-500/10 text-emerald-400' :
+                        p.difficulty === 'Medium' ? 'bg-amber-500/10 text-amber-400' :
+                          'bg-rose-500/10 text-rose-400'
+                        }`}>
+                        {p.difficulty}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <footer className="mt-12 text-center text-slate-500 dark:text-slate-600 text-sm">
+          <p>Built with ❤️ for Visual Learners | Codenium</p>
+        </footer>
+
+        {/* Modal */}
+        <SolutionModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          solution={selectedSolution}
+          slug={selectedSlug}
+        />
       </div>
-
-      <footer className="mt-12 text-center text-slate-500 dark:text-slate-600 text-sm">
-        <p>Built with ❤️ for Visual Learners | Codenium</p>
-      </footer>
-
-      {/* Modal */}
-      <SolutionModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        solution={selectedSolution}
-        slug={selectedSlug}
-      />
     </div>
   );
 }

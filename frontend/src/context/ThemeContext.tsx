@@ -1,30 +1,29 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
+import { ThemeContext, type Theme } from './themeContextDef';
 
-type Theme = 'light' | 'dark';
-
-interface ThemeContextType {
-    theme: Theme;
-    toggleTheme: () => void;
-    setTheme: (theme: Theme) => void;
+function getSystemTheme(): Theme {
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return 'dark';
+    }
+    return 'light';
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+function getInitialTheme(): Theme {
+    if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('codenium-theme');
+        // Only use stored value if it's valid
+        if (stored === 'dark' || stored === 'light') {
+            return stored;
+        }
+    }
+    // Fall back to system preference
+    return getSystemTheme();
+}
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-    const [theme, setThemeState] = useState<Theme>(() => {
-        // Check localStorage first
-        if (typeof window !== 'undefined') {
-            const stored = localStorage.getItem('codenium-theme') as Theme;
-            if (stored) return stored;
+    const [theme, setThemeState] = useState<Theme>(getInitialTheme);
 
-            // Check system preference
-            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                return 'dark';
-            }
-        }
-        return 'dark'; // Default to dark for ADHD-friendly experience
-    });
-
+    // Apply theme to document
     useEffect(() => {
         const root = document.documentElement;
         if (theme === 'dark') {
@@ -34,6 +33,22 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         }
         localStorage.setItem('codenium-theme', theme);
     }, [theme]);
+
+    // Listen for system preference changes (only if no stored preference)
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        const handleChange = (e: MediaQueryListEvent) => {
+            // Only auto-switch if user hasn't set a preference
+            const stored = localStorage.getItem('codenium-theme');
+            if (!stored) {
+                setThemeState(e.matches ? 'dark' : 'light');
+            }
+        };
+
+        mediaQuery.addEventListener('change', handleChange);
+        return () => mediaQuery.removeEventListener('change', handleChange);
+    }, []);
 
     const toggleTheme = () => {
         setThemeState(prev => prev === 'dark' ? 'light' : 'dark');
@@ -50,10 +65,4 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     );
 }
 
-export function useTheme() {
-    const context = useContext(ThemeContext);
-    if (!context) {
-        throw new Error('useTheme must be used within a ThemeProvider');
-    }
-    return context;
-}
+// useTheme hook is now in ./useTheme.ts for Fast Refresh compatibility
