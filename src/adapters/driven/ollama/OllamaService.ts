@@ -1,0 +1,92 @@
+import { AIService } from '../../../domain/ports/AIService';
+
+export class OllamaService implements AIService {
+    private baseUrl: string;
+    private model: string;
+
+    constructor() {
+        this.baseUrl = process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434';
+        this.model = process.env.OLLAMA_MODEL || 'deepseek-coder';
+        console.log(`OllamaService initialized with model: ${this.model} at ${this.baseUrl}`);
+    }
+
+    private async chat(messages: any[], format?: string): Promise<string> {
+        try {
+            const response = await fetch(`${this.baseUrl}/api/chat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: this.model,
+                    messages,
+                    stream: false,
+                    format: format
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Ollama API Error: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            return data.message.content;
+        } catch (error: any) {
+            console.error("Ollama Service Error:", error);
+            throw error;
+        }
+    }
+
+    async generateHint(problem: string, code: string): Promise<any> {
+        try {
+            const content = await this.chat([
+                { role: "system", content: "You are a helpful coding assistant. Provide a short, cryptic but helpful hint for the user's current code state. Do not give the answer." },
+                { role: "user", content: `Problem: ${problem}\n\nCurrent Code:\n${code}` }
+            ]);
+            return { hint: content };
+        } catch (error: any) {
+            return { error: error.message };
+        }
+    }
+
+    async explainSolution(code: string, title: string): Promise<any> {
+        try {
+            const content = await this.chat([
+                { role: "system", content: "Explain this solution code step-by-step. specific focus on time and space complexity." },
+                { role: "user", content: `Problem: ${title}\n\nCode:\n${code}` }
+            ]);
+            return { explanation: content };
+        } catch (error: any) {
+            return { error: error.message };
+        }
+    }
+
+    async answerQuestion(problemTitle: string, problemDesc: string, chatHistory: any[], userMessage: string): Promise<any> {
+        try {
+            const messages: any[] = [
+                { role: "system", content: "You are a Socratic LeetCode tutor..." },
+                { role: "system", content: `Context: ${problemTitle}. ${problemDesc}` }
+            ];
+
+            chatHistory.forEach(msg => messages.push({ role: msg.role, content: msg.content }));
+            messages.push({ role: "user", content: userMessage });
+
+            const content = await this.chat(messages);
+            return { response: content };
+        } catch (error: any) {
+            return { error: error.message };
+        }
+    }
+
+    async generateSolution(problemTitle: string, problemDesc: string): Promise<any> {
+        try {
+            const content = await this.chat([
+                { role: "system", content: "You are an expert algorithm engineer. Generate a solution for the given problem. Return ONLY a JSON object with keys: 'code', 'timeComplexity', 'spaceComplexity', 'explanation'. The 'code' should be a complete valid javascript/typescript function." },
+                { role: "user", content: `Problem: ${problemTitle}\n${problemDesc}` }
+            ], 'json');
+
+            return JSON.parse(content);
+        } catch (error: any) {
+            console.error("AI Error:", error);
+            return { error: error.message };
+        }
+    }
+}

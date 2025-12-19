@@ -52,17 +52,17 @@ cleanup() {
 trap cleanup SIGINT SIGTERM EXIT
 
 echo "Starting Backend (Port 3001)..."
-cd api
-npm start &
+echo "Starting Backend (Port 3001)..."
+make run-api &
 BACKEND_PID=$!
-cd ..
+# cd .. # No longer needed as make handles cwd
 
 # Give backend a moment to grab the socket
 sleep 1
 
 echo "Starting Frontend (Port 3000)..."
-cd frontend
-npm run dev &
+echo "Starting Frontend (Port 3000)..."
+make run-frontend &
 FRONTEND_PID=$!
 
 wait

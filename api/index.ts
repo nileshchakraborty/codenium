@@ -33,7 +33,7 @@ import { ToolRegistry } from '../src/domain/mcp/ToolRegistry';
 // Adapters
 import { FileProblemRepository } from '../src/adapters/driven/fs/FileProblemRepository';
 import { LocalExecutionService } from '../src/adapters/driven/execution/LocalExecutionService';
-import { OpenAIService } from '../src/adapters/driven/openai/OpenAIService';
+import { OllamaService } from '../src/adapters/driven/ollama/OllamaService';
 import { MCPTools } from '../src/adapters/driven/mcp/Tools';
 
 // Application
@@ -50,7 +50,7 @@ console.log("Initializing Hexagonal Architecture...");
 // 1. Create Driven Adapters
 const problemRepo = new FileProblemRepository();
 const executionService = new LocalExecutionService();
-const aiService = new OpenAIService();
+const aiService = new OllamaService();
 const toolRegistry = new ToolRegistry();
 
 // 2. Wire up MCP Tools

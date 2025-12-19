@@ -23,6 +23,12 @@ install:
 dev:
 	./start.sh
 
+run-api:
+	npx nodemon --exec ts-node api/index.ts
+
+run-frontend:
+	cd frontend && npm run dev
+
 build:
 	@echo "Building Frontend..."
 	cd frontend && npm run build
