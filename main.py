@@ -30,6 +30,53 @@ app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
 
+def load_problems():
+    if not DATA_FILE.exists():
+        return {"categories": []}
+    with open(DATA_FILE) as f:
+        data = json.load(f)
+    # Enrich with slugs
+    for cat in data.get("categories", []):
+        for p in cat.get("problems", []):
+            p["slug"] = title_to_slug(p["title"])
+            # Assuming 'has_solution' check necessitates looking at solutions file, 
+            # but let's keep it simple or check solutions
+            p["has_solution"] = False # Default, update if costly to check all
+    
+    # Optional: Update has_solution based on solutions.json
+    try:
+        solutions = load_solutions()
+        sol_map = solutions.get("solutions", {})
+        for cat in data.get("categories", []):
+            for p in cat.get("problems", []):
+                if p["slug"] in sol_map:
+                    p["has_solution"] = True
+    except:
+        pass
+        
+    return data
+
+def load_solutions():
+    if not SOLUTIONS_FILE.exists():
+         return {"solutions": {}}
+    with open(SOLUTIONS_FILE) as f:
+        return json.load(f)
+
+def title_to_slug(title):
+    return title.lower().replace(" ", "-").replace("(", "").replace(")", "").replace("'", "")
+
+@app.get("/api/problems")
+async def get_problems():
+    return load_problems()
+
+@app.get("/api/solutions/{slug}")
+async def get_solution(slug: str):
+    solutions = load_solutions()
+    if slug in solutions.get("solutions", {}):
+        return solutions["solutions"][slug]
+    return HTMLResponse(status_code=404, content='{"error": "Solution not found"}', media_type="application/json")
+
+
 class CodeSubmission(BaseModel):
     code: str
     slug: str
@@ -58,6 +105,12 @@ async def run_code(submission: CodeSubmission):
 
 class GenerateRequest(BaseModel):
     slug: str
+
+class TutorRequest(BaseModel):
+    slug: str
+    message: str
+    history: list[dict] = [] # [{role: 'user'|'assistant', content: '...'}]
+
 
 @app.post("/api/generate")
 async def generate_solution_endpoint(request: GenerateRequest):
@@ -106,4 +159,26 @@ async def generate_solution_endpoint(request: GenerateRequest):
         json.dump(solutions, f, indent=4)
         
     return {"success": True, "slug": request.slug, "passed": passed}
+
+@app.post("/api/tutor")
+async def tutor_endpoint(request: TutorRequest):
+    # Get Problem Details
+    problems = load_problems()
+    problem = None
+    for cat in problems["categories"]:
+        for p in cat["problems"]:
+             if title_to_slug(p["title"]) == request.slug:
+                 problem = p
+                 break
+                 
+    if not problem:
+        return {"error": "Problem not found"}
+        
+    from ai_engine import ask_tutor
+    
+    # We might generate description or just pass title
+    desc = f"LeetCode problem {problem['title']}"
+    
+    result = ask_tutor(problem['title'], desc, request.history, request.message)
+    return result
 
