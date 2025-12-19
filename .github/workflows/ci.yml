@@ -1,116 +1,115 @@
 name: CI/CD Pipeline
 
 on:
-  push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master]
+    push:
+        branches: [main, master]
+    pull_request:
+        branches: [main, master]
 
 jobs:
-  # Test Backend Solutions
-  test-solutions:
-    runs-on: ubuntu-latest
-    name: Validate Solutions
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    # Test Backend Solutions
+    test-solutions:
+        runs-on: ubuntu-latest
+        name: Validate Solutions
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-      - name: Install Python dependencies
-        run: |
-          pip install requests
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.11"
 
-      - name: Validate all solutions
-        run: python validate_all.py
+            - name: Install Python dependencies
+              run: |
+                  pip install -r requirements.txt
 
-  # Build Frontend
-  build-frontend:
-    runs-on: ubuntu-latest
-    name: Build Frontend
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+            - name: Validate all solutions
+              run: python validate_all.py
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
+    # Build Frontend
+    build-frontend:
+        runs-on: ubuntu-latest
+        name: Build Frontend
 
-      - name: Install dependencies
-        working-directory: frontend
-        run: npm ci
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-      - name: Build frontend
-        working-directory: frontend
-        run: npm run build
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+                  cache: "npm"
+                  cache-dependency-path: frontend/package-lock.json
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-dist
-          path: frontend/dist
-          retention-days: 7
+            - name: Install dependencies
+              working-directory: frontend
+              run: npm ci
 
-  # Deploy to GitHub Pages (optional - on main branch push)
-  deploy:
-    runs-on: ubuntu-latest
-    name: Deploy to GitHub Pages
-    needs: [test-solutions, build-frontend]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+            - name: Build frontend
+              working-directory: frontend
+              run: npm run build
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+            - name: Upload build artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: frontend-dist
+                  path: frontend/dist
+                  retention-days: 7
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
+    # Deploy to GitHub Pages (optional - on main branch push)
+    deploy:
+        runs-on: ubuntu-latest
+        name: Deploy to GitHub Pages
+        needs: [test-solutions, build-frontend]
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
-      - name: Install dependencies
-        working-directory: frontend
-        run: npm ci
+        permissions:
+            contents: read
+            pages: write
+            id-token: write
 
-      - name: Build for production
-        working-directory: frontend
-        run: npm run build
-        env:
-          VITE_API_URL: ""  # Use relative paths for static hosting
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
 
-      - name: Copy data files to dist
-        run: |
-          mkdir -p frontend/dist/data
-          cp data/problems.json frontend/dist/data/
-          cp data/solutions.json frontend/dist/data/
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+                  cache: "npm"
+                  cache-dependency-path: frontend/package-lock.json
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: frontend/dist
+            - name: Install dependencies
+              working-directory: frontend
+              run: npm ci
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+            - name: Build for production
+              working-directory: frontend
+              run: npm run build
+              env:
+                  VITE_API_URL: "" # Use relative paths for static hosting
+
+            - name: Copy data files to dist
+              run: |
+                  mkdir -p frontend/dist/data
+                  cp data/problems.json frontend/dist/data/
+                  cp data/solutions.json frontend/dist/data/
+
+            - name: Setup Pages
+              uses: actions/configure-pages@v4
+
+            - name: Upload artifact
+              uses: actions/upload-pages-artifact@v3
+              with:
+                  path: frontend/dist
+
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v4
