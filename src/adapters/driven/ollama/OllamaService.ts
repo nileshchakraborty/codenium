@@ -22,8 +22,12 @@ export class OllamaService implements AIService {
 
             // Handle both local (http://localhost:11434) and cloud (https://ollama.com/api) base URLs
             // Cloud URL already includes /api, local doesn't
-            const chatPath = this.baseUrl.endsWith('/api') ? '/chat' : '/api/chat';
-            const url = this.baseUrl.replace(/\/$/, '') + chatPath;
+            // First normalize: remove trailing slash
+            const normalizedBaseUrl = this.baseUrl.replace(/\/+$/, '');
+            const chatPath = normalizedBaseUrl.endsWith('/api') ? '/chat' : '/api/chat';
+            const url = normalizedBaseUrl + chatPath;
+
+            console.log(`OllamaService calling: ${url}`);
 
             const response = await fetch(url, {
                 method: 'POST',
