@@ -1,13 +1,26 @@
-import json
-import requests
-import re
+"""
+AI Engine - Refactored with Adapter Pattern and MCP
+Uses pluggable AI adapters and standardized context protocol.
+"""
+import sys
+from pathlib import Path
+
+# Add backend to path
+sys.path.insert(0, str(Path(__file__).parent))
+
+from backend import (
+    get_adapter,
+    Message,
+    ProblemContext,
+    MCPRequest,
+    build_context_from_solution,
+)
+from backend.mcp.tools import get_registry
 from runner import execute_code
-import time
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL = "qwen2.5-coder:14b" # Optimized for coding tasks
 
-SYSTEM_PROMPT = """You are an expert LeetCode tutor helping ADHD students. 
+# System prompts
+SOLUTION_SYSTEM_PROMPT = """You are an expert LeetCode tutor helping ADHD students. 
 Your goal is to explain the problem VISUALLY and succinctly.
 
 Output MUST be valid JSON with this exact structure:
@@ -30,13 +43,6 @@ Output MUST be valid JSON with this exact structure:
             "color": "accent",
             "pointers": [ { "index": 0, "label": "L" }, { "index": 3, "label": "R" } ],
             "transientMessage": "Sum = 17. Too big!"
-        },
-        {
-            "type": "highlight",
-            "indices": [0, 2],
-            "color": "success",
-            "pointers": [ { "index": 0, "label": "L" }, { "index": 2, "label": "R" } ],
-            "transientMessage": "Sum = 13. Match!"
         }
     ],
     "code": "def twoSum(nums, target):\\n    ...",
@@ -49,72 +55,148 @@ Output MUST be valid JSON with this exact structure:
 VISUALIZATION RULES:
 - "visualizationType": Only "array" (for now).
 - "initialState": The starting array of numbers.
-- "animationSteps": List of visual changes. 
-  - "indices": 0-based indexes to highlight.
-  - "color": "accent" (blue) or "success" (green).
-  - "pointers": Optional list of {index, label} objects.
-  - "transientMessage": Short message shown for this step.
+- "animationSteps": Visual changes with indices, color, pointers, and message.
 - "code" MUST be a valid Python function.
 - "testCases" MUST have valid python input assignment strings.
 """
 
-def generate_solution_json(problem_title, problem_desc):
-    prompt = f"""
-    Problem: {problem_title}
-    Description: {problem_desc}
-    
-    Generate the JSON solution.
-    """
-    
-    try:
-        response = requests.post(OLLAMA_URL, json={
-            "model": MODEL,
-            "prompt": prompt,
-            "system": SYSTEM_PROMPT,
-            "stream": False,
-            "format": "json" 
-        }, timeout=60)
-        
-        if response.status_code != 200:
-            return {"error": f"Ollama Error: {response.text}"}
-            
-        result = response.json()
-        content = result['response']
-        
-        # Parse JSON
-        try:
-            data = json.loads(content)
-            return data
-        except json.JSONDecodeError:
-            # Try to fix common JSON issues or extract from markdown
-            match = re.search(r'\{.*\}', content, re.DOTALL)
-            if match:
-                try:
-                    return json.loads(match.group(0))
-                except:
-                    pass
-            return {"error": "Failed to parse JSON from AI response", "raw": content}
-            
-    except Exception as e:
-        return {"error": str(e)}
+TUTOR_SYSTEM_PROMPT = """You are a Socratic LeetCode tutor helping students understand algorithms.
+Your goal is to guide the student to the solution by asking searching questions, rather than just giving the answer.
+Explain BIG O complexity clearly when asked.
+Distinguish between Brute Force and Optimal solutions.
 
-def validate_and_fix(solution_data, problem_slug):
+Tone: Encouraging, concise, and technical but accessible.
+
+Response Format:
+Just plain text (markdown supported). Use code blocks for examples.
+"""
+
+
+def generate_solution_json(problem_title: str, problem_desc: str) -> dict:
     """
-    Validates code against test cases. If fails, asks AI to fix.
+    Generate a solution JSON using the configured AI adapter.
+    
+    Args:
+        problem_title: Title of the problem
+        problem_desc: Description of the problem
+        
+    Returns:
+        Dict with solution data or error
+    """
+    adapter = get_adapter()
+    
+    prompt = f"""
+Problem: {problem_title}
+Description: {problem_desc}
+
+Generate the JSON solution.
+"""
+    
+    result = adapter.generate_json(prompt, SOLUTION_SYSTEM_PROMPT)
+    
+    if "error" in result:
+        return result
+    
+    # If result is the parsed JSON, return it
+    if "pattern" in result or "code" in result:
+        return result
+    
+    # Check for response wrapper
+    if "response" in result:
+        return result
+    
+    return result
+
+
+def ask_tutor(
+    problem_title: str, 
+    problem_desc: str, 
+    chat_history: list, 
+    user_message: str
+) -> dict:
+    """
+    Get a response from the AI tutor using MCP context.
+    
+    Args:
+        problem_title: Title of the problem
+        problem_desc: Description of the problem
+        chat_history: Previous conversation messages
+        user_message: Current user question
+        
+    Returns:
+        Dict with 'response' or 'error'
+    """
+    adapter = get_adapter()
+    
+    # Build context
+    context = ProblemContext(
+        title=problem_title,
+        slug=problem_title.lower().replace(' ', '-'),
+        description=problem_desc,
+    )
+    
+    # Build messages
+    messages = [
+        Message(role="system", content=TUTOR_SYSTEM_PROMPT),
+        Message(role="system", content=f"Context: Discussing problem '{problem_title}'. {problem_desc}"),
+    ]
+    
+    # Add available tools info
+    registry = get_registry()
+    tools_info = f"You can ask for: {', '.join(registry.list_tools())}"
+    messages.append(Message(role="system", content=tools_info))
+    
+    # Add history
+    for msg in chat_history:
+        messages.append(Message(role=msg.get('role', 'user'), content=msg.get('content', '')))
+    
+    # Add current message
+    messages.append(Message(role="user", content=user_message))
+    
+    result = adapter.chat(messages)
+    
+    return result
+
+
+def validate_and_fix(solution_data: dict, problem_slug: str) -> tuple:
+    """
+    Validates code against test cases.
+    
+    Args:
+        solution_data: Solution dictionary with code and testCases
+        problem_slug: Problem identifier
+        
+    Returns:
+        Tuple of (solution_data, passed: bool)
     """
     code = solution_data.get('code')
     test_cases = solution_data.get('testCases')
     
     if not code or not test_cases:
         return solution_data, False
-        
-    # Run tests
+    
+    # Run tests using the tool
     result = execute_code(code, test_cases)
     
-    if result['success'] and result['passed']:
+    if result.get('success') and result.get('passed'):
         return solution_data, True
-        
-    # If failed, try to fix (Simple retry logic for now)
-    # in a real app, we'd feed the error back to LLM
+    
     print(f"Validation failed for {problem_slug}: {result.get('error') or 'Tests failed'}")
     return solution_data, False
+
+
+# Convenience function to check adapter status
+def check_ai_status() -> dict:
+    """Check if the AI adapter is available"""
+    try:
+        adapter = get_adapter()
+        available = adapter.is_available()
+        return {
+            "available": available,
+            "provider": adapter.name,
+        }
+    except Exception as e:
+        return {
+            "available": False,
+            "error": str(e)
+        }

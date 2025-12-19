@@ -1,91 +1,80 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import type { Problem, Stats, Solution } from './types';
+/**
+ * App.tsx - Refactored with MVVM Pattern
+ * Uses viewmodel hooks for state management
+ */
+import { useState, useMemo, useCallback } from 'react';
+import type { Solution } from './models';
+import { useProblems } from './viewmodels';
 import SolutionModal from './components/SolutionModal';
 import { Search, Brain, Zap } from 'lucide-react';
 
 function App() {
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [difficultyFilter, setDifficultyFilter] = useState<'All' | 'Easy' | 'Medium' | 'Hard'>('All');
-  const [selectedSolution, setSelectedSolution] = useState<Solution | null>(null);
-  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+  // ViewModels
+  const problems = useProblems();
+
+  // Modal state (could be extracted to a useModal hook)
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+  const [selectedSolution, setSelectedSolution] = useState<Solution | null>(null);
   const [loadingSlug, setLoadingSlug] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
+  // Local filter state for subtopic (simplified from useProblems)
+  const [subTopicFilter, setSubTopicFilter] = useState<string>('All');
 
-  const fetchStats = async () => {
-    try {
-      const res = await axios.get('/api/problems');
-      // The endpoint returns { categories: [...] } which matches our Stats interface structure roughly
-      // but we need to compute the counts if they aren't there?
-      // Wait, load_problems returns the raw JSON. It doesn't have "easy", "medium" counts in categories.
-      // We should probably rely on the frontend to compute stats from the problems list.
-      // OR update the /api/problems endpoint to include stats.
+  // Compute stats from viewmodel
+  const stats = useMemo(() => {
+    if (!problems.stats) return null;
 
-      // Let's assume for now we use the raw data and compute stats in frontend?
-      // Or better, let main.py's /api/problems return the enriched structure?
-      // I updated /api/problems to return 'data' which is the raw problems.json enriched with slugs.
-      // It does NOT have 'easy', 'medium', 'hard' counts in the category objects.
+    let totalEasy = 0, totalMedium = 0, totalHard = 0;
+    const categoriesWithStats = problems.stats.categories.map(cat => {
+      const easy = cat.problems.filter(p => p.difficulty === 'Easy').length;
+      const medium = cat.problems.filter(p => p.difficulty === 'Medium').length;
+      const hard = cat.problems.filter(p => p.difficulty === 'Hard').length;
+      totalEasy += easy;
+      totalMedium += medium;
+      totalHard += hard;
+      return { ...cat, count: cat.problems.length, easy, medium, hard };
+    });
 
-      // let's use the response directly and just ensure we handle missing counts if needed, but App.tsx uses stats.easy etc.
+    return {
+      easy: totalEasy,
+      medium: totalMedium,
+      hard: totalHard,
+      categories: categoriesWithStats
+    };
+  }, [problems.stats]);
 
-      // Actually, I should merge them or compute them.
-      // Let's compute them in frontend for simplicity.
-      const data = res.data;
-      let totalEasy = 0, totalMedium = 0, totalHard = 0;
+  // Filter problems
+  const filterProblems = useCallback((problemList: Array<{ title: string; difficulty: string; subTopic?: string; slug: string; has_solution?: boolean }>) => {
+    return problemList.filter(p => {
+      const matchesSearch = p.title.toLowerCase().includes(problems.filter.search.toLowerCase());
+      const matchesDiff = problems.filter.difficulty === 'All' || p.difficulty === problems.filter.difficulty;
+      const matchesSubTopic = subTopicFilter === 'All' || p.subTopic === subTopicFilter;
+      return matchesSearch && matchesDiff && matchesSubTopic;
+    });
+  }, [problems.filter, subTopicFilter]);
 
-      const categoriesWithStats = data.categories.map((cat: { problems: Problem[]; name: string; icon: string }) => {
-        const easy = cat.problems.filter((p: Problem) => p.difficulty === 'Easy').length;
-        const medium = cat.problems.filter((p: Problem) => p.difficulty === 'Medium').length;
-        const hard = cat.problems.filter((p: Problem) => p.difficulty === 'Hard').length;
+  // All subtopics
+  const allSubTopics = useMemo(() => {
+    if (!stats) return [];
+    return Array.from(new Set(
+      stats.categories.flatMap(c => c.problems.map(p => p.subTopic)).filter((t): t is string => !!t)
+    )).sort();
+  }, [stats]);
 
-        totalEasy += easy;
-        totalMedium += medium;
-        totalHard += hard;
-
-        return {
-          ...cat,
-          count: cat.problems.length,
-          easy, medium, hard
-        };
-      });
-
-      setStats({
-        easy: totalEasy,
-        medium: totalMedium,
-        hard: totalHard,
-        categories: categoriesWithStats
-      });
-    } catch (err) {
-      console.error("Failed to fetch stats", err);
-    }
-  };
-
-  const handleProblemClick = async (slug: string) => {
+  // Handle problem click
+  const handleProblemClick = useCallback(async (slug: string) => {
     setLoadingSlug(slug);
     setSelectedSlug(slug);
     try {
-      // Try to get existing solution
-      let solutionData: Solution | null = null;
-      try {
-        const res = await axios.get(`/api/solutions/${slug}`);
-        solutionData = res.data;
-      } catch (e) {
-        // Not found, generate
-        console.log("Solution not found, generating...", e);
-      }
+      const { SolutionsAPI } = await import('./models');
+      let solutionData = await SolutionsAPI.getBySlug(slug);
 
       if (!solutionData) {
-        // Generate
-        const genRes = await axios.post('/api/generate', { slug });
-        // After toggle, fetch again
-        if (genRes.data.status === 'success') {
-          const res = await axios.get(`/api/solutions/${slug}`);
-          solutionData = res.data;
+        // Generate if not found
+        const genResult = await SolutionsAPI.generate(slug);
+        if (genResult.success) {
+          solutionData = await SolutionsAPI.getBySlug(slug);
         }
       }
 
@@ -99,21 +88,20 @@ function App() {
     } finally {
       setLoadingSlug(null);
     }
-  };
+  }, []);
 
-  // Filter logic handled by derived state if we had full list, 
-  // but stats endpoint returns nested categories. 
-  // We'll iterate through stats.categories.
+  const closeModal = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
 
-  const filterProblems = (problems: Problem[]) => {
-    return problems.filter(p => {
-      const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesDiff = difficultyFilter === 'All' || p.difficulty === difficultyFilter;
-      return matchesSearch && matchesDiff;
-    });
-  };
-
-  if (!stats) return <div className="flex h-screen items-center justify-center text-slate-500">Loading Dashboard...</div>;
+  // Loading state
+  if (problems.loading || !stats) {
+    return (
+      <div className="flex h-screen items-center justify-center text-slate-500">
+        Loading Dashboard...
+      </div>
+    );
+  }
 
   return (
     <div className="app max-w-7xl mx-auto px-4 py-8">
@@ -147,32 +135,61 @@ function App() {
         </div>
       </header>
 
-      {/* Filter Stats */}
-      <div className="mb-8 flex flex-col sm:flex-row justify-between gap-4">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={20} />
-          <input
-            type="text"
-            placeholder="Search problems..."
-            className="w-full bg-slate-900 border border-slate-700 rounded-xl py-3 pl-10 pr-4 text-slate-200 focus:outline-none focus:border-indigo-500 transition-colors"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+      {/* Filters */}
+      <div className="mb-8 flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row justify-between gap-4">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={20} />
+            <input
+              type="text"
+              placeholder="Search problems..."
+              className="w-full bg-slate-900 border border-slate-700 rounded-xl py-3 pl-10 pr-4 text-slate-200 focus:outline-none focus:border-indigo-500 transition-colors"
+              value={problems.filter.search}
+              onChange={(e) => problems.updateFilter({ search: e.target.value })}
+            />
+          </div>
+          <div className="flex gap-2">
+            {(['All', 'Easy', 'Medium', 'Hard'] as const).map(diff => (
+              <button
+                key={diff}
+                onClick={() => problems.updateFilter({ difficulty: diff })}
+                className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${problems.filter.difficulty === diff
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
+                  : 'bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-600'
+                  }`}
+              >
+                {diff}
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="flex gap-2">
-          {(['All', 'Easy', 'Medium', 'Hard'] as const).map(diff => (
+
+        {/* Subtopic Filter */}
+        {allSubTopics.length > 0 && (
+          <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
             <button
-              key={diff}
-              onClick={() => setDifficultyFilter(diff)}
-              className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${difficultyFilter === diff
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
-                : 'bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-600'
+              onClick={() => setSubTopicFilter('All')}
+              className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${subTopicFilter === 'All'
+                ? 'bg-purple-500/20 text-purple-300 border-purple-500/50'
+                : 'bg-slate-900 text-slate-400 border-slate-800 hover:border-slate-600'
                 }`}
             >
-              {diff}
+              All Subtopics
             </button>
-          ))}
-        </div>
+            {allSubTopics.map(st => (
+              <button
+                key={st}
+                onClick={() => setSubTopicFilter(st)}
+                className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${subTopicFilter === st
+                  ? 'bg-purple-500/20 text-purple-300 border-purple-500/50'
+                  : 'bg-slate-900 text-slate-400 border-slate-800 hover:border-slate-600'
+                  }`}
+              >
+                {st}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Categories Grid */}
@@ -191,7 +208,6 @@ function App() {
                   </div>
                   <span className="text-sm text-slate-500 bg-slate-950 px-2 py-1 rounded-md">{visibleProblems.length}</span>
                 </div>
-                {/* Progress bar mock */}
                 <div className="h-1 bg-slate-800 rounded-full overflow-hidden flex mt-3">
                   <div className="bg-emerald-500 h-full" style={{ width: '30%' }}></div>
                   <div className="bg-amber-500 h-full" style={{ width: '50%' }}></div>
@@ -236,7 +252,7 @@ function App() {
       {/* Modal */}
       <SolutionModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={closeModal}
         solution={selectedSolution}
         slug={selectedSlug}
       />

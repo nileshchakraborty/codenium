@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import type { Solution, TestCaseResult } from '../types';
 import SmartVisualizer from './SmartVisualizer';
-import { X, Code as CodeIcon, BookOpen, Terminal, Play, ExternalLink, Plus, Trash2, Youtube, FileText } from 'lucide-react';
+import TutorChat from './TutorChat';
+import { X, Code as CodeIcon, BookOpen, Terminal, Play, ExternalLink, Plus, Trash2, Youtube, FileText, MessageCircle } from 'lucide-react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
@@ -15,7 +16,7 @@ interface SolutionModalProps {
 }
 
 const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution, slug }) => {
-    const [activeTab, setActiveTab] = useState<'explanation' | 'playground'>('explanation');
+    const [activeTab, setActiveTab] = useState<'problem' | 'explanation' | 'playground' | 'tutor'>('problem');
     const [code, setCode] = useState(solution?.code || '');
     const [output, setOutput] = useState('');
     const [isRunning, setIsRunning] = useState(false);
@@ -25,6 +26,9 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
     const [customInput, setCustomInput] = useState('');
     const [customOutput, setCustomOutput] = useState('');
     const [isAddingTest, setIsAddingTest] = useState(false);
+
+    // Tutor Chat State (persisted across tab switches)
+    const [tutorMessages, setTutorMessages] = useState<{ role: 'user' | 'assistant'; content: string }[]>([]);
 
     // Update code when solution changes if code is empty so we don't overwrite user edits unexpectedly
     // actually better to just reset on open?
@@ -37,6 +41,16 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
             setOutput('');
         }
     }, [solution]);
+
+    // Initialize tutor greeting when solution changes
+    React.useEffect(() => {
+        if (solution?.title) {
+            setTutorMessages([{
+                role: 'assistant',
+                content: `Hi! I'm your AI Tutor. I can help you understand **${solution.title}**. Ask me about the brute force approach, time complexity, or for a hint!`
+            }]);
+        }
+    }, [solution?.title]);
 
     const handleRunCode = async () => {
         if (!slug) return;
@@ -62,9 +76,12 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                 // Let's format it nicel
                 if (res.data.results) {
                     const allPassed = res.data.results.every((r: TestCaseResult) => r.passed);
-                    const outputMsg = res.data.results.map((r: TestCaseResult, i: number) =>
-                        `Test Case ${i + 1}: ${r.passed ? 'PASSED ✅' : 'FAILED ❌'}\nInput: ${r.input}\nExpected: ${r.expected}\nActual: ${r.actual}\n`
-                    ).join('\n-------------------\n');
+                    const outputMsg = res.data.results.map((r: TestCaseResult, i: number) => {
+                        if (r.error) {
+                            return `Test Case ${i + 1}: ERROR ⚠️\nInput: ${r.input}\nError: ${r.error}\n`;
+                        }
+                        return `Test Case ${i + 1}: ${r.passed ? 'PASSED ✅' : 'FAILED ❌'}\nInput: ${r.input}\nExpected: ${r.expected}\nActual: ${r.actual}\n`;
+                    }).join('\n-------------------\n');
 
                     setOutput(allPassed ? `All Test Cases Passed! 🎉\n\n${outputMsg}` : `Some Tests Failed.\n\n${outputMsg}`);
                 } else if (res.data.error) {
@@ -136,6 +153,12 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                 {/* Tabs */}
                 <div className="flex items-center gap-1 px-8 py-2 border-b border-slate-700 bg-[#131320]">
                     <button
+                        onClick={() => setActiveTab('problem')}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'problem' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                    >
+                        <FileText size={16} /> Problem
+                    </button>
+                    <button
                         onClick={() => setActiveTab('explanation')}
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'explanation' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
                     >
@@ -147,12 +170,215 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                     >
                         <Terminal size={16} /> Playground
                     </button>
+                    <button
+                        onClick={() => setActiveTab('tutor')}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'tutor' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                    >
+                        <MessageCircle size={16} /> AI Tutor
+                    </button>
                 </div>
 
                 {/* Scrollable Content */}
                 <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-                    {activeTab === 'explanation' ? (
+                    {activeTab === 'problem' ? (
                         <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-300">
+                            {/* Problem Description */}
+                            <div className="space-y-4">
+                                <h3 className="text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
+                                    📋 Problem Description
+                                </h3>
+                                <div className="p-6 rounded-xl bg-slate-800/50 border border-slate-700/50">
+                                    <p className="text-slate-200 text-lg leading-relaxed whitespace-pre-line">
+                                        {solution.description || solution.oneliner || 'No description available.'}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Examples */}
+                            <div className="space-y-4">
+                                <h3 className="text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
+                                    🧪 Examples
+                                </h3>
+                                <div className="space-y-3">
+                                    {(solution.examples || solution.testCases || []).map((ex, i) => (
+                                        <div key={i} className="p-4 rounded-xl bg-slate-800 border border-slate-700">
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <span className="px-2 py-1 text-xs font-bold bg-emerald-500/20 text-emerald-300 rounded">
+                                                    Example {i + 1}
+                                                </span>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <div>
+                                                    <span className="text-xs uppercase text-slate-500 font-semibold">Input:</span>
+                                                    <pre className="mt-1 p-3 bg-slate-900 rounded-lg text-sm text-cyan-300 overflow-x-auto">
+                                                        <code>{ex.input}</code>
+                                                    </pre>
+                                                </div>
+                                                <div>
+                                                    <span className="text-xs uppercase text-slate-500 font-semibold">Output:</span>
+                                                    <pre className="mt-1 p-3 bg-slate-900 rounded-lg text-sm text-emerald-300 overflow-x-auto">
+                                                        <code>{ex.output}</code>
+                                                    </pre>
+                                                </div>
+                                                {'explanation' in ex && typeof (ex as { explanation?: string }).explanation === 'string' && (
+                                                    <div>
+                                                        <span className="text-xs uppercase text-slate-500 font-semibold">Explanation:</span>
+                                                        <p className="mt-1 text-slate-300 text-sm">{(ex as { explanation: string }).explanation}</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Constraints */}
+                            {solution.constraints && solution.constraints.length > 0 && (
+                                <div className="space-y-4">
+                                    <h3 className="text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
+                                        📏 Constraints
+                                    </h3>
+                                    <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50">
+                                        <ul className="space-y-1">
+                                            {solution.constraints.map((c, i) => (
+                                                <li key={i} className="text-slate-300 font-mono text-sm flex items-start gap-2">
+                                                    <span className="text-indigo-400">•</span> {c}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Hints (Collapsible) */}
+                            {solution.hints && solution.hints.length > 0 && (
+                                <div className="space-y-4">
+                                    <h3 className="text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
+                                        💡 Hints
+                                    </h3>
+                                    <div className="space-y-2">
+                                        {solution.hints.map((hint, i) => (
+                                            <details key={i} className="group">
+                                                <summary className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 cursor-pointer hover:bg-amber-500/20 transition-colors">
+                                                    <span className="ml-2 font-medium">Hint {i + 1}</span>
+                                                </summary>
+                                                <div className="mt-2 p-4 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300">
+                                                    {hint}
+                                                </div>
+                                            </details>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Complexity Analysis */}
+                            <div className="space-y-4">
+                                <h3 className="text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
+                                    ⚡ Complexity Analysis
+                                </h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/30">
+                                        <div className="text-sm text-emerald-400 font-semibold mb-1">Time Complexity</div>
+                                        <div className="text-xl text-white font-mono">{solution.timeComplexity || 'N/A'}</div>
+                                    </div>
+                                    <div className="p-4 rounded-xl bg-gradient-to-r from-blue-500/10 to-indigo-500/10 border border-blue-500/30">
+                                        <div className="text-sm text-blue-400 font-semibold mb-1">Space Complexity</div>
+                                        <div className="text-xl text-white font-mono">{solution.spaceComplexity || 'N/A'}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Key Insight */}
+                            {solution.keyInsight && (
+                                <div className="p-6 rounded-xl border-l-4 border-amber-500 bg-gradient-to-r from-amber-500/10 to-orange-500/10">
+                                    <h3 className="text-lg font-semibold text-amber-300 mb-1">🔑 Key Insight</h3>
+                                    <p className="text-slate-200 text-lg leading-relaxed">{solution.keyInsight}</p>
+                                </div>
+                            )}
+
+                            {/* Related Problems */}
+                            {solution.relatedProblems && solution.relatedProblems.length > 0 && (
+                                <div className="space-y-4">
+                                    <h3 className="text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
+                                        🔗 Related Problems
+                                    </h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        {solution.relatedProblems.map((related, i) => (
+                                            <span key={i} className="px-3 py-1.5 text-sm bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-full hover:bg-indigo-500/30 transition-colors cursor-pointer">
+                                                {related.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* External Resources */}
+                            <div className="space-y-4">
+                                <h3 className="text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
+                                    📚 External Resources
+                                </h3>
+                                <div className="flex flex-wrap gap-3">
+                                    {slug && (
+                                        <>
+                                            <a
+                                                href={`https://leetcode.com/problems/${slug}/`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-2 px-4 py-2 bg-orange-500/20 text-orange-300 border border-orange-500/30 rounded-lg hover:bg-orange-500/30 transition-colors"
+                                            >
+                                                <ExternalLink size={16} /> LeetCode
+                                            </a>
+                                            <a
+                                                href={`https://neetcode.io/problems/${slug}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-2 px-4 py-2 bg-green-500/20 text-green-300 border border-green-500/30 rounded-lg hover:bg-green-500/30 transition-colors"
+                                            >
+                                                <ExternalLink size={16} /> NeetCode
+                                            </a>
+                                            <a
+                                                href={`https://takeuforward.org/plus/dsa/all-problems`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-2 px-4 py-2 bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-lg hover:bg-purple-500/30 transition-colors"
+                                            >
+                                                <ExternalLink size={16} /> TakeUForward
+                                            </a>
+                                        </>
+                                    )}
+                                    {solution.videoId && (
+                                        <a
+                                            href={`https://www.youtube.com/watch?v=${solution.videoId}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-2 px-4 py-2 bg-red-500/20 text-red-300 border border-red-500/30 rounded-lg hover:bg-red-500/30 transition-colors"
+                                        >
+                                            <Youtube size={16} /> Video Solution
+                                        </a>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    ) : activeTab === 'explanation' ? (
+                        <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-300">
+
+                            {/* YouTube Video Player */}
+                            {solution.videoId && (
+                                <div className="space-y-4">
+                                    <h3 className="text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2">
+                                        <Youtube size={16} className="text-red-500" /> Video Explanation
+                                    </h3>
+                                    <div className="relative w-full rounded-xl overflow-hidden border border-slate-700 shadow-2xl" style={{ paddingBottom: '56.25%' }}>
+                                        <iframe
+                                            className="absolute top-0 left-0 w-full h-full"
+                                            src={`https://www.youtube.com/embed/${solution.videoId}`}
+                                            title={`${solution.title} - Video Explanation`}
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                        />
+                                    </div>
+                                </div>
+                            )}
 
                             {/* One-liner */}
                             <div className="p-6 rounded-xl border-l-4 border-indigo-500 bg-gradient-to-r from-indigo-500/10 to-purple-500/10">
@@ -305,16 +531,29 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                                 </div>
                             </div>
                         </div>
+                    ) : activeTab === 'tutor' ? (
+                        <div className="h-full animate-in slide-in-from-bottom-4 duration-300">
+                            {slug && solution ? (
+                                <TutorChat
+                                    slug={slug}
+                                    problemTitle={solution.title}
+                                    messages={tutorMessages}
+                                    setMessages={setTutorMessages}
+                                />
+                            ) : (
+                                <div className="text-center text-slate-500 mt-10">Tutor unavailable without a valid problem.</div>
+                            )}
+                        </div>
                     ) : (
-                        <div className="h-full flex flex-col gap-4 animate-in slide-in-from-bottom-4 duration-300">
-                            <div className="flex-1 bg-[#0d0d15] rounded-xl border border-slate-700 overflow-hidden relative group">
-                                <div className="absolute top-0 left-0 right-0 px-4 py-2 bg-[#1a1a2e] border-b border-slate-700 text-xs text-slate-500 font-mono flex justify-between items-center">
+                        <div className="h-full min-h-[600px] flex flex-col gap-4 animate-in slide-in-from-bottom-4 duration-300">
+                            <div className="flex-1 bg-[#0d0d15] rounded-xl border border-slate-700 overflow-hidden relative group min-h-[400px]">
+                                <div className="absolute top-0 left-0 right-0 px-4 py-2 bg-[#1a1a2e] border-b border-slate-700 text-xs text-slate-500 font-mono flex justify-between items-center z-10">
                                     <span>main.py</span>
                                 </div>
                                 <textarea
                                     value={code}
                                     onChange={(e) => setCode(e.target.value)}
-                                    className="w-full h-full p-4 pt-12 bg-transparent text-slate-200 font-mono text-sm resize-none focus:outline-none"
+                                    className="absolute inset-0 w-full h-full p-4 pt-14 bg-transparent text-slate-200 font-mono text-base leading-relaxed resize-none focus:outline-none z-0"
                                     spellCheck={false}
                                 />
                             </div>
