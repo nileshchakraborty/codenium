@@ -7,13 +7,21 @@ dotenv.config({ path: path.join(__dirname, '../../../../.env') });
 
 export class OpenAIService implements AIService {
     private openai: OpenAI;
+    private model: string;
 
     constructor() {
         if (!process.env.OPENAI_API_KEY) {
             console.warn("OpenAIService: No API Key found. AI features will fail.");
         }
+
+        const baseURL = process.env.OPENAI_BASE_URL;
+        this.model = process.env.OPENAI_MODEL || 'gpt-4-turbo-preview';
+
+        console.log(`OpenAIService initialized with model: ${this.model}${baseURL ? ` at ${baseURL}` : ''}`);
+
         this.openai = new OpenAI({
             apiKey: process.env.OPENAI_API_KEY || 'dummy-key',
+            ...(baseURL && { baseURL }),
         });
     }
 
@@ -24,7 +32,7 @@ export class OpenAIService implements AIService {
                     { role: "system", content: "You are a helpful coding assistant. Provide a short, cryptic but helpful hint for the user's current code state. Do not give the answer." },
                     { role: "user", content: `Problem: ${problem}\n\nCurrent Code:\n${code}` }
                 ],
-                model: "gpt-4-turbo-preview",
+                model: this.model,
                 max_tokens: 150,
             });
             return { hint: completion.choices[0].message.content };
@@ -41,7 +49,7 @@ export class OpenAIService implements AIService {
                     { role: "system", content: "Explain this solution code step-by-step. specific focus on time and space complexity." },
                     { role: "user", content: `Problem: ${title}\n\nCode:\n${code}` }
                 ],
-                model: "gpt-4-turbo-preview",
+                model: this.model,
             });
             return { explanation: completion.choices[0].message.content };
         } catch (error: any) {
@@ -62,7 +70,7 @@ export class OpenAIService implements AIService {
 
             const completion = await this.openai.chat.completions.create({
                 messages: messages,
-                model: "gpt-4-turbo-preview",
+                model: this.model,
             });
             return { response: completion.choices[0].message.content };
         } catch (error: any) {
@@ -78,7 +86,7 @@ export class OpenAIService implements AIService {
                     { role: "system", content: "You are an expert algorithm engineer. Generate a solution for the given problem. Return ONLY a JSON object with keys: 'code', 'timeComplexity', 'spaceComplexity', 'explanation'. The 'code' should be a complete valid javascript/typescript function. Do not wrap in markdown." },
                     { role: "user", content: `Problem: ${problemTitle}\n${problemDesc}` }
                 ],
-                model: "gpt-4-turbo-preview",
+                model: this.model,
                 response_format: { type: "json_object" }
             });
             const content = completion.choices[0].message.content;
