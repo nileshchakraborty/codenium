@@ -19,28 +19,36 @@ export class FileProblemRepository implements ProblemRepository {
         this.solutionsFile = path.join(DATA_DIR, 'solutions.json');
     }
 
-    async getAllProblems(): Promise<Problem[]> {
-        if (!fs.existsSync(this.problemsFile)) return [];
+    async getAllProblems(): Promise<any> {
+        if (!fs.existsSync(this.problemsFile)) return { categories: [] };
         return JSON.parse(fs.readFileSync(this.problemsFile, 'utf-8'));
     }
 
     async getProblemBySlug(slug: string): Promise<Problem | null> {
-        const problems = await this.getAllProblems();
-        return problems.find(p => p.slug === slug) || null;
+        const data = await this.getAllProblems();
+        if (!data.categories) return null;
+
+        for (const category of data.categories) {
+            const problem = category.problems.find((p: Problem) => p.slug === slug);
+            if (problem) return problem;
+        }
+        return null;
     }
 
     async getSolution(slug: string): Promise<Solution | null> {
         if (!fs.existsSync(this.solutionsFile)) return null;
-        const solutions = JSON.parse(fs.readFileSync(this.solutionsFile, 'utf-8'));
-        return solutions[slug] || null;
+        const data = JSON.parse(fs.readFileSync(this.solutionsFile, 'utf-8'));
+        return data.solutions?.[slug] || null;
     }
 
     async saveSolution(slug: string, solution: Solution): Promise<void> {
-        let solutions: Record<string, Solution> = {};
+        let data: { solutions: Record<string, Solution> } = { solutions: {} };
         if (fs.existsSync(this.solutionsFile)) {
-            solutions = JSON.parse(fs.readFileSync(this.solutionsFile, 'utf-8'));
+            data = JSON.parse(fs.readFileSync(this.solutionsFile, 'utf-8'));
         }
-        solutions[slug] = solution;
-        fs.writeFileSync(this.solutionsFile, JSON.stringify(solutions, null, 2));
+        if (!data.solutions) data.solutions = {};
+
+        data.solutions[slug] = solution;
+        fs.writeFileSync(this.solutionsFile, JSON.stringify(data, null, 2));
     }
 }
