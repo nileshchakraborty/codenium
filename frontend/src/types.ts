@@ -43,6 +43,7 @@ export interface Solution {
     oneliner: string;
     intuition: string[];
     keyInsight: string;
+    mentalModel?: string;
     code: string;
 
     // Smart Visualization
@@ -77,6 +78,12 @@ export interface Solution {
     neetcodeLink?: string;    // NeetCode.io link
     takeuforwardLink?: string;// TakeUForward link
     leetcodeLink?: string;    // LeetCode link
+    suggestedNextQuestion?: {
+        slug: string;
+        title: string;
+        difficulty: string;
+        pattern: string;
+    };
 }
 
 export interface TestCaseResult {

@@ -2,6 +2,9 @@
 
 A next-generation platform for visualizing algorithms and data structures. Built with high-performance visualization engines and a vast library of interactive content.
 
+![Demo Video](assets/demo.webp)
+*Interactive Visualization Demo*
+
 ## 🌟 Key Features
 
 ### 1. **Massive Content Library**
@@ -9,32 +12,39 @@ A next-generation platform for visualizing algorithms and data structures. Built
 - **100% Enhanced**: Every single problem features detailed, step-by-step animations.
 - **Interactive**: Scrub, replay, and speed control for every visualization.
 
-### 2. **High-Performance Architecture**
-- **Trie-Based Search Engine**: 
-  - Instant results with **O(L)** complexity (search term length).
-  - **Fuzzy Matching**: Finds "N-Queen" when searching "n queen" via normalization.
-  - **Tokenized**: Finds "Queen" within "N-Queens".
-  - **Memoized Cache**: Zero latency for repeated queries.
-- **SmartVisualizer™ Engine**: 
-  - Unified rendering stage for Matrix, Graph, Tree, and Array visualizations.
-  - Dynamic `arrayState` rendering for high-FPS grid updates (e.g., N-Queens).
-  - **Variable State Panel**: Real-time tracking of pointer values (i, j, left, right) alongside the visual.
+### 2. **Structured Learning Paths** 🧠
+- **Pattern-Based Progression**: Problems are linked by pattern (e.g., *Two Pointers*).
+- **Difficulty Ladders**: Master concepts by progressing from **Easy** -> **Medium** -> **Hard**.
+- **Next Question Guided Flow**: The UI suggests the next logical problem to solve.
 
-### 3. **Modern Frontend Stack**
-- **Framework**: React + Vite (Fast HMR & Build)
-- **Architecture**: MVVM (Model-View-ViewModel) Pattern.
-  - `viewmodels/useProblems.ts`: Manages filtering & stats.
-  - `utils/SearchEngine.ts`: Reusable Trie logic.
-- **Styling**: TailwindCSS with Dark/Light mode support.
+### 3. **Cognitive & Accessibility Tools** 🎤
+- **Voiceover Mode**: Text-to-Speech narration of the problem intuition.
+- **Mental Models**: Visual analogies (e.g., "Sliding Window is like a Caterpillar") for 135+ patterns.
+- **Tutor Chat**: AI-powered context-aware assistance.
 
-## 🛠️ Architecture Overview
+### 4. **High-Performance Architecture**
+- **Trie-Based Search Engine**: Instant fuzzy search with **O(L)** complexity and memoization.
+- **SmartVisualizer™ Engine**: Unified rendering for Arrays, Matrices, Trees, and Graphs.
+  - **Dynamic State Panel**: Real-time tracking of variable values (i, j, left, right).
+
+![Screenshot](assets/screen.png)
+*Graph Visualization Example*
+
+## 🏗️ Architecture Overview
+
+The system follows a clean **MVVM (Model-View-ViewModel)** architecture with a focus on static data performance.
 
 ```mermaid
 graph TD
     User[User] -->|Search/Filter| ViewModel[useProblems ViewModel]
     ViewModel -->|Query| Trie[SearchEngine (Trie + Cache)]
     ViewModel -->|Data| App[App Component]
-    App -->|Select Problem| SmartViz[SmartVisualizer Component]
+    
+    App -->|Select Problem| SolutionModal[Solution Modal]
+    SolutionModal -->|Navigation| NextProblem[Next Question Logic]
+    SolutionModal -->|Voice| Speech[Web Speech API]
+    
+    SolutionModal -->|Render| SmartViz[SmartVisualizer Component]
     SmartViz -->|Render| MatrixViz[Matrix Visualizer]
     SmartViz -->|Render| GraphViz[Graph Visualizer]
     SmartViz -->|Render| TreeViz[Tree Visualizer]
@@ -43,34 +53,47 @@ graph TD
     Data -->|Index| Trie
 ```
 
-## 📸 Demo
+### Core Modules
+| Module | Description |
+|--------|-------------|
+| **frontend/src/viewmodels** | Handles business logic, filtering, and state management. |
+| **frontend/src/models** | Data access layer (API wrappers). |
+| **frontend/src/utils/SearchEngine.ts** | Highly optimized Trie implementation for search. |
+| **api/data/** | Static JSON content serving as the database. |
 
-### Interactive Visualizations
-The platform transforms static code into dynamic experiences:
-- **Arrays**: Watch pointers move in real-time.
-- **Trees**: See DFS/BFS traversals node-by-node.
-- **Grids**: Observe N-Queens placement or Pathfinding dynamically.
+## 📘 Runbook / Operations
 
-### AI Integration
-- **Tutor Mode**: Context-aware AI explains the "Why" behind every step.
+### 1. Setup & Installation
+```bash
+# Install dependencies
+npm install
 
-## 🚀 Getting Started
+# Start Development Server
+./start.sh
+```
+Access at `http://localhost:3000`.
 
-1. **Install Dependencies**
-   ```bash
-   npm install
-   ```
+### 2. Maintenance Scripts
+The `scripts/` directory contains tools to manage the 250+ problem dataset.
 
-2. **Run Development Server**
-   ```bash
-   ./start.sh
-   ```
-   Access at `http://localhost:3000`.
+| Script | Purpose | Run Command |
+|--------|---------|-------------|
+| **validate-all-data.js** | Audits dataset integrity (missing fields, broken links). | `node scripts/validate-all-data.js` |
+| **inject-mental-models.js** | Injects analogies into solutions based on patterns. | `node scripts/inject-mental-models.js` |
+| **generate-learning-paths.js** | Links problems (Easy->Hard) and generates 'Suggested Next'. | `node scripts/generate-learning-paths.js` |
+| **sync-difficulty.js** | Syncs difficulty ratings between listing and details. | `node scripts/sync-difficulty.js` |
+
+### 3. Adding New Content
+1. Add entry to `api/data/problems.json`.
+2. Add detailed solution to `api/data/solutions.json`.
+3. Run `node scripts/generate-learning-paths.js` to link it into the graph.
+4. Run `node scripts/validate-all-data.js` to ensure quality.
 
 ## 🧪 Tech Stack
 
 - **Frontend**: React 18, TypeScript, Vite
-- **State Management**: MVVM Hooks
+- **Styling**: TailwindCSS (Dark/Light Mode)
+- **State**: MVVM Hooks + React Context
 - **Visualization**: Custom SVG/HTML5 renderers (No heavy canvas libs)
 - **Data**: JSON-based static content (Pre-computed steps for performance)
 
@@ -78,4 +101,4 @@ The platform transforms static code into dynamic experiences:
 
 - **Build**: Passing (Vite Prod Build)
 - **Coverage**: 250/250 Solutions Enhanced
-- **Tests**: Core Search Logic Verified
+- **Features**: Voiceover, Search, Learning Paths Verified.
