@@ -3,7 +3,7 @@ import type { Solution, TestCaseResult } from '../types';
 import { PlaygroundAPI } from '../models/api';
 import SmartVisualizer from './SmartVisualizer';
 import TutorChat from './TutorChat';
-import { X, Code as CodeIcon, BookOpen, Terminal, Play, ExternalLink, Youtube, FileText, MessageCircle, Plus, Trash2 } from 'lucide-react';
+import { X, Code as CodeIcon, BookOpen, Terminal, Play, ExternalLink, Youtube, FileText, MessageCircle, Plus, Trash2, Brain, Volume2, Square } from 'lucide-react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
@@ -14,9 +14,10 @@ interface SolutionModalProps {
     onClose: () => void;
     solution: Solution | null;
     slug: string | null;
+    onSelectProblem: (slug: string) => void;
 }
 
-const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution, slug }) => {
+const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution, slug, onSelectProblem }) => {
     const [activeTab, setActiveTab] = useState<'problem' | 'explanation' | 'playground' | 'tutor'>('problem');
     const [code, setCode] = useState(solution?.code || '');
     const [output, setOutput] = useState('');
@@ -49,6 +50,13 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
             }]);
         }
     }, [solution?.title]);
+
+    // Reset state when problem changes (Navigation)
+    React.useEffect(() => {
+        setActiveTab('problem');
+        setIsSpeaking(false);
+        window.speechSynthesis.cancel();
+    }, [slug]);
 
     const handleRunCode = async () => {
         if (!slug) return;
@@ -95,6 +103,46 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
     };
 
 
+
+    const [isSpeaking, setIsSpeaking] = useState(false);
+
+    // Stop speaking when modal closes or tab changes
+    React.useEffect(() => {
+        return () => {
+            window.speechSynthesis.cancel();
+            setIsSpeaking(false);
+        };
+    }, [activeTab, isOpen]);
+
+    const handleSpeak = () => {
+        if (!solution) return;
+
+        if (isSpeaking) {
+            window.speechSynthesis.cancel();
+            setIsSpeaking(false);
+            return;
+        }
+
+        const textToRead = [
+            solution.title,
+            "Quick Summary.",
+            solution.oneliner,
+            solution.mentalModel ? `Visual Analogy. ${solution.mentalModel}` : "",
+            "Core Intuition.",
+            ...(solution.intuition || [])
+        ].join(". \n");
+
+        const utterance = new SpeechSynthesisUtterance(textToRead);
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+
+        utterance.onend = () => setIsSpeaking(false);
+        utterance.onerror = () => setIsSpeaking(false);
+
+        window.speechSynthesis.speak(utterance);
+        setIsSpeaking(true);
+    };
 
     if (!isOpen || !solution) return null;
 
@@ -344,6 +392,44 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                                     )}
                                 </div>
                             </div>
+
+                            {/* Suggested Next Question (Pattern Path) */}
+                            {solution.suggestedNextQuestion && (
+                                <div className="pt-6 mt-6 border-t border-slate-200 dark:border-slate-800">
+                                    <h3 className="text-xs sm:text-sm uppercase tracking-wider text-slate-500 font-bold flex items-center gap-2 mb-4">
+                                        🚀 Next in Learning Path
+                                    </h3>
+                                    <div
+                                        onClick={() => onSelectProblem(solution.suggestedNextQuestion!.slug)}
+                                        className="group relative overflow-hidden p-6 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 text-white shadow-xl cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all"
+                                    >
+                                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                            <Brain size={100} />
+                                        </div>
+
+                                        <div className="relative z-10">
+                                            <div className="flex items-center gap-2 mb-2 text-indigo-200 text-xs font-bold uppercase tracking-wider">
+                                                Mastering {solution.suggestedNextQuestion.pattern} pattern
+                                            </div>
+                                            <h4 className="text-2xl font-bold mb-3 group-hover:underline decoration-2 underline-offset-4">
+                                                {solution.suggestedNextQuestion.title}
+                                            </h4>
+
+                                            <div className="flex items-center gap-3">
+                                                <span className={`px-2.5 py-1 rounded-lg text-xs font-bold bg-white/10 backdrop-blur-md border border-white/20 ${solution.suggestedNextQuestion.difficulty === 'Easy' ? 'text-emerald-300' :
+                                                    solution.suggestedNextQuestion.difficulty === 'Medium' ? 'text-amber-300' :
+                                                        'text-rose-300'
+                                                    }`}>
+                                                    {solution.suggestedNextQuestion.difficulty}
+                                                </span>
+                                                <span className="text-sm text-indigo-100 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                                    Continue Learning <ExternalLink size={14} />
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     ) : activeTab === 'explanation' ? (
                         <div className="space-y-6 sm:space-y-8 animate-in slide-in-from-bottom-4 duration-300">
@@ -368,7 +454,16 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
 
                             {/* One-liner */}
                             <div className="p-4 sm:p-6 rounded-xl border-l-4 border-indigo-500 bg-gradient-to-r from-indigo-500/10 to-purple-500/10">
-                                <h3 className="text-base sm:text-lg font-semibold text-indigo-600 dark:text-indigo-300 mb-1">💡 Quick Summary</h3>
+                                <div className="flex justify-between items-start mb-1">
+                                    <h3 className="text-base sm:text-lg font-semibold text-indigo-600 dark:text-indigo-300">💡 Quick Summary</h3>
+                                    <button
+                                        onClick={handleSpeak}
+                                        className={`p-2 rounded-full transition-all ${isSpeaking ? 'bg-indigo-600 text-white animate-pulse' : 'bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500/20 dark:text-indigo-300'}`}
+                                        title={isSpeaking ? "Stop Reading" : "Read Explanation"}
+                                    >
+                                        {isSpeaking ? <Square size={16} fill="currentColor" /> : <Volume2 size={16} />}
+                                    </button>
+                                </div>
                                 <p className="text-slate-700 dark:text-slate-200 text-sm sm:text-lg leading-relaxed">{solution.oneliner}</p>
                             </div>
 
@@ -385,6 +480,18 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                                     ))}
                                 </div>
                             </div>
+
+                            {/* Mental Model (Analogy) */}
+                            {solution.mentalModel && (
+                                <div className="p-4 sm:p-5 rounded-xl border border-indigo-200 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/10">
+                                    <h3 className="text-sm font-bold text-indigo-700 dark:text-indigo-300 mb-2 flex items-center gap-2">
+                                        <Brain size={16} /> Visual Analogy
+                                    </h3>
+                                    <p className="text-slate-700 dark:text-indigo-100 italic text-sm sm:text-base font-medium leading-relaxed">
+                                        "{solution.mentalModel}"
+                                    </p>
+                                </div>
+                            )}
 
                             {/* Visualization */}
                             <div className="space-y-3 sm:space-y-4">

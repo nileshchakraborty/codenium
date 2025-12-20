@@ -266,9 +266,19 @@ function App() {
                     <span className="text-sm text-slate-500 bg-slate-200 dark:bg-slate-950 px-2 py-1 rounded-md">{visibleProblems.length}</span>
                   </div>
                   <div className="h-1 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden flex mt-3">
-                    <div className="bg-emerald-500 h-full" style={{ width: '30%' }}></div>
-                    <div className="bg-amber-500 h-full" style={{ width: '50%' }}></div>
-                    <div className="bg-rose-500 h-full" style={{ width: '20%' }}></div>
+                    {problems.filter.difficulty === 'Easy' ? (
+                      <div className="bg-emerald-500 h-full w-full transition-all duration-500" />
+                    ) : problems.filter.difficulty === 'Medium' ? (
+                      <div className="bg-amber-500 h-full w-full transition-all duration-500" />
+                    ) : problems.filter.difficulty === 'Hard' ? (
+                      <div className="bg-rose-500 h-full w-full transition-all duration-500" />
+                    ) : (
+                      <>
+                        <div className="bg-emerald-500 h-full transition-all duration-500" style={{ width: `${(cat.easy / cat.count) * 100}%` }} />
+                        <div className="bg-amber-500 h-full transition-all duration-500" style={{ width: `${(cat.medium / cat.count) * 100}%` }} />
+                        <div className="bg-rose-500 h-full transition-all duration-500" style={{ width: `${(cat.hard / cat.count) * 100}%` }} />
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -312,6 +322,7 @@ function App() {
           onClose={closeModal}
           solution={selectedSolution}
           slug={selectedSlug}
+          onSelectProblem={handleProblemClick}
         />
       </div>
     </div>

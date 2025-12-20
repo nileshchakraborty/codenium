@@ -177,7 +177,14 @@
           3
         ]
       ],
-      "approach": "Dynamic Programming: Compute min path sum from bottom to top to avoid greedy traps!"
+      "approach": "Dynamic Programming: Compute min path sum from bottom to top to avoid greedy traps!",
+      "suggestedNextQuestion": {
+        "slug": "unique-paths",
+        "title": "Unique Paths",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      },
+      "mentalModel": "Like filling out a form where each answer depends on the previous answers. You never calculate the same thing twice!"
     },
     "best-time-to-buy-and-sell-stock": {
       "title": "Best Time to Buy and Sell Stock",
@@ -821,7 +828,14 @@
         "m",
         "a"
       ],
-      "approach": "Two Pointers: Use two pointers from both ends, skip non-alphanumeric!"
+      "approach": "Two Pointers: Use two pointers from both ends, skip non-alphanumeric!",
+      "suggestedNextQuestion": {
+        "slug": "3sum",
+        "title": "3Sum",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "merge-sorted-array": {
       "title": "Merge Sorted Array",
@@ -1448,7 +1462,8 @@
         "Maintain monotonic property if needed",
         "Process remaining stack elements if needed"
       ],
-      "approach": "Stack: Push open brackets; pop and match close brackets."
+      "approach": "Stack: Push open brackets; pop and match close brackets.",
+      "mentalModel": "Like a stack of plates. You can only add or remove the top plate (LIFO)."
     },
     "maximum-subarray": {
       "title": "Maximum Subarray",
@@ -1905,7 +1920,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "DP (Fibonacci): ways(i) = ways(i-1) + ways(i-2). It's just Fibonacci."
+      "approach": "DP (Fibonacci): ways(i) = ways(i-1) + ways(i-2). It's just Fibonacci.",
+      "suggestedNextQuestion": {
+        "slug": "min-cost-climbing-stairs",
+        "title": "Min Cost Climbing Stairs",
+        "difficulty": "Easy",
+        "pattern": "Dynamic Programming"
+      },
+      "mentalModel": "Like a Fibonacci sequence. To get to step N, you must have come from step N-1 or N-2."
     },
     "linked-list-cycle": {
       "title": "Linked List Cycle",
@@ -2123,7 +2145,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Fast & Slow Pointers: Slow moves 1 step, Fast moves 2. If they collide, there is a cycle."
+      "approach": "Fast & Slow Pointers: Slow moves 1 step, Fast moves 2. If they collide, there is a cycle.",
+      "suggestedNextQuestion": {
+        "slug": "merge-two-sorted-lists",
+        "title": "Merge Two Sorted Lists",
+        "difficulty": "Easy",
+        "pattern": "Two Pointers"
+      }
     },
     "binary-search": {
       "title": "Binary Search",
@@ -2620,7 +2648,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Matrix DFS / BFS: Iterate grid. If '1', increment count and run DFS/BFS to sink (mark '0') the entire island."
+      "approach": "Matrix DFS / BFS: Iterate grid. If '1', increment count and run DFS/BFS to sink (mark '0') the entire island.",
+      "suggestedNextQuestion": {
+        "slug": "pacific-atlantic-water-flow",
+        "title": "Pacific Atlantic Water Flow",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like a ripple in a pond, spreading out layer by layer from the center."
     },
     "reverse-linked-list": {
       "title": "Reverse Linked List",
@@ -3163,7 +3198,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Hash Set: Add to set; if exists, return True."
+      "approach": "Hash Set: Add to set; if exists, return True.",
+      "suggestedNextQuestion": {
+        "slug": "copy-list-with-random-pointer",
+        "title": "Copy List with Random Pointer",
+        "difficulty": "Medium",
+        "pattern": "Arrays & Hashing"
+      }
     },
     "invert-binary-tree": {
       "title": "Invert Binary Tree",
@@ -3385,7 +3426,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "DFS (Recursion): Swap left and right children, then recurse."
+      "approach": "DFS (Recursion): Swap left and right children, then recurse.",
+      "suggestedNextQuestion": {
+        "slug": "maximum-depth-of-binary-tree",
+        "title": "Maximum Depth of Binary Tree",
+        "difficulty": "Easy",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like solving a maze by walking as far as you can down one path, then backtracking when you hit a dead end."
     },
     "coin-change": {
       "title": "Coin Change",
@@ -3643,7 +3691,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "1D DP: dp[i] = min(dp[i], dp[i-coin] + 1) for each coin."
+      "approach": "1D DP: dp[i] = min(dp[i], dp[i-coin] + 1) for each coin.",
+      "suggestedNextQuestion": {
+        "slug": "coin-change-ii",
+        "title": "Coin Change II",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      }
     },
     "two-sum": {
       "title": "Two Sum",
@@ -3827,7 +3881,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Hash Map: Store seen numbers; check if (target - current) exists in map."
+      "approach": "Hash Map: Store seen numbers; check if (target - current) exists in map.",
+      "suggestedNextQuestion": {
+        "slug": "valid-anagram",
+        "title": "Valid Anagram",
+        "difficulty": "Easy",
+        "pattern": "Arrays & Hashing"
+      }
     },
     "remove-element": {
       "title": "Remove Element",
@@ -4044,7 +4104,14 @@
         2,
         3
       ],
-      "approach": "Two Pointers: Use a read pointer and a write pointer to filter in-place."
+      "approach": "Two Pointers: Use a read pointer and a write pointer to filter in-place.",
+      "suggestedNextQuestion": {
+        "slug": "valid-palindrome",
+        "title": "Valid Palindrome",
+        "difficulty": "Easy",
+        "pattern": "Two Pointers"
+      },
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "majority-element": {
       "title": "Majority Element",
@@ -4352,7 +4419,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Hash Map / Counter: Count letters in magazine; ensure every letter in note is available."
+      "approach": "Hash Map / Counter: Count letters in magazine; ensure every letter in note is available.",
+      "suggestedNextQuestion": {
+        "slug": "roman-to-integer",
+        "title": "Roman to Integer",
+        "difficulty": "Easy",
+        "pattern": "Arrays & Hashing"
+      }
     },
     "valid-anagram": {
       "title": "Valid Anagram",
@@ -4512,7 +4585,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Hash Map / Sorting: Check if character counts are identical."
+      "approach": "Hash Map / Sorting: Check if character counts are identical.",
+      "suggestedNextQuestion": {
+        "slug": "word-pattern",
+        "title": "Word Pattern",
+        "difficulty": "Easy",
+        "pattern": "Arrays & Hashing"
+      }
     },
     "happy-number": {
       "title": "Happy Number",
@@ -4676,7 +4755,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Floyd's Cycle Finding: Detect cycle in sum-of-squares chain. 1 is happy root; other cycles are sad."
+      "approach": "Floyd's Cycle Finding: Detect cycle in sum-of-squares chain. 1 is happy root; other cycles are sad.",
+      "suggestedNextQuestion": {
+        "slug": "is-subsequence",
+        "title": "Is Subsequence",
+        "difficulty": "Easy",
+        "pattern": "Two Pointers"
+      }
     },
     "middle-of-the-linked-list": {
       "pattern": "Two Pointers",
@@ -4845,7 +4930,14 @@
         "Continue until pointers meet or condition satisfied",
         "Return the result"
       ],
-      "approach": "Two Pointers: Use two pointers, one moving twice as fast as the other, to find the middle."
+      "approach": "Two Pointers: Use two pointers, one moving twice as fast as the other, to find the middle.",
+      "suggestedNextQuestion": {
+        "slug": "minimum-absolute-difference",
+        "title": "Minimum Absolute Difference",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "time-needed-to-buy-tickets": {
       "pattern": "Two Pointers",
@@ -4995,7 +5087,14 @@
         "Continue until pointers meet or condition satisfied",
         "Return the result"
       ],
-      "approach": "Two Pointers: Use two pointers to simulate buying tickets in a queue."
+      "approach": "Two Pointers: Use two pointers to simulate buying tickets in a queue.",
+      "suggestedNextQuestion": {
+        "slug": "two-sum-ii---input-array-is-sorted",
+        "title": "Two Sum II - Input Array Is Sorted",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "minimum-absolute-difference": {
       "pattern": "Two Pointers",
@@ -5161,7 +5260,14 @@
         "Continue until pointers meet or condition satisfied",
         "Return the result"
       ],
-      "approach": "Two Pointers: Sort the array and use two pointers to find the minimum absolute difference."
+      "approach": "Two Pointers: Sort the array and use two pointers to find the minimum absolute difference.",
+      "suggestedNextQuestion": {
+        "slug": "minimum-time-visiting-all-points",
+        "title": "Minimum Time Visiting All Points",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "missing-number": {
       "pattern": "Math",
@@ -5498,7 +5604,14 @@
         "Continue until pointers meet or condition satisfied",
         "Return the result"
       ],
-      "approach": "Two Pointers: Use two pointers to traverse points and calculate min time."
+      "approach": "Two Pointers: Use two pointers to traverse points and calculate min time.",
+      "suggestedNextQuestion": {
+        "slug": "remove-duplicates-from-sorted-array-ii",
+        "title": "Remove Duplicates from Sorted Array II",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "fizz-buzz": {
       "pattern": "Iterative",
@@ -5916,7 +6029,14 @@
         "Continue until pointers meet or condition satisfied",
         "Return the result"
       ],
-      "approach": "Two Pointers: Use in-order traversal to collect elements, then apply two-pointer technique."
+      "approach": "Two Pointers: Use in-order traversal to collect elements, then apply two-pointer technique.",
+      "suggestedNextQuestion": {
+        "slug": "trapping-rain-water",
+        "title": "Trapping Rain Water",
+        "difficulty": "Hard",
+        "pattern": "Two Pointers"
+      },
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "isomorphic-strings": {
       "title": "Isomorphic Strings",
@@ -6101,7 +6221,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Hash Map (Bi-directional): Map s[i]->t[i] AND t[i]->s[i]; detect conflicts."
+      "approach": "Hash Map (Bi-directional): Map s[i]->t[i] AND t[i]->s[i]; detect conflicts.",
+      "suggestedNextQuestion": {
+        "slug": "ransom-note",
+        "title": "Ransom Note",
+        "difficulty": "Easy",
+        "pattern": "Arrays & Hashing"
+      }
     },
     "word-pattern": {
       "title": "Word Pattern",
@@ -6287,7 +6413,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Hash Map (Bi-directional): Same as Isomorphic Strings, but mapping Char -> Word."
+      "approach": "Hash Map (Bi-directional): Same as Isomorphic Strings, but mapping Char -> Word.",
+      "suggestedNextQuestion": {
+        "slug": "contains-duplicate",
+        "title": "Contains Duplicate",
+        "difficulty": "Medium",
+        "pattern": "Arrays & Hashing"
+      }
     },
     "group-anagrams": {
       "title": "Group Anagrams",
@@ -6508,7 +6640,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Hash Map: Map sorted string (or char-count tuple) to list of strings."
+      "approach": "Hash Map: Map sorted string (or char-count tuple) to list of strings.",
+      "suggestedNextQuestion": {
+        "slug": "insert-delete-getrandom-o1",
+        "title": "Insert Delete GetRandom O(1)",
+        "difficulty": "Medium",
+        "pattern": "Arrays & Hashing"
+      }
     },
     "contains-duplicate-ii": {
       "title": "Contains Duplicate II",
@@ -6727,7 +6865,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Sliding Window / Hash Map: Maintain a window of size k using a set; duplicate in window triggers True."
+      "approach": "Sliding Window / Hash Map: Maintain a window of size k using a set; duplicate in window triggers True.",
+      "suggestedNextQuestion": {
+        "slug": "longest-repeating-character-replacement",
+        "title": "Longest Repeating Character Replacement",
+        "difficulty": "Medium",
+        "pattern": "Sliding Window"
+      },
+      "mentalModel": "Imagine a caterpillar crawling along a branch. It extends its head (right pointer) to eat leaves (add elements), and pulls its tail (left pointer) to digest (remove elements)."
     },
     "longest-consecutive-sequence": {
       "title": "Longest Consecutive Sequence",
@@ -6936,7 +7081,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Hash Set: Only start counting if (num-1) is NOT in set. This ensures we only count from sequence starts."
+      "approach": "Hash Set: Only start counting if (num-1) is NOT in set. This ensures we only count from sequence starts.",
+      "suggestedNextQuestion": {
+        "slug": "range-sum-query---immutable",
+        "title": "Range Sum Query - Immutable",
+        "difficulty": "Medium",
+        "pattern": "Arrays & Hashing"
+      }
     },
     "insert-delete-getrandom-o1": {
       "title": "Insert Delete GetRandom O(1)",
@@ -7069,7 +7220,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Hash Map + Dynamic Array: Map stores {val: index}. To delete, swap val with last element, then pop."
+      "approach": "Hash Map + Dynamic Array: Map stores {val: index}. To delete, swap val with last element, then pop.",
+      "suggestedNextQuestion": {
+        "slug": "longest-consecutive-sequence",
+        "title": "Longest Consecutive Sequence",
+        "difficulty": "Medium",
+        "pattern": "Arrays & Hashing"
+      }
     },
     "how-many-numbers-are-smaller-than-the-current-number": {
       "title": "How Many Numbers Are Smaller Than the Current Number",
@@ -7390,7 +7547,8 @@
         "Maintain monotonic property if needed",
         "Process remaining stack elements if needed"
       ],
-      "approach": "Stack: Split by '/'. Stack keeps directories. '..' pops, '.' ignores."
+      "approach": "Stack: Split by '/'. Stack keeps directories. '..' pops, '.' ignores.",
+      "mentalModel": "Like a stack of plates. You can only add or remove the top plate (LIFO)."
     },
     "min-stack": {
       "title": "Min Stack",
@@ -7583,7 +7741,8 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Stack (Two Stacks): Maintain a second stack tracking the minimum value at each depth."
+      "approach": "Stack (Two Stacks): Maintain a second stack tracking the minimum value at each depth.",
+      "mentalModel": "Like a stack of plates. You can only add or remove the top plate (LIFO)."
     },
     "evaluate-reverse-polish-notation": {
       "title": "Evaluate Reverse Polish Notation",
@@ -7783,7 +7942,8 @@
         "Maintain monotonic property if needed",
         "Process remaining stack elements if needed"
       ],
-      "approach": "Stack: Push numbers. Operator? Pop two, apply, push result."
+      "approach": "Stack: Push numbers. Operator? Pop two, apply, push result.",
+      "mentalModel": "Like a stack of plates. You can only add or remove the top plate (LIFO)."
     },
     "basic-calculator": {
       "title": "Basic Calculator",
@@ -7972,7 +8132,8 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Stack (Signs): Track result and sign. Parenthesis? Push current result & sign, reset."
+      "approach": "Stack (Signs): Track result and sign. Parenthesis? Push current result & sign, reset.",
+      "mentalModel": "Like a stack of plates. You can only add or remove the top plate (LIFO)."
     },
     "implement-stack-using-queues": {
       "title": "Implement Stack using Queues",
@@ -8109,7 +8270,8 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Queue Rotation: Push to queue, then rotate (pop & push back) all previous elements to keep new element at front."
+      "approach": "Queue Rotation: Push to queue, then rotate (pop & push back) all previous elements to keep new element at front.",
+      "mentalModel": "Like a line at a grocery store. First person in line is the first one served (FIFO)."
     },
     "add-two-numbers": {
       "title": "Add Two Numbers",
@@ -8306,7 +8468,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Linked List Math: Traverse both lists, add digits + carry, create new node."
+      "approach": "Linked List Math: Traverse both lists, add digits + carry, create new node.",
+      "suggestedNextQuestion": {
+        "slug": "remove-linked-list-elements",
+        "title": "Remove Linked List Elements",
+        "difficulty": "Medium",
+        "pattern": "Linked List"
+      },
+      "mentalModel": "Like a treasure hunt where each clue (node) holds the location of the next clue."
     },
     "merge-two-sorted-lists": {
       "title": "Merge Two Sorted Lists",
@@ -8539,7 +8708,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Linked List / Two Pointers: Use a dummy head; stitch nodes from l1 or l2 whichever is smaller."
+      "approach": "Linked List / Two Pointers: Use a dummy head; stitch nodes from l1 or l2 whichever is smaller.",
+      "suggestedNextQuestion": {
+        "slug": "remove-duplicates-from-sorted-array",
+        "title": "Remove Duplicates from Sorted Array",
+        "difficulty": "Easy",
+        "pattern": "Two Pointers"
+      },
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "copy-list-with-random-pointer": {
       "title": "Copy List with Random Pointer",
@@ -8718,7 +8894,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Hash Map / Interweaving: Two passes: 1. Create copy nodes mapped in dict. 2. Link next/random using dict."
+      "approach": "Hash Map / Interweaving: Two passes: 1. Create copy nodes mapped in dict. 2. Link next/random using dict.",
+      "suggestedNextQuestion": {
+        "slug": "design-twitter",
+        "title": "Design Twitter",
+        "difficulty": "Medium",
+        "pattern": "Arrays & Hashing"
+      }
     },
     "reverse-linked-list-ii": {
       "title": "Reverse Linked List II",
@@ -8907,7 +9089,9 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Linked List Manipulation: Reach 'left'; reverse 'right-left' times; reconnect."
+      "approach": "Linked List Manipulation: Reach 'left'; reverse 'right-left' times; reconnect.",
+      "suggestedNextQuestion": null,
+      "mentalModel": "Like a treasure hunt where each clue (node) holds the location of the next clue."
     },
     "maximum-depth-of-binary-tree": {
       "title": "Maximum Depth of Binary Tree",
@@ -9115,7 +9299,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "DFS (Recursion): 1 + max(dfs(left), dfs(right))"
+      "approach": "DFS (Recursion): 1 + max(dfs(left), dfs(right))",
+      "suggestedNextQuestion": {
+        "slug": "path-sum",
+        "title": "Path Sum",
+        "difficulty": "Easy",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like solving a maze by walking as far as you can down one path, then backtracking when you hit a dead end."
     },
     "same-tree": {
       "title": "Same Tree",
@@ -9298,7 +9489,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "DFS (Recursion): Check if p==q, then recurse: same(p.left, q.left) && same(p.right, q.right)."
+      "approach": "DFS (Recursion): Check if p==q, then recurse: same(p.left, q.left) && same(p.right, q.right).",
+      "suggestedNextQuestion": {
+        "slug": "symmetric-tree",
+        "title": "Symmetric Tree",
+        "difficulty": "Easy",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like solving a maze by walking as far as you can down one path, then backtracking when you hit a dead end."
     },
     "symmetric-tree": {
       "title": "Symmetric Tree",
@@ -9489,7 +9687,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "DFS (Helpers): Compare root.left and root.right as mirror images (outer vs outer, inner vs inner)."
+      "approach": "DFS (Helpers): Compare root.left and root.right as mirror images (outer vs outer, inner vs inner).",
+      "suggestedNextQuestion": {
+        "slug": "binary-tree-level-order-traversal",
+        "title": "Binary Tree Level Order Traversal",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like solving a maze by walking as far as you can down one path, then backtracking when you hit a dead end."
     },
     "binary-tree-level-order-traversal": {
       "title": "Binary Tree Level Order Traversal",
@@ -9678,7 +9883,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "BFS (Queue): Use a deque; process current level sizet times; append children."
+      "approach": "BFS (Queue): Use a deque; process current level sizet times; append children.",
+      "suggestedNextQuestion": {
+        "slug": "binary-tree-right-side-view",
+        "title": "Binary Tree Right Side View",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like a ripple in a pond, spreading out layer by layer from the center."
     },
     "clone-graph": {
       "title": "Clone Graph",
@@ -9923,7 +10135,14 @@
           "from": 3,
           "to": 4
         }
-      ]
+      ],
+      "suggestedNextQuestion": {
+        "slug": "count-good-nodes-in-binary-tree",
+        "title": "Count Good Nodes In Binary Tree",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like solving a maze by walking as far as you can down one path, then backtracking when you hit a dead end."
     },
     "course-schedule": {
       "title": "Course Schedule",
@@ -10090,7 +10309,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Topological Sort (DFS/BFS): Detect cycle in a directed graph. DFS with 'visiting' state or Kahn's Algo (indegrees)."
+      "approach": "Topological Sort (DFS/BFS): Detect cycle in a directed graph. DFS with 'visiting' state or Kahn's Algo (indegrees).",
+      "suggestedNextQuestion": {
+        "slug": "course-schedule-ii",
+        "title": "Course Schedule II",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like a ripple in a pond, spreading out layer by layer from the center."
     },
     "permutations": {
       "title": "Permutations",
@@ -10264,7 +10490,14 @@
         "If solution found, record it",
         "Undo choice and try next option"
       ],
-      "approach": "Backtracking: Iterate choices, remove choice (visiting), recurse, add choice back (unvisiting)."
+      "approach": "Backtracking: Iterate choices, remove choice (visiting), recurse, add choice back (unvisiting).",
+      "suggestedNextQuestion": {
+        "slug": "subsets",
+        "title": "Subsets",
+        "difficulty": "Medium",
+        "pattern": "Backtracking"
+      },
+      "mentalModel": "Like try-and-error in a lock combination. You try a number, if it fails, you 'backtrack' and try the next one."
     },
     "combination-sum": {
       "title": "Combination Sum",
@@ -10431,7 +10664,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Backtracking (Decision Tree): At each step: Option 1 (Include nums[i], stay at i), Option 2 (Exclude nums[i], move to i+1)."
+      "approach": "Backtracking (Decision Tree): At each step: Option 1 (Include nums[i], stay at i), Option 2 (Exclude nums[i], move to i+1).",
+      "suggestedNextQuestion": {
+        "slug": "combination-sum-ii",
+        "title": "Combination Sum II",
+        "difficulty": "Medium",
+        "pattern": "Backtracking"
+      },
+      "mentalModel": "Like try-and-error in a lock combination. You try a number, if it fails, you 'backtrack' and try the next one."
     },
     "word-search": {
       "title": "Word Search",
@@ -10745,7 +10985,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Backtracking (Matrix): DFS on grid: match char? Mark visited -> Recurse neighbors -> Unmark."
+      "approach": "Backtracking (Matrix): DFS on grid: match char? Mark visited -> Recurse neighbors -> Unmark.",
+      "suggestedNextQuestion": {
+        "slug": "n-queens",
+        "title": "N Queens",
+        "difficulty": "Hard",
+        "pattern": "Backtracking"
+      },
+      "mentalModel": "Like try-and-error in a lock combination. You try a number, if it fails, you 'backtrack' and try the next one."
     },
     "kth-largest-element-in-an-array": {
       "title": "Kth Largest Element in an Array",
@@ -11352,7 +11599,14 @@
         "Continue until pointers meet or condition satisfied",
         "Return the result"
       ],
-      "approach": "Two Pointers: Use slow/fast pointers. Slow marks 'write position', fast scans ahead."
+      "approach": "Two Pointers: Use slow/fast pointers. Slow marks 'write position', fast scans ahead.",
+      "suggestedNextQuestion": {
+        "slug": "remove-element",
+        "title": "Remove Element",
+        "difficulty": "Easy",
+        "pattern": "Two Pointers"
+      },
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "remove-duplicates-from-sorted-array-ii": {
       "title": "Remove Duplicates from Sorted Array II",
@@ -11550,7 +11804,14 @@
         "Continue until pointers meet or condition satisfied",
         "Return the result"
       ],
-      "approach": "Two Pointers: Allow at most 2 duplicates. Compare with nums[slow-1] instead of nums[slow]."
+      "approach": "Two Pointers: Allow at most 2 duplicates. Compare with nums[slow-1] instead of nums[slow].",
+      "suggestedNextQuestion": {
+        "slug": "remove-duplicates-from-sorted-list-ii",
+        "title": "Remove Duplicates from Sorted List II",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "rotate-array": {
       "title": "Rotate Array",
@@ -12003,7 +12264,14 @@
         "Validate choice doesn't violate constraints",
         "Build solution incrementally"
       ],
-      "approach": "Greedy: Buy before every rise, sell after every rise. Collect all profits."
+      "approach": "Greedy: Buy before every rise, sell after every rise. Collect all profits.",
+      "suggestedNextQuestion": {
+        "slug": "gas-station",
+        "title": "Gas Station",
+        "difficulty": "Medium",
+        "pattern": "Greedy"
+      },
+      "mentalModel": "Like a cashier making change. Always pick the biggest coin that fits, hoping it leads to the fewest coins total."
     },
     "jump-game": {
       "title": "Jump Game",
@@ -12196,7 +12464,14 @@
         "Validate choice doesn't violate constraints",
         "Build solution incrementally"
       ],
-      "approach": "Greedy: Track the farthest reachable index. If i > maxReach, return False."
+      "approach": "Greedy: Track the farthest reachable index. If i > maxReach, return False.",
+      "suggestedNextQuestion": {
+        "slug": "merge-triplets-to-form-target-triplet",
+        "title": "Merge Triplets to Form Target Triplet",
+        "difficulty": "Medium",
+        "pattern": "Greedy"
+      },
+      "mentalModel": "Like a cashier making change. Always pick the biggest coin that fits, hoping it leads to the fewest coins total."
     },
     "jump-game-ii": {
       "title": "Jump Game II",
@@ -12377,7 +12652,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Greedy BFS: BFS-style: track current level end and farthest reachable."
+      "approach": "Greedy BFS: BFS-style: track current level end and farthest reachable.",
+      "suggestedNextQuestion": {
+        "slug": "lowest-common-ancestor-of-a-binary-tree",
+        "title": "Lowest Common Ancestor of a Binary Tree",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like a ripple in a pond, spreading out layer by layer from the center."
     },
     "h-index": {
       "title": "H-Index",
@@ -12576,7 +12858,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Counting Sort / Binary Search: Count papers at each citation level. Scan from high to low."
+      "approach": "Counting Sort / Binary Search: Count papers at each citation level. Scan from high to low.",
+      "suggestedNextQuestion": {
+        "slug": "koko-eating-bananas",
+        "title": "Koko Eating Bananas",
+        "difficulty": "Medium",
+        "pattern": "Binary Search"
+      },
+      "mentalModel": "Like looking up a word in a dictionary. You open the middle, see if the word is before or after, and discard half the book instantly."
     },
     "product-of-array-except-self": {
       "title": "Product of Array Except Self",
@@ -12924,7 +13213,14 @@
         "Validate choice doesn't violate constraints",
         "Build solution incrementally"
       ],
-      "approach": "Greedy: If total gas >= total cost, solution exists. Start from where deficit resets."
+      "approach": "Greedy: If total gas >= total cost, solution exists. Start from where deficit resets.",
+      "suggestedNextQuestion": {
+        "slug": "hand-of-straights",
+        "title": "Hand of Straights",
+        "difficulty": "Medium",
+        "pattern": "Greedy"
+      },
+      "mentalModel": "Like a cashier making change. Always pick the biggest coin that fits, hoping it leads to the fewest coins total."
     },
     "candy": {
       "title": "Candy",
@@ -13085,7 +13381,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Two Pass Greedy: Left pass: satisfy left neighbor rule. Right pass: satisfy right rule."
+      "approach": "Two Pass Greedy: Left pass: satisfy left neighbor rule. Right pass: satisfy right rule.",
+      "suggestedNextQuestion": {
+        "slug": "text-justification",
+        "title": "Text Justification",
+        "difficulty": "Hard",
+        "pattern": "Greedy"
+      },
+      "mentalModel": "Like a cashier making change. Always pick the biggest coin that fits, hoping it leads to the fewest coins total."
     },
     "trapping-rain-water": {
       "title": "Trapping Rain Water",
@@ -13339,7 +13642,9 @@
         "Continue until pointers meet or condition satisfied",
         "Return the result"
       ],
-      "approach": "Two Pointers: Two pointers from ends. Water at i = min(leftMax, rightMax) - height[i]."
+      "approach": "Two Pointers: Two pointers from ends. Water at i = min(leftMax, rightMax) - height[i].",
+      "suggestedNextQuestion": null,
+      "mentalModel": "Imagine filling a landscape with water. The water level at any point is determined by the shortest 'wall' enclosing it."
     },
     "roman-to-integer": {
       "title": "Roman to Integer",
@@ -13550,7 +13855,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Hash Map: If current < next, subtract; else add."
+      "approach": "Hash Map: If current < next, subtract; else add.",
+      "suggestedNextQuestion": {
+        "slug": "two-sum",
+        "title": "Two Sum",
+        "difficulty": "Easy",
+        "pattern": "Arrays & Hashing"
+      }
     },
     "integer-to-roman": {
       "title": "Integer to Roman",
@@ -13686,7 +13997,14 @@
         "Validate choice doesn't violate constraints",
         "Build solution incrementally"
       ],
-      "approach": "Greedy: Greedily subtract largest possible value and append symbol."
+      "approach": "Greedy: Greedily subtract largest possible value and append symbol.",
+      "suggestedNextQuestion": {
+        "slug": "jump-game",
+        "title": "Jump Game",
+        "difficulty": "Medium",
+        "pattern": "Greedy"
+      },
+      "mentalModel": "Like a cashier making change. Always pick the biggest coin that fits, hoping it leads to the fewest coins total."
     },
     "length-of-last-word": {
       "title": "Length of Last Word",
@@ -14177,7 +14495,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Two Pointers / Split: Split by spaces, reverse, join with single space."
+      "approach": "Two Pointers / Split: Split by spaces, reverse, join with single space.",
+      "suggestedNextQuestion": {
+        "slug": "squares-of-a-sorted-array",
+        "title": "Squares of a Sorted Array",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "zigzag-conversion": {
       "title": "Zigzag Conversion",
@@ -14639,7 +14964,9 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Greedy + Simulation: Greedily pack words, distribute spaces evenly. Left-justify last line."
+      "approach": "Greedy + Simulation: Greedily pack words, distribute spaces evenly. Left-justify last line.",
+      "suggestedNextQuestion": null,
+      "mentalModel": "Like a cashier making change. Always pick the biggest coin that fits, hoping it leads to the fewest coins total."
     },
     "find-all-numbers-disappeared-in-an-array": {
       "title": "Find All Numbers Disappeared in an Array",
@@ -15007,7 +15334,14 @@
         "Continue until pointers meet or condition satisfied",
         "Return the result"
       ],
-      "approach": "Two Pointers: Use pointer for s, advance when char matches in t."
+      "approach": "Two Pointers: Use pointer for s, advance when char matches in t.",
+      "suggestedNextQuestion": {
+        "slug": "linked-list-cycle",
+        "title": "Linked List Cycle",
+        "difficulty": "Easy",
+        "pattern": "Two Pointers"
+      },
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "two-sum-ii---input-array-is-sorted": {
       "title": "Two Sum II - Input Array Is Sorted",
@@ -15152,7 +15486,14 @@
         "Continue until pointers meet or condition satisfied",
         "Return the result"
       ],
-      "approach": "Two Pointers: Left and right pointers. Move left up if sum too small, right down if too big."
+      "approach": "Two Pointers: Left and right pointers. Move left up if sum too small, right down if too big.",
+      "suggestedNextQuestion": {
+        "slug": "two-sum-iv---input-is-a-bst",
+        "title": "Two Sum IV - Input is a BST",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "container-with-most-water": {
       "title": "Container With Most Water",
@@ -15361,7 +15702,14 @@
         "Continue until pointers meet or condition satisfied",
         "Return the result"
       ],
-      "approach": "Two Pointers: Two pointers from ends. Move the shorter one inward."
+      "approach": "Two Pointers: Two pointers from ends. Move the shorter one inward.",
+      "suggestedNextQuestion": {
+        "slug": "find-the-duplicate-number",
+        "title": "Find The Duplicate Number",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "3sum": {
       "title": "3Sum",
@@ -15562,7 +15910,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Two Pointers + Sort: Sort, fix one element, two-pointer for remaining two."
+      "approach": "Two Pointers + Sort: Sort, fix one element, two-pointer for remaining two.",
+      "suggestedNextQuestion": {
+        "slug": "container-with-most-water",
+        "title": "Container With Most Water",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "squares-of-a-sorted-array": {
       "title": "Squares of a Sorted Array",
@@ -15707,7 +16062,14 @@
         "Continue until pointers meet or condition satisfied",
         "Return the result"
       ],
-      "approach": "Two Pointers: Compare absolute values at ends, place larger square at end of result."
+      "approach": "Two Pointers: Compare absolute values at ends, place larger square at end of result.",
+      "suggestedNextQuestion": {
+        "slug": "time-needed-to-buy-tickets",
+        "title": "Time Needed to Buy Tickets",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "longest-mountain-in-array": {
       "title": "Longest Mountain in Array",
@@ -15860,7 +16222,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Two Pointers / Expand: Find peak, expand left (strictly decreasing), expand right (strictly decreasing)."
+      "approach": "Two Pointers / Expand: Find peak, expand left (strictly decreasing), expand right (strictly decreasing).",
+      "suggestedNextQuestion": {
+        "slug": "meeting-rooms-ii",
+        "title": "Meeting Rooms II",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "delete-node-in-a-bst": {
       "title": "Delete Node in a BST",
@@ -16013,7 +16382,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "BST Traversal: Find node, replace with successor (leftmost in right subtree)."
+      "approach": "BST Traversal: Find node, replace with successor (leftmost in right subtree).",
+      "suggestedNextQuestion": {
+        "slug": "flatten-binary-tree-to-linked-list",
+        "title": "Flatten Binary Tree to Linked List",
+        "difficulty": "Medium",
+        "pattern": "Trees"
+      }
     },
     "insert-into-a-binary-search-tree": {
       "title": "Insert into a Binary Search Tree",
@@ -16158,7 +16533,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "BST Traversal: Navigate BST, insert at null position."
+      "approach": "BST Traversal: Navigate BST, insert at null position.",
+      "suggestedNextQuestion": {
+        "slug": "kth-smallest-element-in-a-bst",
+        "title": "Kth Smallest Element in a BST",
+        "difficulty": "Medium",
+        "pattern": "Trees"
+      }
     },
     "palindrome-linked-list": {
       "title": "Palindrome Linked List",
@@ -16472,7 +16853,8 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Stack + Queue: Use stack to reverse first k, then cycle remaining elements."
+      "approach": "Stack + Queue: Use stack to reverse first k, then cycle remaining elements.",
+      "mentalModel": "Like a stack of plates. You can only add or remove the top plate (LIFO)."
     },
     "minimum-size-subarray-sum": {
       "title": "Minimum Size Subarray Sum",
@@ -16816,7 +17198,14 @@
         "Shrink window when condition violated",
         "Track optimal result throughout"
       ],
-      "approach": "Sliding Window: Expand right until sum >= target, shrink left while valid."
+      "approach": "Sliding Window: Expand right until sum >= target, shrink left while valid.",
+      "suggestedNextQuestion": {
+        "slug": "permutation-in-string",
+        "title": "Permutation In String",
+        "difficulty": "Medium",
+        "pattern": "Sliding Window"
+      },
+      "mentalModel": "Imagine a caterpillar crawling along a branch. It extends its head (right pointer) to eat leaves (add elements), and pulls its tail (left pointer) to digest (remove elements)."
     },
     "longest-substring-without-repeating-characters": {
       "title": "Longest Substring Without Repeating Characters",
@@ -17196,7 +17585,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Sliding Window + Hash Set: Expand right, shrink left when duplicate found."
+      "approach": "Sliding Window + Hash Set: Expand right, shrink left when duplicate found.",
+      "suggestedNextQuestion": {
+        "slug": "minimum-size-subarray-sum",
+        "title": "Minimum Size Subarray Sum",
+        "difficulty": "Medium",
+        "pattern": "Sliding Window"
+      },
+      "mentalModel": "Imagine a caterpillar crawling along a branch. It extends its head (right pointer) to eat leaves (add elements), and pulls its tail (left pointer) to digest (remove elements)."
     },
     "substring-with-concatenation-of-all-words": {
       "title": "Substring with Concatenation of All Words",
@@ -17456,7 +17852,9 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Sliding Window + Hash Map: Sliding window of size wordLen*numWords, check if all words match."
+      "approach": "Sliding Window + Hash Map: Sliding window of size wordLen*numWords, check if all words match.",
+      "suggestedNextQuestion": null,
+      "mentalModel": "Imagine a caterpillar crawling along a branch. It extends its head (right pointer) to eat leaves (add elements), and pulls its tail (left pointer) to digest (remove elements)."
     },
     "minimum-window-substring": {
       "title": "Minimum Window Substring",
@@ -17932,7 +18330,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Sliding Window + Hash Map: Expand right to include all t chars, shrink left to minimize."
+      "approach": "Sliding Window + Hash Map: Expand right to include all t chars, shrink left to minimize.",
+      "suggestedNextQuestion": {
+        "slug": "substring-with-concatenation-of-all-words",
+        "title": "Substring with Concatenation of All Words",
+        "difficulty": "Hard",
+        "pattern": "Sliding Window"
+      },
+      "mentalModel": "Imagine a caterpillar crawling along a branch. It extends its head (right pointer) to eat leaves (add elements), and pulls its tail (left pointer) to digest (remove elements)."
     },
     "valid-sudoku": {
       "title": "Valid Sudoku",
@@ -18071,7 +18476,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Hash Set per Row/Col/Box: Check each row, column, and 3x3 box for duplicates."
+      "approach": "Hash Set per Row/Col/Box: Check each row, column, and 3x3 box for duplicates.",
+      "suggestedNextQuestion": {
+        "slug": "max-points-on-a-line",
+        "title": "Max Points on a Line",
+        "difficulty": "Hard",
+        "pattern": "Arrays & Hashing"
+      }
     },
     "spiral-matrix": {
       "title": "Spiral Matrix",
@@ -19862,7 +20273,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Greedy Interval: Sort by end. Shoot at end of first, skip all overlapping."
+      "approach": "Greedy Interval: Sort by end. Shoot at end of first, skip all overlapping.",
+      "suggestedNextQuestion": {
+        "slug": "non-overlapping-intervals",
+        "title": "Non Overlapping Intervals",
+        "difficulty": "Medium",
+        "pattern": "Greedy"
+      },
+      "mentalModel": "Like a cashier making change. Always pick the biggest coin that fits, hoping it leads to the fewest coins total."
     },
     "reverse-nodes-in-k-group": {
       "title": "Reverse Nodes in k-Group",
@@ -20141,7 +20559,14 @@
         "Continue until pointers meet or condition satisfied",
         "Return the result"
       ],
-      "approach": "Two Pointers: Advance fast by n, then move both until fast reaches end."
+      "approach": "Two Pointers: Advance fast by n, then move both until fast reaches end.",
+      "suggestedNextQuestion": {
+        "slug": "reverse-words-in-a-string",
+        "title": "Reverse Words in a String",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "remove-duplicates-from-sorted-list-ii": {
       "title": "Remove Duplicates from Sorted List II",
@@ -20286,7 +20711,14 @@
         "Continue until pointers meet or condition satisfied",
         "Return the result"
       ],
-      "approach": "Two Pointers: Skip all nodes with duplicate values, keep only unique."
+      "approach": "Two Pointers: Skip all nodes with duplicate values, keep only unique.",
+      "suggestedNextQuestion": {
+        "slug": "remove-nth-node-from-end-of-list",
+        "title": "Remove Nth Node From End of List",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "rotate-list": {
       "title": "Rotate List",
@@ -21126,7 +21558,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Preorder + Pointer Manipulation: Find rightmost of left subtree, connect to right, move left to right."
+      "approach": "Preorder + Pointer Manipulation: Find rightmost of left subtree, connect to right, move left to right.",
+      "suggestedNextQuestion": {
+        "slug": "insert-into-a-binary-search-tree",
+        "title": "Insert into a Binary Search Tree",
+        "difficulty": "Medium",
+        "pattern": "Trees"
+      }
     },
     "path-sum": {
       "title": "Path Sum",
@@ -21359,7 +21797,14 @@
         "Backtrack when path exhausted",
         "Return result after full traversal"
       ],
-      "approach": "DFS: DFS, subtract node value, check leaf with remaining 0."
+      "approach": "DFS: DFS, subtract node value, check leaf with remaining 0.",
+      "suggestedNextQuestion": {
+        "slug": "same-tree",
+        "title": "Same Tree",
+        "difficulty": "Easy",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like solving a maze by walking as far as you can down one path, then backtracking when you hit a dead end."
     },
     "sum-root-to-leaf-numbers": {
       "title": "Sum Root to Leaf Numbers",
@@ -21468,7 +21913,14 @@
         "Backtrack when path exhausted",
         "Return result after full traversal"
       ],
-      "approach": "DFS: DFS carrying current number. At leaf, add to sum."
+      "approach": "DFS: DFS carrying current number. At leaf, add to sum.",
+      "suggestedNextQuestion": {
+        "slug": "surrounded-regions",
+        "title": "Surrounded Regions",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like solving a maze by walking as far as you can down one path, then backtracking when you hit a dead end."
     },
     "binary-tree-maximum-path-sum": {
       "title": "Binary Tree Maximum Path Sum",
@@ -21658,7 +22110,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "DFS + Global Max: For each node, compute max path through it. Update global max."
+      "approach": "DFS + Global Max: For each node, compute max path through it. Update global max.",
+      "suggestedNextQuestion": {
+        "slug": "reconstruct-itinerary",
+        "title": "Reconstruct Itinerary",
+        "difficulty": "Hard",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like solving a maze by walking as far as you can down one path, then backtracking when you hit a dead end."
     },
     "count-complete-tree-nodes": {
       "title": "Count Complete Tree Nodes",
@@ -21788,7 +22247,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Binary Search on Tree: Compare left/right depths. If equal, left is perfect. Otherwise right is."
+      "approach": "Binary Search on Tree: Compare left/right depths. If equal, left is perfect. Otherwise right is.",
+      "suggestedNextQuestion": {
+        "slug": "minimum-absolute-difference-in-bst",
+        "title": "Minimum Absolute Difference in BST",
+        "difficulty": "Easy",
+        "pattern": "Trees"
+      },
+      "mentalModel": "Like looking up a word in a dictionary. You open the middle, see if the word is before or after, and discard half the book instantly."
     },
     "binary-tree-right-side-view": {
       "title": "Binary Tree Right Side View",
@@ -21927,7 +22393,14 @@
         "Add unvisited neighbors to queue",
         "Track level/distance as needed"
       ],
-      "approach": "BFS: BFS level by level, take last node of each level."
+      "approach": "BFS: BFS level by level, take last node of each level.",
+      "suggestedNextQuestion": {
+        "slug": "binary-tree-zigzag-level-order-traversal",
+        "title": "Binary Tree Zigzag Level Order Traversal",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like a ripple in a pond, spreading out layer by layer from the center."
     },
     "average-of-levels-in-binary-tree": {
       "title": "Average of Levels in Binary Tree",
@@ -22058,7 +22531,14 @@
         "Add unvisited neighbors to queue",
         "Track level/distance as needed"
       ],
-      "approach": "BFS: BFS level by level, compute average per level."
+      "approach": "BFS: BFS level by level, compute average per level.",
+      "suggestedNextQuestion": {
+        "slug": "invert-binary-tree",
+        "title": "Invert Binary Tree",
+        "difficulty": "Easy",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like a ripple in a pond, spreading out layer by layer from the center."
     },
     "binary-tree-zigzag-level-order-traversal": {
       "title": "Binary Tree Zigzag Level Order Traversal",
@@ -22193,7 +22673,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "BFS + Direction Flag: BFS, alternate direction each level (reverse odd levels)."
+      "approach": "BFS + Direction Flag: BFS, alternate direction each level (reverse odd levels).",
+      "suggestedNextQuestion": {
+        "slug": "cheapest-flights-within-k-stops",
+        "title": "Cheapest Flights Within K Stops",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like a ripple in a pond, spreading out layer by layer from the center."
     },
     "minimum-absolute-difference-in-bst": {
       "title": "Minimum Absolute Difference in BST",
@@ -22313,7 +22800,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Inorder Traversal: Inorder gives sorted order. Track prev, compare adjacent."
+      "approach": "Inorder Traversal: Inorder gives sorted order. Track prev, compare adjacent.",
+      "suggestedNextQuestion": {
+        "slug": "subtree-of-another-tree",
+        "title": "Subtree of Another Tree",
+        "difficulty": "Easy",
+        "pattern": "Trees"
+      }
     },
     "kth-smallest-element-in-a-bst": {
       "title": "Kth Smallest Element in a BST",
@@ -22433,7 +22926,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Inorder Traversal: Inorder traversal, return kth element."
+      "approach": "Inorder Traversal: Inorder traversal, return kth element.",
+      "suggestedNextQuestion": {
+        "slug": "lowest-common-ancestor-of-a-binary-search-tree",
+        "title": "Lowest Common Ancestor of a Binary Search Tree",
+        "difficulty": "Medium",
+        "pattern": "Trees"
+      }
     },
     "validate-binary-search-tree": {
       "title": "Validate Binary Search Tree",
@@ -22546,7 +23045,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "DFS with Range: DFS with min/max bounds. Node must be in (min, max)."
+      "approach": "DFS with Range: DFS with min/max bounds. Node must be in (min, max).",
+      "suggestedNextQuestion": {
+        "slug": "walls-and-gates",
+        "title": "Walls And Gates",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like solving a maze by walking as far as you can down one path, then backtracking when you hit a dead end."
     },
     "lowest-common-ancestor-of-a-bst": {
       "title": "Lowest Common Ancestor of a Binary Search Tree",
@@ -22677,7 +23183,13 @@
         "Otherwise, current node is the LCA (split point)",
         "Return the current node's value"
       ],
-      "approach": "BST Property: If both p,q < node, go left. If both > node, go right. Else LCA."
+      "approach": "BST Property: If both p,q < node, go left. If both > node, go right. Else LCA.",
+      "suggestedNextQuestion": {
+        "slug": "min-cost-to-connect-all-points",
+        "title": "Min Cost to Connect All Points",
+        "difficulty": "Medium",
+        "pattern": "Trees"
+      }
     },
     "balance-a-binary-search-tree": {
       "title": "Balance a Binary Search Tree",
@@ -22808,7 +23320,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Inorder + Rebuild: Inorder to sorted array. Build balanced BST from array."
+      "approach": "Inorder + Rebuild: Inorder to sorted array. Build balanced BST from array.",
+      "suggestedNextQuestion": {
+        "slug": "binary-search-tree-iterator",
+        "title": "Binary Search Tree Iterator",
+        "difficulty": "Medium",
+        "pattern": "Trees"
+      }
     },
     "surrounded-regions": {
       "title": "Surrounded Regions",
@@ -23103,7 +23621,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "DFS from Border: DFS from border Os to mark safe. Flip remaining Os to Xs."
+      "approach": "DFS from Border: DFS from border Os to mark safe. Flip remaining Os to Xs.",
+      "suggestedNextQuestion": {
+        "slug": "validate-binary-search-tree",
+        "title": "Validate Binary Search Tree",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like solving a maze by walking as far as you can down one path, then backtracking when you hit a dead end."
     },
     "evaluate-division": {
       "title": "Evaluate Division",
@@ -23225,7 +23750,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Graph BFS/DFS: Build graph of ratios. DFS/BFS to find path and multiply."
+      "approach": "Graph BFS/DFS: Build graph of ratios. DFS/BFS to find path and multiply.",
+      "suggestedNextQuestion": {
+        "slug": "graph-valid-tree",
+        "title": "Graph Valid Tree",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like a ripple in a pond, spreading out layer by layer from the center."
     },
     "course-schedule-ii": {
       "title": "Course Schedule II",
@@ -23433,7 +23965,13 @@
           "from": 3,
           "to": 2
         }
-      ]
+      ],
+      "suggestedNextQuestion": {
+        "slug": "diameter-of-binary-tree",
+        "title": "Diameter of Binary Tree",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      }
     },
     "diameter-of-binary-tree": {
       "title": "Diameter of Binary Tree",
@@ -23553,7 +24091,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "DFS + Global Max: For each node, diameter through it = left_height + right_height."
+      "approach": "DFS + Global Max: For each node, diameter through it = left_height + right_height.",
+      "suggestedNextQuestion": {
+        "slug": "evaluate-division",
+        "title": "Evaluate Division",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like solving a maze by walking as far as you can down one path, then backtracking when you hit a dead end."
     },
     "cheapest-flights-within-k-stops": {
       "title": "Cheapest Flights Within K Stops",
@@ -23659,7 +24204,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "BFS / Bellman-Ford: Modified Bellman-Ford: k+1 iterations. Or BFS with level tracking."
+      "approach": "BFS / Bellman-Ford: Modified Bellman-Ford: k+1 iterations. Or BFS with level tracking.",
+      "suggestedNextQuestion": {
+        "slug": "clone-graph",
+        "title": "Clone Graph",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like a ripple in a pond, spreading out layer by layer from the center."
     },
     "snakes-and-ladders": {
       "title": "Snakes and Ladders",
@@ -23777,7 +24329,14 @@
         "Add unvisited neighbors to queue",
         "Track level/distance as needed"
       ],
-      "approach": "BFS: BFS from square 1. Follow snakes/ladders. Min moves to n²."
+      "approach": "BFS: BFS from square 1. Follow snakes/ladders. Min moves to n².",
+      "suggestedNextQuestion": {
+        "slug": "sum-root-to-leaf-numbers",
+        "title": "Sum Root to Leaf Numbers",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like a ripple in a pond, spreading out layer by layer from the center."
     },
     "minimum-genetic-mutation": {
       "title": "Minimum Genetic Mutation",
@@ -24042,7 +24601,14 @@
         "Add unvisited neighbors to queue",
         "Track level/distance as needed"
       ],
-      "approach": "BFS: BFS from startGene. Each level = 1 mutation. Valid if in bank."
+      "approach": "BFS: BFS from startGene. Each level = 1 mutation. Valid if in bank.",
+      "suggestedNextQuestion": {
+        "slug": "network-delay-time",
+        "title": "Network Delay Time",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like a ripple in a pond, spreading out layer by layer from the center."
     },
     "word-ladder": {
       "title": "Word Ladder",
@@ -24243,7 +24809,9 @@
         "Add unvisited neighbors to queue",
         "Track level/distance as needed"
       ],
-      "approach": "BFS: BFS from beginWord. Valid moves = 1 char diff in wordList."
+      "approach": "BFS: BFS from beginWord. Valid moves = 1 char diff in wordList.",
+      "suggestedNextQuestion": null,
+      "mentalModel": "Like a ripple in a pond, spreading out layer by layer from the center."
     },
     "minimum-depth-of-binary-tree": {
       "title": "Minimum Depth of Binary Tree",
@@ -24374,7 +24942,14 @@
         "Add unvisited neighbors to queue",
         "Track level/distance as needed"
       ],
-      "approach": "BFS: BFS level by level. Return level when first leaf found."
+      "approach": "BFS: BFS level by level. Return level when first leaf found.",
+      "suggestedNextQuestion": {
+        "slug": "minimum-genetic-mutation",
+        "title": "Minimum Genetic Mutation",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like a ripple in a pond, spreading out layer by layer from the center."
     },
     "letter-combinations-of-a-phone-number": {
       "title": "Letter Combinations of a Phone Number",
@@ -24508,7 +25083,14 @@
         "If solution found, record it",
         "Undo choice and try next option"
       ],
-      "approach": "Backtracking: Map digits to letters. Backtrack all combinations."
+      "approach": "Backtracking: Map digits to letters. Backtrack all combinations.",
+      "suggestedNextQuestion": {
+        "slug": "palindrome-partitioning",
+        "title": "Palindrome Partitioning",
+        "difficulty": "Medium",
+        "pattern": "Backtracking"
+      },
+      "mentalModel": "Like try-and-error in a lock combination. You try a number, if it fails, you 'backtrack' and try the next one."
     },
     "combinations": {
       "title": "Combinations",
@@ -24622,7 +25204,14 @@
         "If solution found, record it",
         "Undo choice and try next option"
       ],
-      "approach": "Backtracking: Backtrack choosing k elements from 1 to n."
+      "approach": "Backtracking: Backtrack choosing k elements from 1 to n.",
+      "suggestedNextQuestion": {
+        "slug": "generate-parentheses",
+        "title": "Generate Parentheses",
+        "difficulty": "Medium",
+        "pattern": "Backtracking"
+      },
+      "mentalModel": "Like try-and-error in a lock combination. You try a number, if it fails, you 'backtrack' and try the next one."
     },
     "n-queens-ii": {
       "title": "N-Queens II",
@@ -24878,7 +25467,14 @@
         "If solution found, record it",
         "Undo choice and try next option"
       ],
-      "approach": "Backtracking: Place queens row by row. Track cols and diagonals."
+      "approach": "Backtracking: Place queens row by row. Track cols and diagonals.",
+      "suggestedNextQuestion": {
+        "slug": "word-search-ii",
+        "title": "Word Search II",
+        "difficulty": "Hard",
+        "pattern": "Backtracking"
+      },
+      "mentalModel": "Like try-and-error in a lock combination. You try a number, if it fails, you 'backtrack' and try the next one."
     },
     "generate-parentheses": {
       "title": "Generate Parentheses",
@@ -25026,7 +25622,14 @@
         "If solution found, record it",
         "Undo choice and try next option"
       ],
-      "approach": "Backtracking: Add '(' if open < n. Add ')' if close < open."
+      "approach": "Backtracking: Add '(' if open < n. Add ')' if close < open.",
+      "suggestedNextQuestion": {
+        "slug": "letter-case-permutation",
+        "title": "Letter Case Permutation",
+        "difficulty": "Medium",
+        "pattern": "Backtracking"
+      },
+      "mentalModel": "Like try-and-error in a lock combination. You try a number, if it fails, you 'backtrack' and try the next one."
     },
     "subsets": {
       "title": "Subsets",
@@ -25163,7 +25766,14 @@
         "If solution found, record it",
         "Undo choice and try next option"
       ],
-      "approach": "Backtracking: Backtrack: include or exclude each element."
+      "approach": "Backtracking: Backtrack: include or exclude each element.",
+      "suggestedNextQuestion": {
+        "slug": "subsets-ii",
+        "title": "Subsets II",
+        "difficulty": "Medium",
+        "pattern": "Backtracking"
+      },
+      "mentalModel": "Like try-and-error in a lock combination. You try a number, if it fails, you 'backtrack' and try the next one."
     },
     "letter-case-permutation": {
       "title": "Letter Case Permutation",
@@ -25278,7 +25888,14 @@
         "If solution found, record it",
         "Undo choice and try next option"
       ],
-      "approach": "Backtracking: For each letter, branch on lower and upper case."
+      "approach": "Backtracking: For each letter, branch on lower and upper case.",
+      "suggestedNextQuestion": {
+        "slug": "letter-combinations-of-a-phone-number",
+        "title": "Letter Combinations of a Phone Number",
+        "difficulty": "Medium",
+        "pattern": "Backtracking"
+      },
+      "mentalModel": "Like try-and-error in a lock combination. You try a number, if it fails, you 'backtrack' and try the next one."
     },
     "merge-k-sorted-lists": {
       "title": "Merge k Sorted Lists",
@@ -25767,7 +26384,14 @@
         "Adjust left or right based on comparison",
         "Return result when converged"
       ],
-      "approach": "Binary Search: Binary search. If not found, left pointer is insert position."
+      "approach": "Binary Search: Binary search. If not found, left pointer is insert position.",
+      "suggestedNextQuestion": {
+        "slug": "sqrtx",
+        "title": "Sqrt(x)",
+        "difficulty": "Easy",
+        "pattern": "Binary Search"
+      },
+      "mentalModel": "Like looking up a word in a dictionary. You open the middle, see if the word is before or after, and discard half the book instantly."
     },
     "search-a-2d-matrix": {
       "title": "Search a 2D Matrix",
@@ -25962,7 +26586,14 @@
         "Adjust left or right based on comparison",
         "Return result when converged"
       ],
-      "approach": "Binary Search: Treat matrix as 1D sorted array. Binary search with coordinate conversion."
+      "approach": "Binary Search: Treat matrix as 1D sorted array. Binary search with coordinate conversion.",
+      "suggestedNextQuestion": {
+        "slug": "search-in-rotated-sorted-array",
+        "title": "Search in Rotated Sorted Array",
+        "difficulty": "Medium",
+        "pattern": "Binary Search"
+      },
+      "mentalModel": "Like looking up a word in a dictionary. You open the middle, see if the word is before or after, and discard half the book instantly."
     },
     "find-peak-element": {
       "title": "Find Peak Element",
@@ -26103,7 +26734,14 @@
         "Adjust left or right based on comparison",
         "Return result when converged"
       ],
-      "approach": "Binary Search: Move towards larger neighbor. Guaranteed to find peak."
+      "approach": "Binary Search: Move towards larger neighbor. Guaranteed to find peak.",
+      "suggestedNextQuestion": {
+        "slug": "h-index",
+        "title": "H-Index",
+        "difficulty": "Medium",
+        "pattern": "Binary Search"
+      },
+      "mentalModel": "Like looking up a word in a dictionary. You open the middle, see if the word is before or after, and discard half the book instantly."
     },
     "search-in-rotated-sorted-array": {
       "title": "Search in Rotated Sorted Array",
@@ -26249,7 +26887,14 @@
         "Adjust left or right based on comparison",
         "Return result when converged"
       ],
-      "approach": "Binary Search: Determine which half is sorted. Check if target is in that half."
+      "approach": "Binary Search: Determine which half is sorted. Check if target is in that half.",
+      "suggestedNextQuestion": {
+        "slug": "time-based-key-value-store",
+        "title": "Time Based Key Value Store",
+        "difficulty": "Medium",
+        "pattern": "Binary Search"
+      },
+      "mentalModel": "Like looking up a word in a dictionary. You open the middle, see if the word is before or after, and discard half the book instantly."
     },
     "find-first-and-last-position-of-element-in-sorted-array": {
       "title": "Find First and Last Position of Element in Sorted Array",
@@ -26647,7 +27292,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Binary Search (Bisect): Two binary searches: find left bound and right bound."
+      "approach": "Binary Search (Bisect): Two binary searches: find left bound and right bound.",
+      "suggestedNextQuestion": {
+        "slug": "find-minimum-in-rotated-sorted-array",
+        "title": "Find Minimum in Rotated Sorted Array",
+        "difficulty": "Medium",
+        "pattern": "Binary Search"
+      },
+      "mentalModel": "Like looking up a word in a dictionary. You open the middle, see if the word is before or after, and discard half the book instantly."
     },
     "find-minimum-in-rotated-sorted-array": {
       "title": "Find Minimum in Rotated Sorted Array",
@@ -26915,7 +27567,14 @@
         "Adjust left or right based on comparison",
         "Return result when converged"
       ],
-      "approach": "Binary Search: Compare mid with right. If mid > right, min is on right. Else on left."
+      "approach": "Binary Search: Compare mid with right. If mid > right, min is on right. Else on left.",
+      "suggestedNextQuestion": {
+        "slug": "find-peak-element",
+        "title": "Find Peak Element",
+        "difficulty": "Medium",
+        "pattern": "Binary Search"
+      },
+      "mentalModel": "Like looking up a word in a dictionary. You open the middle, see if the word is before or after, and discard half the book instantly."
     },
     "median-of-two-sorted-arrays": {
       "title": "Median of Two Sorted Arrays",
@@ -27015,7 +27674,9 @@
         "Adjust left or right based on comparison",
         "Return result when converged"
       ],
-      "approach": "Binary Search: Binary search on smaller array. Find partition where left <= right."
+      "approach": "Binary Search: Binary search on smaller array. Find partition where left <= right.",
+      "suggestedNextQuestion": null,
+      "mentalModel": "Like looking up a word in a dictionary. You open the middle, see if the word is before or after, and discard half the book instantly."
     },
     "maximum-sum-circular-subarray": {
       "title": "Maximum Sum Circular Subarray",
@@ -28802,7 +29463,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "DP: dp[i] = dp[i >> 1] + (i & 1). Use previous result."
+      "approach": "DP: dp[i] = dp[i >> 1] + (i & 1). Use previous result.",
+      "suggestedNextQuestion": {
+        "slug": "decode-ways",
+        "title": "Decode Ways",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      }
     },
     "powx,-n": {
       "title": "Pow(x, n)",
@@ -30070,7 +30737,14 @@
         "Adjust left or right based on comparison",
         "Return result when converged"
       ],
-      "approach": "Binary Search: Binary search for largest k where k*k <= x."
+      "approach": "Binary Search: Binary search for largest k where k*k <= x.",
+      "suggestedNextQuestion": {
+        "slug": "find-first-and-last-position-of-element-in-sorted-array",
+        "title": "Find First and Last Position of Element in Sorted Array",
+        "difficulty": "Medium",
+        "pattern": "Binary Search"
+      },
+      "mentalModel": "Like looking up a word in a dictionary. You open the middle, see if the word is before or after, and discard half the book instantly."
     },
     "max-points-on-a-line": {
       "title": "Max Points on a Line",
@@ -30215,7 +30889,8 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Hash Map + Slopes: For each point, count slopes to all others."
+      "approach": "Hash Map + Slopes: For each point, count slopes to all others.",
+      "suggestedNextQuestion": null
     },
     "house-robber": {
       "title": "House Robber",
@@ -30436,7 +31111,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "1D DP: dp[i] = max(dp[i-1], dp[i-2] + nums[i])."
+      "approach": "1D DP: dp[i] = max(dp[i-1], dp[i-2] + nums[i]).",
+      "suggestedNextQuestion": {
+        "slug": "house-robber-ii",
+        "title": "House Robber II",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      }
     },
     "word-break": {
       "title": "Word Break",
@@ -30757,7 +31438,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "1D DP: dp[i] = any(dp[j] and s[j:i] in wordDict)."
+      "approach": "1D DP: dp[i] = any(dp[j] and s[j:i] in wordDict).",
+      "suggestedNextQuestion": {
+        "slug": "best-time-to-buy-and-sell-stock-iii",
+        "title": "Best Time to Buy and Sell Stock III",
+        "difficulty": "Hard",
+        "pattern": "Dynamic Programming"
+      }
     },
     "longest-increasing-subsequence": {
       "title": "Longest Increasing Subsequence",
@@ -31079,7 +31766,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "DP / Binary Search: Maintain sorted 'tails' array. Binary search insertion point."
+      "approach": "DP / Binary Search: Maintain sorted 'tails' array. Binary search insertion point.",
+      "suggestedNextQuestion": {
+        "slug": "maximal-square",
+        "title": "Maximal Square",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      },
+      "mentalModel": "Like looking up a word in a dictionary. You open the middle, see if the word is before or after, and discard half the book instantly."
     },
     "number-of-longest-increasing-subsequence": {
       "title": "Number of Longest Increasing Subsequence",
@@ -31318,7 +32012,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "DP: Track both length and count at each position."
+      "approach": "DP: Track both length and count at each position.",
+      "suggestedNextQuestion": {
+        "slug": "partition-equal-subset-sum",
+        "title": "Partition Equal Subset Sum",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      }
     },
     "decode-ways": {
       "title": "Decode Ways",
@@ -31556,7 +32256,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "1D DP: dp[i] = dp[i-1] (if valid single) + dp[i-2] (if valid pair)."
+      "approach": "1D DP: dp[i] = dp[i-1] (if valid single) + dp[i-2] (if valid pair).",
+      "suggestedNextQuestion": {
+        "slug": "edit-distance",
+        "title": "Edit Distance",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      }
     },
     "minimum-path-sum": {
       "title": "Minimum Path Sum",
@@ -31713,7 +32419,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "2D DP: dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1])."
+      "approach": "2D DP: dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1]).",
+      "suggestedNextQuestion": {
+        "slug": "number-of-longest-increasing-subsequence",
+        "title": "Number of Longest Increasing Subsequence",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      }
     },
     "unique-paths-ii": {
       "title": "Unique Paths II",
@@ -31870,7 +32582,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "2D DP: dp[i][j] = 0 if obstacle, else dp[i-1][j] + dp[i][j-1]."
+      "approach": "2D DP: dp[i][j] = 0 if obstacle, else dp[i-1][j] + dp[i][j-1].",
+      "suggestedNextQuestion": {
+        "slug": "word-break",
+        "title": "Word Break",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      }
     },
     "longest-palindromic-substring": {
       "title": "Longest Palindromic Substring",
@@ -32541,7 +33259,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "2D DP: dp[i][j] = True if s3[:i+j] can be formed by s1[:i] and s2[:j]."
+      "approach": "2D DP: dp[i][j] = True if s3[:i+j] can be formed by s1[:i] and s2[:j].",
+      "suggestedNextQuestion": {
+        "slug": "longest-common-subsequence",
+        "title": "Longest Common Subsequence",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      }
     },
     "edit-distance": {
       "title": "Edit Distance",
@@ -32647,7 +33371,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "2D DP: dp[i][j] = min(insert, delete, replace) + 1."
+      "approach": "2D DP: dp[i][j] = min(insert, delete, replace) + 1.",
+      "suggestedNextQuestion": {
+        "slug": "house-robber",
+        "title": "House Robber",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      }
     },
     "best-time-to-buy-and-sell-stock-iii": {
       "title": "Best Time to Buy and Sell Stock III",
@@ -32913,7 +33643,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "State Machine DP: Track 4 states: buy1, sell1, buy2, sell2."
+      "approach": "State Machine DP: Track 4 states: buy1, sell1, buy2, sell2.",
+      "suggestedNextQuestion": {
+        "slug": "best-time-to-buy-and-sell-stock-iv",
+        "title": "Best Time to Buy and Sell Stock IV",
+        "difficulty": "Hard",
+        "pattern": "Dynamic Programming"
+      }
     },
     "best-time-to-buy-and-sell-stock-iv": {
       "title": "Best Time to Buy and Sell Stock IV",
@@ -33188,7 +33924,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "DP: Generalize to k transactions with 2k states."
+      "approach": "DP: Generalize to k transactions with 2k states.",
+      "suggestedNextQuestion": {
+        "slug": "burst-balloons",
+        "title": "Burst Balloons",
+        "difficulty": "Hard",
+        "pattern": "Dynamic Programming"
+      }
     },
     "maximal-square": {
       "title": "Maximal Square",
@@ -33344,7 +34086,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "2D DP: dp[i][j] = min(top, left, diag) + 1 if matrix[i][j] == '1'."
+      "approach": "2D DP: dp[i][j] = min(top, left, diag) + 1 if matrix[i][j] == '1'.",
+      "suggestedNextQuestion": {
+        "slug": "maximum-product-subarray",
+        "title": "Maximum Product Subarray",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      }
     },
     "remove-linked-list-elements": {
       "title": "Remove Linked List Elements",
@@ -33497,7 +34245,14 @@
         "Move pointer(s) to next",
         "Handle edge cases and return result"
       ],
-      "approach": "Linked List: Use dummy head. Skip nodes with target value."
+      "approach": "Linked List: Use dummy head. Skip nodes with target value.",
+      "suggestedNextQuestion": {
+        "slug": "reorder-list",
+        "title": "Reorder List",
+        "difficulty": "Medium",
+        "pattern": "Linked List"
+      },
+      "mentalModel": "Like a treasure hunt where each clue (node) holds the location of the next clue."
     },
     "lowest-common-ancestor-of-a-binary-tree": {
       "title": "Lowest Common Ancestor of a Binary Tree",
@@ -33687,7 +34442,14 @@
         "If only one subtree returns non-null, propagate it up",
         "Return the found LCA or None"
       ],
-      "approach": "DFS: Return node if matched. If both subtrees return non-null, node is LCA."
+      "approach": "DFS: Return node if matched. If both subtrees return non-null, node is LCA.",
+      "suggestedNextQuestion": {
+        "slug": "max-area-of-island",
+        "title": "Max Area of Island",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like solving a maze by walking as far as you can down one path, then backtracking when you hit a dead end."
     },
     "populating-next-right-pointers-in-each-node-ii": {
       "title": "Populating Next Right Pointers in Each Node II",
@@ -33818,7 +34580,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Level Order Traversal: Use next pointers to traverse level. Connect children as you go."
+      "approach": "Level Order Traversal: Use next pointers to traverse level. Connect children as you go.",
+      "suggestedNextQuestion": {
+        "slug": "search-in-a-binary-search-tree",
+        "title": "Search in a Binary Search Tree",
+        "difficulty": "Medium",
+        "pattern": "Trees"
+      }
     },
     "convert-sorted-array-to-binary-search-tree": {
       "title": "Convert Sorted Array to Binary Search Tree",
@@ -34186,7 +34954,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "BST Traversal: If val < root, go left. If val > root, go right."
+      "approach": "BST Traversal: If val < root, go left. If val > root, go right.",
+      "suggestedNextQuestion": {
+        "slug": "serialize-and-deserialize-binary-tree",
+        "title": "Serialize And Deserialize Binary Tree",
+        "difficulty": "Hard",
+        "pattern": "Trees"
+      }
     },
     "ipo": {
       "title": "IPO",
@@ -35095,7 +35869,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Greedy / Math: Count max frequency. Result = max((maxCount-1)*(n+1)+numMaxCount, len(tasks))."
+      "approach": "Greedy / Math: Count max frequency. Result = max((maxCount-1)*(n+1)+numMaxCount, len(tasks)).",
+      "suggestedNextQuestion": {
+        "slug": "valid-parenthesis-string",
+        "title": "Valid Parenthesis String",
+        "difficulty": "Medium",
+        "pattern": "Greedy"
+      },
+      "mentalModel": "Like a cashier making change. Always pick the biggest coin that fits, hoping it leads to the fewest coins total."
     },
     "k-closest-points-to-origin": {
       "title": "K Closest Points to Origin",
@@ -35610,7 +36391,14 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Bit Manipulation / BFS: If even, divide. If odd, prefer +1 if it creates more trailing zeros."
+      "approach": "Bit Manipulation / BFS: If even, divide. If odd, prefer +1 if it creates more trailing zeros.",
+      "suggestedNextQuestion": {
+        "slug": "jump-game-ii",
+        "title": "Jump Game II",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like a ripple in a pond, spreading out layer by layer from the center."
     },
     "range-sum-query---immutable": {
       "title": "Range Sum Query - Immutable",
@@ -35905,7 +36693,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "Prefix Sum: Precompute prefix sums. Range sum = prefix[r+1] - prefix[l]."
+      "approach": "Prefix Sum: Precompute prefix sums. Range sum = prefix[r+1] - prefix[l].",
+      "suggestedNextQuestion": {
+        "slug": "transformed-array",
+        "title": "Transformed Array",
+        "difficulty": "Medium",
+        "pattern": "Arrays & Hashing"
+      }
     },
     "unique-paths": {
       "title": "Unique Paths",
@@ -35988,7 +36782,13 @@
         "Handle edge cases",
         "Return the result"
       ],
-      "approach": "2D DP: dp[i][j] = dp[i-1][j] + dp[i][j-1]. Or use combinatorics."
+      "approach": "2D DP: dp[i][j] = dp[i-1][j] + dp[i][j-1]. Or use combinatorics.",
+      "suggestedNextQuestion": {
+        "slug": "unique-paths-ii",
+        "title": "Unique Paths II",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      }
     },
     "lru-cache": {
       "title": "LRU Cache",
@@ -36206,7 +37006,8 @@
           "transientMessage": "Updating index 2."
         }
       ],
-      "approach": "Trie: Implement a trie with insert, search, and startsWith methods."
+      "approach": "Trie: Implement a trie with insert, search, and startsWith methods.",
+      "mentalModel": "Like an autocomplete system. As you type each letter, you walk down a specific path of the word tree."
     },
     "design-add-and-search-words-data-structure": {
       "title": "Design Add and Search Words Data Structure",
@@ -36299,7 +37100,8 @@
           "transientMessage": "Updating index 2."
         }
       ],
-      "approach": "Trie: Design a data structure that supports adding words and searching with '.' wildcard."
+      "approach": "Trie: Design a data structure that supports adding words and searching with '.' wildcard.",
+      "mentalModel": "Like an autocomplete system. As you type each letter, you walk down a specific path of the word tree."
     },
     "word-search-ii": {
       "title": "Word Search II",
@@ -36392,7 +37194,9 @@
           "transientMessage": "Updating index 2."
         }
       ],
-      "approach": "Backtracking: Find all words from a dictionary that can be formed by adjacent cells in a grid."
+      "approach": "Backtracking: Find all words from a dictionary that can be formed by adjacent cells in a grid.",
+      "suggestedNextQuestion": null,
+      "mentalModel": "Like try-and-error in a lock combination. You try a number, if it fails, you 'backtrack' and try the next one."
     },
     "binary-search-tree-iterator": {
       "title": "Binary Search Tree Iterator",
@@ -36485,7 +37289,13 @@
           "transientMessage": "Updating index 2."
         }
       ],
-      "approach": "Tree: Implement an iterator over a BST that returns nodes in ascending order."
+      "approach": "Tree: Implement an iterator over a BST that returns nodes in ascending order.",
+      "suggestedNextQuestion": {
+        "slug": "delete-node-in-a-bst",
+        "title": "Delete Node in a BST",
+        "difficulty": "Medium",
+        "pattern": "Trees"
+      }
     },
     "transformed-array": {
       "title": "Transformed Array",
@@ -36601,7 +37411,13 @@
         1,
         1
       ],
-      "approach": "Array: Transform an array based on given rules and return the result."
+      "approach": "Array: Transform an array based on given rules and return the result.",
+      "suggestedNextQuestion": {
+        "slug": "valid-sudoku",
+        "title": "Valid Sudoku",
+        "difficulty": "Medium",
+        "pattern": "Arrays & Hashing"
+      }
     },
     "encode-and-decode-strings": {
       "id": "encode-and-decode-strings",
@@ -36862,7 +37678,8 @@
         "🔍 What condition moves each pointer?"
       ],
       "approach": "Two Pointers: Use two pointers starting from ends to find the pair.",
-      "videoId": "cQ1Oz4ckceM"
+      "videoId": "cQ1Oz4ckceM",
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "longest-repeating-character-replacement": {
       "id": "longest-repeating-character-replacement",
@@ -37052,7 +37869,14 @@
         "🔍 Track window state efficiently"
       ],
       "approach": "Sliding Window: Use sliding window with max frequency tracking to find longest valid substring.",
-      "videoId": "gqXU1UyA8pk"
+      "videoId": "gqXU1UyA8pk",
+      "suggestedNextQuestion": {
+        "slug": "longest-substring-without-repeating-characters",
+        "title": "Longest Substring Without Repeating Characters",
+        "difficulty": "Medium",
+        "pattern": "Sliding Window"
+      },
+      "mentalModel": "Imagine a caterpillar crawling along a branch. It extends its head (right pointer) to eat leaves (add elements), and pulls its tail (left pointer) to digest (remove elements)."
     },
     "sliding-window-maximum": {
       "id": "sliding-window-maximum",
@@ -37177,7 +38001,8 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Monotonic Queue: Use a deque to maintain decreasing elements in the current window.",
-      "videoId": "DfljaUwZsOk"
+      "videoId": "DfljaUwZsOk",
+      "mentalModel": "Like a line at a grocery store. First person in line is the first one served (FIFO)."
     },
     "non-overlapping-intervals": {
       "id": "non-overlapping-intervals",
@@ -37384,7 +38209,14 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Greedy Algorithm: Sort by end time and greedily select non-overlapping intervals.",
-      "videoId": "nONCGxWoUfM"
+      "videoId": "nONCGxWoUfM",
+      "suggestedNextQuestion": {
+        "slug": "partition-labels",
+        "title": "Partition Labels",
+        "difficulty": "Medium",
+        "pattern": "Greedy"
+      },
+      "mentalModel": "Like a cashier making change. Always pick the biggest coin that fits, hoping it leads to the fewest coins total."
     },
     "meeting-rooms": {
       "id": "meeting-rooms",
@@ -37606,7 +38438,14 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Two Pointers + Sorting: Sort start/end times separately and use two pointers to track room usage.",
-      "videoId": "FdzJmTCVyJU"
+      "videoId": "FdzJmTCVyJU",
+      "suggestedNextQuestion": {
+        "slug": "middle-of-the-linked-list",
+        "title": "Middle of the Linked List",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      "mentalModel": "Like two people walking towards each other from opposite ends of a hallway to meet in the middle."
     },
     "minimum-interval-to-include-each-query": {
       "id": "minimum-interval-to-include-each-query",
@@ -37909,7 +38748,8 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Monotonic Stack: Use a stack to track indices of decreasing temperatures.",
-      "videoId": "cTBiBSnjO3c"
+      "videoId": "cTBiBSnjO3c",
+      "mentalModel": "Like a stack of plates. You can only add or remove the top plate (LIFO)."
     },
     "car-fleet": {
       "id": "car-fleet",
@@ -38121,7 +38961,8 @@
         "🔍 When do you push vs pop?"
       ],
       "approach": "Stack: Sort cars by position and use stack to count fleets based on arrival times.",
-      "videoId": "Pr6T-3yB9RM"
+      "videoId": "Pr6T-3yB9RM",
+      "mentalModel": "Like a stack of plates. You can only add or remove the top plate (LIFO)."
     },
     "largest-rectangle-in-histogram": {
       "id": "largest-rectangle-in-histogram",
@@ -38247,7 +39088,8 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Monotonic Stack: Use a stack to track increasing bar heights and calculate areas when heights decrease.",
-      "videoId": "zx5Sw9130L0"
+      "videoId": "zx5Sw9130L0",
+      "mentalModel": "Like a stack of plates. You can only add or remove the top plate (LIFO)."
     },
     "reorder-list": {
       "id": "reorder-list",
@@ -38387,7 +39229,14 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Linked List Reversal + Merge: Split list in half, reverse second half, then merge alternately.",
-      "videoId": "S5bfdUTrKLM"
+      "videoId": "S5bfdUTrKLM",
+      "suggestedNextQuestion": {
+        "slug": "reverse-linked-list-ii",
+        "title": "Reverse Linked List II",
+        "difficulty": "Medium",
+        "pattern": "Linked List"
+      },
+      "mentalModel": "Like a treasure hunt where each clue (node) holds the location of the next clue."
     },
     "find-the-duplicate-number": {
       "id": "find-the-duplicate-number",
@@ -38522,7 +39371,13 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Floyd's Cycle Detection: Treat array values as pointers and detect cycle using Floyd's algorithm.",
-      "videoId": "wjYnzkAhcNk"
+      "videoId": "wjYnzkAhcNk",
+      "suggestedNextQuestion": {
+        "slug": "longest-mountain-in-array",
+        "title": "Longest Mountain in Array",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      }
     },
     "balanced-binary-tree": {
       "id": "balanced-binary-tree",
@@ -38682,7 +39537,13 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Tree Recursion: Check balance condition recursively for each node.",
-      "videoId": "QfJsau0ItOY"
+      "videoId": "QfJsau0ItOY",
+      "suggestedNextQuestion": {
+        "slug": "count-complete-tree-nodes",
+        "title": "Count Complete Tree Nodes",
+        "difficulty": "Easy",
+        "pattern": "Trees"
+      }
     },
     "subtree-of-another-tree": {
       "id": "subtree-of-another-tree",
@@ -38848,7 +39709,13 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Tree Traversal + Subtree Matching: Traverse main tree and check if any node matches the subRoot tree structure.",
-      "videoId": "E36O5SWp-LE"
+      "videoId": "E36O5SWp-LE",
+      "suggestedNextQuestion": {
+        "slug": "balance-a-binary-search-tree",
+        "title": "Balance a Binary Search Tree",
+        "difficulty": "Medium",
+        "pattern": "Trees"
+      }
     },
     "lowest-common-ancestor-of-a-binary-search-tree": {
       "id": "lowest-common-ancestor-of-a-binary-search-tree",
@@ -38982,7 +39849,13 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "BST Property: Use BST property to navigate toward LCA.",
-      "videoId": "gs2LMfuOR9k"
+      "videoId": "gs2LMfuOR9k",
+      "suggestedNextQuestion": {
+        "slug": "lowest-common-ancestor-of-a-bst",
+        "title": "Lowest Common Ancestor of a BST",
+        "difficulty": "Medium",
+        "pattern": "Trees"
+      }
     },
     "count-good-nodes-in-binary-tree": {
       "id": "count-good-nodes-in-binary-tree",
@@ -39111,7 +39984,14 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "DFS Traversal: Traverse tree while tracking max value seen so far.",
-      "videoId": "7cp5imvDzl4"
+      "videoId": "7cp5imvDzl4",
+      "suggestedNextQuestion": {
+        "slug": "course-schedule",
+        "title": "Course Schedule",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like solving a maze by walking as far as you can down one path, then backtracking when you hit a dead end."
     },
     "serialize-and-deserialize-binary-tree": {
       "id": "serialize-and-deserialize-binary-tree",
@@ -39251,7 +40131,8 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Tree Traversal: Use preorder traversal with null markers for serialization and reconstruction.",
-      "videoId": "u4JAi2JJhI8"
+      "videoId": "u4JAi2JJhI8",
+      "suggestedNextQuestion": null
     },
     "max-area-of-island": {
       "id": "max-area-of-island",
@@ -39486,7 +40367,14 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "DFS on Grid: Use DFS from each land cell to explore and count island areas.",
-      "videoId": "iJGr1OtmH0c"
+      "videoId": "iJGr1OtmH0c",
+      "suggestedNextQuestion": {
+        "slug": "minimum-depth-of-binary-tree",
+        "title": "Minimum Depth of Binary Tree",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like solving a maze by walking as far as you can down one path, then backtracking when you hit a dead end."
     },
     "pacific-atlantic-water-flow": {
       "id": "pacific-atlantic-water-flow",
@@ -39785,7 +40673,14 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Multi-source BFS: Reverse the flow - start from oceans and find reachable cells.",
-      "videoId": "s-VkcjHqkGI"
+      "videoId": "s-VkcjHqkGI",
+      "suggestedNextQuestion": {
+        "slug": "redundant-connection",
+        "title": "Redundant Connection",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like a ripple in a pond, spreading out layer by layer from the center."
     },
     "rotting-oranges": {
       "id": "rotting-oranges",
@@ -40044,7 +40939,14 @@
         "🔍 Track visited to avoid cycles"
       ],
       "approach": "BFS: Use BFS from all initial rotten oranges to simulate rotting.",
-      "videoId": "y704fEOx0s0"
+      "videoId": "y704fEOx0s0",
+      "suggestedNextQuestion": {
+        "slug": "snakes-and-ladders",
+        "title": "Snakes and Ladders",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like a ripple in a pond, spreading out layer by layer from the center."
     },
     "walls-and-gates": {
       "id": "walls-and-gates",
@@ -40267,7 +41169,14 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Multi-source BFS: Start BFS from all gates simultaneously to find shortest distances.",
-      "videoId": "e69C6xhiSQE"
+      "videoId": "e69C6xhiSQE",
+      "suggestedNextQuestion": {
+        "slug": "alien-dictionary",
+        "title": "Alien Dictionary",
+        "difficulty": "Hard",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like a ripple in a pond, spreading out layer by layer from the center."
     },
     "redundant-connection": {
       "id": "redundant-connection",
@@ -40457,7 +41366,13 @@
           "from": 2,
           "to": 3
         }
-      ]
+      ],
+      "suggestedNextQuestion": {
+        "slug": "rotting-oranges",
+        "title": "Rotting Oranges",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      }
     },
     "number-of-connected-components-in-an-undirected-graph": {
       "id": "number-of-connected-components-in-an-undirected-graph",
@@ -40589,7 +41504,14 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Union-Find / DFS: Use Union-Find to group connected nodes and count components.",
-      "videoId": "8f1XPm4WOUc"
+      "videoId": "8f1XPm4WOUc",
+      "suggestedNextQuestion": {
+        "slug": "number-of-islands",
+        "title": "Number of Islands",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like solving a maze by walking as far as you can down one path, then backtracking when you hit a dead end."
     },
     "graph-valid-tree": {
       "id": "graph-valid-tree",
@@ -40711,7 +41633,13 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Union-Find: Use Union-Find to detect cycles and check connectivity.",
-      "videoId": "bXsUuownnoQ"
+      "videoId": "bXsUuownnoQ",
+      "suggestedNextQuestion": {
+        "slug": "integer-replacement",
+        "title": "Integer Replacement",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      }
     },
     "reconstruct-itinerary": {
       "id": "reconstruct-itinerary",
@@ -40853,7 +41781,14 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Hierholzer's Algorithm / DFS: Use DFS with lexical ordering to traverse all edges exactly once.",
-      "videoId": "ZyB_gQ8vqGA"
+      "videoId": "ZyB_gQ8vqGA",
+      "suggestedNextQuestion": {
+        "slug": "swim-in-rising-water",
+        "title": "Swim In Rising Water",
+        "difficulty": "Hard",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like solving a maze by walking as far as you can down one path, then backtracking when you hit a dead end."
     },
     "min-cost-to-connect-all-points": {
       "id": "min-cost-to-connect-all-points",
@@ -40954,7 +41889,13 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Minimum Spanning Tree (Kruskal's): Use Kruskal's algorithm with Union-Find to find MST.",
-      "videoId": "f7JOBJIC-NA"
+      "videoId": "f7JOBJIC-NA",
+      "suggestedNextQuestion": {
+        "slug": "populating-next-right-pointers-in-each-node-ii",
+        "title": "Populating Next Right Pointers in Each Node II",
+        "difficulty": "Medium",
+        "pattern": "Trees"
+      }
     },
     "network-delay-time": {
       "id": "network-delay-time",
@@ -41091,7 +42032,13 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Dijkstra's Algorithm: Use Dijkstra's algorithm to find shortest paths from source node.",
-      "videoId": "EaphyqKU4PQ"
+      "videoId": "EaphyqKU4PQ",
+      "suggestedNextQuestion": {
+        "slug": "number-of-connected-components-in-an-undirected-graph",
+        "title": "Number of Connected Components In An Undirected Graph",
+        "difficulty": "Medium",
+        "pattern": "Graphs"
+      }
     },
     "swim-in-rising-water": {
       "id": "swim-in-rising-water",
@@ -41258,7 +42205,14 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Binary Search + DFS: Binary search on time values, use DFS to check if path exists.",
-      "videoId": "amvrKhR-e80"
+      "videoId": "amvrKhR-e80",
+      "suggestedNextQuestion": {
+        "slug": "word-ladder",
+        "title": "Word Ladder",
+        "difficulty": "Hard",
+        "pattern": "Graphs"
+      },
+      "mentalModel": "Like solving a maze by walking as far as you can down one path, then backtracking when you hit a dead end."
     },
     "alien-dictionary": {
       "id": "alien-dictionary",
@@ -41467,7 +42421,13 @@
           "from": "e",
           "to": "r"
         }
-      ]
+      ],
+      "suggestedNextQuestion": {
+        "slug": "binary-tree-maximum-path-sum",
+        "title": "Binary Tree Maximum Path Sum",
+        "difficulty": "Hard",
+        "pattern": "Graphs"
+      }
     },
     "subsets-ii": {
       "id": "subsets-ii",
@@ -41593,7 +42553,14 @@
         "🔍 Track current state and restore after"
       ],
       "approach": "Backtracking: Use backtracking with sorting to skip duplicates.",
-      "videoId": "Vn2v6ajA7U0"
+      "videoId": "Vn2v6ajA7U0",
+      "suggestedNextQuestion": {
+        "slug": "word-search",
+        "title": "Word Search",
+        "difficulty": "Medium",
+        "pattern": "Backtracking"
+      },
+      "mentalModel": "Like try-and-error in a lock combination. You try a number, if it fails, you 'backtrack' and try the next one."
     },
     "combination-sum-ii": {
       "id": "combination-sum-ii",
@@ -41706,7 +42673,14 @@
         "🔍 Track current state and restore after"
       ],
       "approach": "Backtracking: Use backtracking with sorting to avoid duplicates.",
-      "videoId": "rSA3t6BDDwg"
+      "videoId": "rSA3t6BDDwg",
+      "suggestedNextQuestion": {
+        "slug": "combinations",
+        "title": "Combinations",
+        "difficulty": "Medium",
+        "pattern": "Backtracking"
+      },
+      "mentalModel": "Like try-and-error in a lock combination. You try a number, if it fails, you 'backtrack' and try the next one."
     },
     "palindrome-partitioning": {
       "id": "palindrome-partitioning",
@@ -41788,7 +42762,14 @@
         "🔍 Track current state and restore after"
       ],
       "approach": "Backtracking: Use backtracking to explore all possible partitions.",
-      "videoId": "3jvWodd7ht0"
+      "videoId": "3jvWodd7ht0",
+      "suggestedNextQuestion": {
+        "slug": "permutations",
+        "title": "Permutations",
+        "difficulty": "Medium",
+        "pattern": "Backtracking"
+      },
+      "mentalModel": "Like try-and-error in a lock combination. You try a number, if it fails, you 'backtrack' and try the next one."
     },
     "n-queens": {
       "id": "n-queens",
@@ -42104,7 +43085,14 @@
         "🔍 Track current state and restore after"
       ],
       "approach": "Backtracking: Place queens row by row, backtracking when conflicts arise.",
-      "videoId": "Ph95IHmRp5M"
+      "videoId": "Ph95IHmRp5M",
+      "suggestedNextQuestion": {
+        "slug": "n-queens-ii",
+        "title": "N-Queens II",
+        "difficulty": "Hard",
+        "pattern": "Backtracking"
+      },
+      "mentalModel": "Like try-and-error in a lock combination. You try a number, if it fails, you 'backtrack' and try the next one."
     },
     "koko-eating-bananas": {
       "id": "koko-eating-bananas",
@@ -42215,7 +43203,14 @@
         "🔍 What should mid represent?"
       ],
       "approach": "Binary Search: Binary search on eating speed k between 1 and max(piles).",
-      "videoId": "U2SozAs9RzA"
+      "videoId": "U2SozAs9RzA",
+      "suggestedNextQuestion": {
+        "slug": "search-a-2d-matrix",
+        "title": "Search a 2D Matrix",
+        "difficulty": "Medium",
+        "pattern": "Binary Search"
+      },
+      "mentalModel": "Like looking up a word in a dictionary. You open the middle, see if the word is before or after, and discard half the book instantly."
     },
     "time-based-key-value-store": {
       "id": "time-based-key-value-store",
@@ -42324,7 +43319,14 @@
         "🔍 What should mid represent?"
       ],
       "approach": "Binary Search: Use binary search on sorted timestamps to find the latest valid value.",
-      "videoId": "fu2cD_6E8Hw"
+      "videoId": "fu2cD_6E8Hw",
+      "suggestedNextQuestion": {
+        "slug": "median-of-two-sorted-arrays",
+        "title": "Median of Two Sorted Arrays",
+        "difficulty": "Hard",
+        "pattern": "Binary Search"
+      },
+      "mentalModel": "Like looking up a word in a dictionary. You open the middle, see if the word is before or after, and discard half the book instantly."
     },
     "kth-largest-element-in-a-stream": {
       "id": "kth-largest-element-in-a-stream",
@@ -42528,7 +43530,8 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Heap (Priority Queue): Use a max heap to efficiently retrieve the two heaviest stones.",
-      "videoId": "B-QCq79-Vfw"
+      "videoId": "B-QCq79-Vfw",
+      "mentalModel": "Like a line at a grocery store. First person in line is the first one served (FIFO)."
     },
     "design-twitter": {
       "id": "design-twitter",
@@ -42618,7 +43621,13 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Hash Map + Heap: Use hash maps for users/tweets and a min-heap for news feed.",
-      "videoId": "pNichitDD2E"
+      "videoId": "pNichitDD2E",
+      "suggestedNextQuestion": {
+        "slug": "detect-squares",
+        "title": "Detect Squares",
+        "difficulty": "Medium",
+        "pattern": "Arrays & Hashing"
+      }
     },
     "sum-of-two-integers": {
       "id": "sum-of-two-integers",
@@ -43151,7 +44160,13 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Geometry + Hash Map: For each existing point, check if it can form a square with the query point and two others.",
-      "videoId": "bahebearrDc"
+      "videoId": "bahebearrDc",
+      "suggestedNextQuestion": {
+        "slug": "group-anagrams",
+        "title": "Group Anagrams",
+        "difficulty": "Medium",
+        "pattern": "Arrays & Hashing"
+      }
     },
     "min-cost-climbing-stairs": {
       "id": "min-cost-climbing-stairs",
@@ -43294,7 +44309,14 @@
         "🔍 Can you optimize space complexity?"
       ],
       "approach": "Dynamic Programming: Use DP to track min cost to reach each step, only keeping last two values.",
-      "videoId": "ktmzAZWkEZ0"
+      "videoId": "ktmzAZWkEZ0",
+      "suggestedNextQuestion": {
+        "slug": "best-time-to-buy-and-sell-stock-with-cooldown",
+        "title": "Best Time to Buy And Sell Stock With Cooldown",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      },
+      "mentalModel": "Like filling out a form where each answer depends on the previous answers. You never calculate the same thing twice!"
     },
     "house-robber-ii": {
       "id": "house-robber-ii",
@@ -43435,7 +44457,14 @@
         "🔍 Can you optimize space complexity?"
       ],
       "approach": "Dynamic Programming: Split into two subproblems: exclude first or last house.",
-      "videoId": "rWAJCfYYOvM"
+      "videoId": "rWAJCfYYOvM",
+      "suggestedNextQuestion": {
+        "slug": "interleaving-string",
+        "title": "Interleaving String",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      },
+      "mentalModel": "Like filling out a form where each answer depends on the previous answers. You never calculate the same thing twice!"
     },
     "palindromic-substrings": {
       "id": "palindromic-substrings",
@@ -43682,7 +44711,14 @@
         "🔍 Can you optimize space complexity?"
       ],
       "approach": "Dynamic Programming: Track both max and min products at each step due to negative numbers.",
-      "videoId": "lXVy6YWFcRM"
+      "videoId": "lXVy6YWFcRM",
+      "suggestedNextQuestion": {
+        "slug": "minimum-path-sum",
+        "title": "Minimum Path Sum",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      },
+      "mentalModel": "Like filling out a form where each answer depends on the previous answers. You never calculate the same thing twice!"
     },
     "partition-equal-subset-sum": {
       "id": "partition-equal-subset-sum",
@@ -43770,7 +44806,14 @@
         "🔍 Can you optimize space complexity?"
       ],
       "approach": "Dynamic Programming: Use DP to check if we can achieve sum/2 with given numbers.",
-      "videoId": "IsvocB5BJhw"
+      "videoId": "IsvocB5BJhw",
+      "suggestedNextQuestion": {
+        "slug": "target-sum",
+        "title": "Target Sum",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      },
+      "mentalModel": "Like filling out a form where each answer depends on the previous answers. You never calculate the same thing twice!"
     },
     "longest-common-subsequence": {
       "id": "longest-common-subsequence",
@@ -44109,7 +45152,14 @@
         "🔍 Can you optimize space complexity?"
       ],
       "approach": "Dynamic Programming: Build a 2D table to store LCS lengths for all substrings.",
-      "videoId": "Ua0GhsJSlWM"
+      "videoId": "Ua0GhsJSlWM",
+      "suggestedNextQuestion": {
+        "slug": "longest-increasing-subsequence",
+        "title": "Longest Increasing Subsequence",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      },
+      "mentalModel": "Like filling out a form where each answer depends on the previous answers. You never calculate the same thing twice!"
     },
     "best-time-to-buy-and-sell-stock-with-cooldown": {
       "id": "best-time-to-buy-and-sell-stock-with-cooldown",
@@ -44268,7 +45318,14 @@
         "🔍 Can you optimize space complexity?"
       ],
       "approach": "Dynamic Programming: Track max profit for holding/selling states with cooldown constraint.",
-      "videoId": "I7j0F7AHpb8"
+      "videoId": "I7j0F7AHpb8",
+      "suggestedNextQuestion": {
+        "slug": "coin-change",
+        "title": "Coin Change",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      },
+      "mentalModel": "Like filling out a form where each answer depends on the previous answers. You never calculate the same thing twice!"
     },
     "coin-change-ii": {
       "id": "coin-change-ii",
@@ -44429,7 +45486,14 @@
         "🔍 Can you optimize space complexity?"
       ],
       "approach": "Dynamic Programming: Build up combinations count for each amount using previous results.",
-      "videoId": "Mjy4hd2xgrs"
+      "videoId": "Mjy4hd2xgrs",
+      "suggestedNextQuestion": {
+        "slug": "counting-bits",
+        "title": "Counting Bits",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      },
+      "mentalModel": "Like filling out a form where each answer depends on the previous answers. You never calculate the same thing twice!"
     },
     "target-sum": {
       "id": "target-sum",
@@ -44513,7 +45577,14 @@
         "🔍 Can you optimize space complexity?"
       ],
       "approach": "Dynamic Programming: Use DP to count ways to reach target sum with +/- signs.",
-      "videoId": "g0npyaQtAQM"
+      "videoId": "g0npyaQtAQM",
+      "suggestedNextQuestion": {
+        "slug": "triangle",
+        "title": "Triangle",
+        "difficulty": "Medium",
+        "pattern": "Dynamic Programming"
+      },
+      "mentalModel": "Like filling out a form where each answer depends on the previous answers. You never calculate the same thing twice!"
     },
     "longest-increasing-path-in-a-matrix": {
       "id": "longest-increasing-path-in-a-matrix",
@@ -44745,7 +45816,14 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "DFS with Memoization: Use DFS from each cell with memoization to avoid recomputation.",
-      "videoId": "wCc_nd-GiEc"
+      "videoId": "wCc_nd-GiEc",
+      "suggestedNextQuestion": {
+        "slug": "regular-expression-matching",
+        "title": "Regular Expression Matching",
+        "difficulty": "Hard",
+        "pattern": "Dynamic Programming"
+      },
+      "mentalModel": "Like solving a maze by walking as far as you can down one path, then backtracking when you hit a dead end."
     },
     "distinct-subsequences": {
       "id": "distinct-subsequences",
@@ -45237,7 +46315,14 @@
         "🔍 Can you optimize space complexity?"
       ],
       "approach": "Dynamic Programming: Use DP to count ways to form t[0:j] using s[0:i].",
-      "videoId": "-RDzMJ33nx8"
+      "videoId": "-RDzMJ33nx8",
+      "suggestedNextQuestion": {
+        "slug": "longest-increasing-path-in-a-matrix",
+        "title": "Longest Increasing Path In a Matrix",
+        "difficulty": "Hard",
+        "pattern": "Dynamic Programming"
+      },
+      "mentalModel": "Like filling out a form where each answer depends on the previous answers. You never calculate the same thing twice!"
     },
     "burst-balloons": {
       "id": "burst-balloons",
@@ -45340,7 +46425,14 @@
         "🔍 Can you optimize space complexity?"
       ],
       "approach": "Dynamic Programming: Use DP with interval merging, considering last balloon to burst.",
-      "videoId": "VFskby7lUbw"
+      "videoId": "VFskby7lUbw",
+      "suggestedNextQuestion": {
+        "slug": "distinct-subsequences",
+        "title": "Distinct Subsequences",
+        "difficulty": "Hard",
+        "pattern": "Dynamic Programming"
+      },
+      "mentalModel": "Like filling out a form where each answer depends on the previous answers. You never calculate the same thing twice!"
     },
     "regular-expression-matching": {
       "id": "regular-expression-matching",
@@ -45549,7 +46641,9 @@
         "🔍 Can you optimize space complexity?"
       ],
       "approach": "Dynamic Programming: Use a 2D DP table to track matching substrings.",
-      "videoId": "HAA8mgxlov8"
+      "videoId": "HAA8mgxlov8",
+      "suggestedNextQuestion": null,
+      "mentalModel": "Like filling out a form where each answer depends on the previous answers. You never calculate the same thing twice!"
     },
     "hand-of-straights": {
       "id": "hand-of-straights",
@@ -45690,7 +46784,14 @@
         "0 <= hand[i] <= 10^9",
         "1 <= groupSize <= hand.length"
       ],
-      "videoId": "amnrMCVd2YI"
+      "videoId": "amnrMCVd2YI",
+      "suggestedNextQuestion": {
+        "slug": "integer-to-roman",
+        "title": "Integer to Roman",
+        "difficulty": "Medium",
+        "pattern": "Greedy"
+      },
+      "mentalModel": "Like a cashier making change. Always pick the biggest coin that fits, hoping it leads to the fewest coins total."
     },
     "merge-triplets-to-form-target-triplet": {
       "id": "merge-triplets-to-form-target-triplet",
@@ -45839,7 +46940,14 @@
         "🔍 Prove greedy works before implementing"
       ],
       "approach": "Greedy: Only consider triplets that don't exceed target values and greedily build up to target.",
-      "videoId": "kShkQLQZ9K4"
+      "videoId": "kShkQLQZ9K4",
+      "suggestedNextQuestion": {
+        "slug": "minimum-number-of-arrows-to-burst-balloons",
+        "title": "Minimum Number of Arrows to Burst Balloons",
+        "difficulty": "Medium",
+        "pattern": "Greedy"
+      },
+      "mentalModel": "Like a cashier making change. Always pick the biggest coin that fits, hoping it leads to the fewest coins total."
     },
     "partition-labels": {
       "id": "partition-labels",
@@ -45987,7 +47095,14 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Greedy with Last Occurrence Tracking: Track last occurrences and extend partitions greedily.",
-      "videoId": "B7m8UmZE-vw"
+      "videoId": "B7m8UmZE-vw",
+      "suggestedNextQuestion": {
+        "slug": "task-scheduler",
+        "title": "Task Scheduler",
+        "difficulty": "Medium",
+        "pattern": "Greedy"
+      },
+      "mentalModel": "Like a cashier making change. Always pick the biggest coin that fits, hoping it leads to the fewest coins total."
     },
     "valid-parenthesis-string": {
       "id": "valid-parenthesis-string",
@@ -46104,7 +47219,14 @@
         "🔍 Handle edge cases carefully"
       ],
       "approach": "Greedy with Range Tracking: Track possible open parenthesis counts with min/max bounds.",
-      "videoId": "QhPdNS143Qg"
+      "videoId": "QhPdNS143Qg",
+      "suggestedNextQuestion": {
+        "slug": "candy",
+        "title": "Candy",
+        "difficulty": "Hard",
+        "pattern": "Greedy"
+      },
+      "mentalModel": "Like a cashier making change. Always pick the biggest coin that fits, hoping it leads to the fewest coins total."
     },
     "permutation-in-string": {
       "id": "permutation-in-string",
@@ -46220,7 +47342,14 @@
         "🔍 Track window state efficiently"
       ],
       "approach": "Sliding Window: Use sliding window with character frequency matching.",
-      "videoId": "UbyhOgBN834"
+      "videoId": "UbyhOgBN834",
+      "suggestedNextQuestion": {
+        "slug": "minimum-window-substring",
+        "title": "Minimum Window Substring",
+        "difficulty": "Hard",
+        "pattern": "Sliding Window"
+      },
+      "mentalModel": "Imagine a caterpillar crawling along a branch. It extends its head (right pointer) to eat leaves (add elements), and pulls its tail (left pointer) to digest (remove elements)."
     }
   }
 }
