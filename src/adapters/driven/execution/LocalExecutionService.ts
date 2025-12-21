@@ -1,37 +1,48 @@
-import { spawn } from 'child_process';
-import path from 'path';
 import { ExecutionResult, ExecutionService } from '../../../domain/ports/ExecutionService';
-
-import fs from 'fs';
 
 import { JavascriptRunner } from './runners/JavascriptRunner';
 import { PythonRunner } from './runners/PythonRunner';
-import { JavaRunner } from './runners/JavaRunner';
-import { GoRunner } from './runners/GoRunner';
-import { RustRunner } from './runners/RustRunner';
-import { CppRunner } from './runners/CppRunner';
+
+// Feature flag: Only enable safe runners in production (Vercel)
+const ENABLE_EXPERIMENTAL_LANGUAGES = process.env.ENABLE_EXPERIMENTAL_LANGUAGES === 'true';
 
 export class LocalExecutionService implements ExecutionService {
-    private runners: Record<string, any> = {
-        'python': new PythonRunner(),
-        'javascript': new JavascriptRunner(),
-        'typescript': new JavascriptRunner(), // Reuse JS runner for now
-        'java': new JavaRunner(),
-        'go': new GoRunner(),
-        'golang': new GoRunner(),
-        'rust': new RustRunner(),
-        'rs': new RustRunner(),
-        'cpp': new CppRunner(),
-        'c++': new CppRunner(),
-        'c': new CppRunner(), // For now treat C as C++ (g++ compiles c fine mostly)
-    };
+    private runners: Record<string, any>;
+
+    constructor() {
+        // Always available: Python and JavaScript
+        this.runners = {
+            'python': new PythonRunner(),
+            'javascript': new JavascriptRunner(),
+            'typescript': new JavascriptRunner(),
+        };
+
+        // Experimental runners (only if flag is enabled)
+        if (ENABLE_EXPERIMENTAL_LANGUAGES) {
+            console.log('[LocalExecutionService] Loading experimental language runners...');
+            // Dynamic imports to avoid loading binaries on Vercel
+            const { JavaRunner } = require('./runners/JavaRunner');
+            const { GoRunner } = require('./runners/GoRunner');
+            const { RustRunner } = require('./runners/RustRunner');
+            const { CppRunner } = require('./runners/CppRunner');
+
+            this.runners['java'] = new JavaRunner();
+            this.runners['go'] = new GoRunner();
+            this.runners['golang'] = new GoRunner();
+            this.runners['rust'] = new RustRunner();
+            this.runners['rs'] = new RustRunner();
+            this.runners['cpp'] = new CppRunner();
+            this.runners['c++'] = new CppRunner();
+            this.runners['c'] = new CppRunner();
+        }
+    }
 
     async execute(code: string, testCases: any[], language: string = 'python'): Promise<ExecutionResult> {
         const runner = this.runners[language.toLowerCase()];
         if (!runner) {
             return {
                 success: false,
-                error: `Language '${language}' not supported yet. Supported: ${Object.keys(this.runners).join(', ')}`
+                error: `Language '${language}' not supported. Supported: ${Object.keys(this.runners).join(', ')}`
             };
         }
         return runner.execute(code, testCases);

@@ -6,11 +6,11 @@ import { ExecutionResult } from '../../../../domain/ports/ExecutionService';
 export class JavascriptRunner {
     async execute(code: string, testCases: any[]): Promise<ExecutionResult> {
         return new Promise((resolve) => {
-            const runnerScript = path.join(process.cwd(), 'api', 'runners', 'node_runner.js');
+            const runnerScript = path.join(process.cwd(), 'api', '_runners', 'node_runner.js');
 
             if (!fs.existsSync(runnerScript)) {
                 // Fallback for Vercel or different CWD
-                const fallback = path.join(process.cwd(), 'runners', 'node_runner.js');
+                const fallback = path.join(process.cwd(), '_runners', 'node_runner.js');
                 if (!fs.existsSync(fallback)) {
                     console.error("Critical: node_runner.js not found in:", runnerScript, fallback);
                     resolve({ success: false, error: 'Execution bridge not found' });
