@@ -7,7 +7,10 @@
  * - Async job processing with status tracking
  */
 
-import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
+
+// Use Node.js built-in crypto.randomUUID() instead of uuid package (ESM-only)
+const uuidv4 = (): string => crypto.randomUUID();
 
 export type JobType = 'execute' | 'ai_tutor' | 'ai_hint' | 'ai_explain' | 'generate';
 export type JobStatus = 'pending' | 'processing' | 'completed' | 'failed';
