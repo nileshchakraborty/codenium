@@ -8,12 +8,17 @@ export class FileProblemRepository implements ProblemRepository {
     private solutionsFile: string;
 
     constructor() {
-        // Try to find data relative to current file first (prod), then fallback to root (dev)
-        const prodPath = path.join(__dirname, '..', '..', '..', '..', 'api', 'data');
-        const devPath = path.join(process.cwd(), 'api', 'data');
+        // Robust path finding for Vercel / Local
+        const candidates = [
+            path.join(process.cwd(), 'api', 'data'),              // Local / Vercel Root
+            path.join(__dirname, '..', '..', '..', '..', 'api', 'data'), // Original Prod relative
+            path.join(__dirname, 'api', 'data'),                  // Possible Vercel structure
+            path.join('/var/task/api/data'),                       // AWS Lambda / Vercel absolute
+            path.join(process.cwd(), 'data')                       // Fallback
+        ];
 
-        const DATA_DIR = fs.existsSync(prodPath) ? prodPath : devPath;
-        console.log(`FileProblemRepository initialized with DATA_DIR: ${DATA_DIR}`);
+        const DATA_DIR = candidates.find(p => fs.existsSync(p)) || candidates[0];
+        console.log(`FileProblemRepository initialized with DATA_DIR: ${DATA_DIR} (Exists: ${fs.existsSync(DATA_DIR)})`);
 
         this.problemsFile = path.join(DATA_DIR, 'problems.json');
         this.solutionsFile = path.join(DATA_DIR, 'solutions.json');

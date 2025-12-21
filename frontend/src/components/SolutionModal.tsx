@@ -763,10 +763,14 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                         >
                             <option value="python">Python</option>
                             <option value="javascript">JavaScript</option>
-                            <option value="java">Java</option>
-                            <option value="go">Go</option>
-                            <option value="rust">Rust</option>
-                            <option value="cpp">C++</option>
+                            {import.meta.env.VITE_ENABLE_EXPERIMENTAL_LANGUAGES === 'true' && (
+                                <>
+                                    <option value="java">Java</option>
+                                    <option value="go">Go</option>
+                                    <option value="rust">Rust</option>
+                                    <option value="cpp">C++</option>
+                                </>
+                            )}
                         </select>
                         <span>{language === 'python' ? 'main.py' : language === 'javascript' ? 'main.js' : language === 'java' ? 'Solution.java' : language === 'go' ? 'main.go' : language === 'rust' ? 'solution.rs' : 'solution.cpp'}</span>
                         <div id="vim-status-bar" className="flex-1 min-w-[200px]"></div>
