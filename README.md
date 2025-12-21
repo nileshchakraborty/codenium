@@ -2,8 +2,8 @@
 
 A next-generation platform for visualizing algorithms and data structures. Built with high-performance visualization engines and a vast library of interactive content.
 
-![Walkthrough Demo](.agent/walkthrough_final.webp)
-*Interactive Walkthrough: Unified Filter System & Responsive Design*
+![Desktop View](.agent/desktop_light.png)
+*Interactive Problem Dashboard with Unified Filter System*
 
 ## 🌟 Key Features
 
@@ -47,22 +47,22 @@ The system follows a Hexagonal Architecture pattern, separating the core domain 
 
 ```mermaid
 graph TD
-    subgraph Frontend ["React PWA (Port 3000)"]
+    subgraph Frontend ["React PWA Port 3000"]
         User[User] -->|Interact| View[UI Components]
-        View -->|Query| ViewModel[ViewModels (MVVM)]
+        View -->|Query| ViewModel["ViewModels MVVM"]
         
         ViewModel -->|Fast Search| Trie[Local Search Engine]
         ViewModel -->|Data fetch| APIClient[API Client]
     end
 
-    subgraph Backend ["Node.js Express (Port 3001)"]
+    subgraph Backend ["Node.js Express Port 3001"]
         APIClient -->|REST| Controller[API Controllers]
         
         Controller -->|Use Case| Service[Problem Service]
         
         Service -->|Load| AdapterFS[File Repository Adapter]
         Service -->|Execute| AdapterExec[Execution Service]
-        Service -->|Inference| AdapterAI[AI Service (OpenAI/Ollama)]
+        Service -->|Inference| AdapterAI["AI Service OpenAI/Ollama"]
         
         AdapterFS --> JSON[(JSON Data Store)]
         AdapterExec --> Python[Python Runtime]
