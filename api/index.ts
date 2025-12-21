@@ -4,9 +4,50 @@ import path from 'path';
 import dotenv from 'dotenv';
 import fs from 'fs';
 
+// ============================================
+// VERCEL DEBUG: Startup Logging
+// Set DEBUG_LOGS=false to disable verbose logging
+// ============================================
+const DEBUG_LOGS = process.env.DEBUG_LOGS !== 'false'; // Default: true
+
+const log = (...args: any[]) => {
+    if (DEBUG_LOGS) console.log(...args);
+};
+
+log('============================================');
+log('[STARTUP] API Server Initializing...');
+log('[STARTUP] Node Version:', process.version);
+log('[STARTUP] CWD:', process.cwd());
+log('[STARTUP] __dirname:', __dirname);
+log('[STARTUP] NODE_ENV:', process.env.NODE_ENV);
+log('============================================');
+
+// Check critical paths
+const criticalPaths = [
+    { name: 'api/data', path: path.join(process.cwd(), 'api', 'data') },
+    { name: 'api/_lib', path: path.join(process.cwd(), 'api', '_lib') },
+    { name: 'src', path: path.join(process.cwd(), 'src') },
+    { name: '/var/task/api/data', path: '/var/task/api/data' },
+];
+log('[STARTUP] Checking critical paths:');
+criticalPaths.forEach(({ name, path: p }) => {
+    log(`  ${name}: ${fs.existsSync(p) ? '✅ EXISTS' : '❌ MISSING'}`);
+});
+
+// List contents of CWD
+try {
+    log('[STARTUP] CWD Contents:', fs.readdirSync(process.cwd()).join(', '));
+} catch (e) {
+    log('[STARTUP] Failed to read CWD:', e);
+}
+
 // --- MIDDLEWARE & SERVICES ---
+log('[STARTUP] Loading middleware...');
 import { generalLimiter, aiLimiter } from '../src/infrastructure/middleware/RateLimiter';
 import { cacheService } from '../src/infrastructure/cache/CacheService';
+import { jobQueue, type JobType, type Job } from '../src/infrastructure/queue/JobQueue';
+import { progressStore, type UserProgress } from '../src/infrastructure/store/ProgressStore';
+log('[STARTUP] Middleware loaded ✅');
 
 // Robust Env Loading
 const envPaths = [
@@ -19,29 +60,33 @@ const envPaths = [
 let envLoaded = false;
 for (const p of envPaths) {
     if (fs.existsSync(p)) {
-        console.log("Loading .env from:", p);
+        log("[STARTUP] Loading .env from:", p);
         dotenv.config({ path: p });
         envLoaded = true;
         break;
     }
 }
-if (!envLoaded) console.warn("WARNING: No .env file found!");
-console.log("OPENAI_API_KEY present:", !!process.env.OPENAI_API_KEY);
-
-
+if (!envLoaded) log("[STARTUP] WARNING: No .env file found!");
+log("[STARTUP] OPENAI_API_KEY present:", !!process.env.OPENAI_API_KEY);
 
 // Domain
+log('[STARTUP] Loading domain...');
 import { ToolRegistry } from '../src/domain/mcp/ToolRegistry';
+log('[STARTUP] Domain loaded ✅');
 
 // Adapters
+log('[STARTUP] Loading adapters...');
 import { FileProblemRepository } from '../src/adapters/driven/fs/FileProblemRepository';
 import { LocalExecutionService } from '../src/adapters/driven/execution/LocalExecutionService';
 import { OllamaService } from '../src/adapters/driven/ollama/OllamaService';
 import { OpenAIService } from '../src/adapters/driven/openai/OpenAIService';
 import { MCPTools } from '../src/adapters/driven/mcp/Tools';
+log('[STARTUP] Adapters loaded ✅');
 
 // Application
+log('[STARTUP] Loading application services...');
 import { ProblemService } from '../src/application/ProblemService';
+log('[STARTUP] Application services loaded ✅');
 
 // Google Auth
 import { OAuth2Client } from 'google-auth-library';
@@ -176,8 +221,8 @@ app.get('/api/solutions/:slug', async (req, res) => {
 
         if (cachedSolution) {
             console.log(`Cache Hit: Solution ${slug}`);
-            res.json(cachedSolution);
-            return;
+            // res.json(cachedSolution);
+            // return; // Force fresh load for now
         }
 
         const solution = await problemService.getSolution(slug);
@@ -195,8 +240,8 @@ app.get('/api/solutions/:slug', async (req, res) => {
 
 app.post('/api/execute', requireAuth, async (req, res) => {
     try {
-        const { code, testCases } = req.body;
-        const result = await problemService.executeCode(code, testCases);
+        const { code, testCases, language } = req.body;
+        const result = await problemService.executeCode(code, testCases, language);
         res.json(result);
     } catch (e: any) {
         console.error("Execution Error:", e);
@@ -241,6 +286,189 @@ app.post('/api/generate', requireAuth, async (req, res) => {
         res.json(result);
     } catch (e: any) {
         console.error("Generation Error:", e);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// --- JOB QUEUE ENDPOINTS ---
+
+// Register job processors
+jobQueue.registerProcessor('execute', async (job: Job) => {
+    const { code, testCases } = job.payload as { code: string; testCases?: any[] };
+    return await problemService.executeCode(code, testCases || []);
+});
+
+jobQueue.registerProcessor('ai_tutor', async (job: Job) => {
+    const { slug, message, history, code } = job.payload as {
+        slug: string;
+        message: string;
+        history?: any[];
+        code?: string
+    };
+    return await problemService.chatWithTutor(slug, history || [], message, code);
+});
+
+jobQueue.registerProcessor('ai_hint', async (job: Job) => {
+    const { problem, code } = job.payload as { problem: string; code?: string };
+    return await problemService.getAIHint(problem, code || '');
+});
+
+jobQueue.registerProcessor('ai_explain', async (job: Job) => {
+    const { code, title } = job.payload as { code?: string; title?: string };
+    return await problemService.getAIExplanation(code || '', title || 'Unknown');
+});
+
+jobQueue.registerProcessor('generate', async (job: Job) => {
+    const { slug } = job.payload as { slug: string };
+    return await problemService.generateSolution(slug);
+});
+
+// Submit a new job
+app.post('/api/jobs/submit', requireAuth, async (req, res) => {
+    try {
+        const { type, payload } = req.body as { type: JobType; payload: Record<string, unknown> };
+        const user = (req as any).user;
+
+        if (!type || !payload) {
+            return res.status(400).json({ error: 'Missing type or payload' });
+        }
+
+        const validTypes: JobType[] = ['execute', 'ai_tutor', 'ai_hint', 'ai_explain', 'generate'];
+        if (!validTypes.includes(type)) {
+            return res.status(400).json({ error: `Invalid job type: ${type}` });
+        }
+
+        const jobId = await jobQueue.submit({
+            userId: user.sub,
+            type,
+            payload,
+        });
+
+        res.json({ jobId, status: 'pending' });
+    } catch (e: any) {
+        console.error("Job submission error:", e);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Get job status/result
+app.get('/api/jobs/:jobId', requireAuth, async (req, res) => {
+    try {
+        const { jobId } = req.params;
+        const user = (req as any).user;
+
+        const job = jobQueue.getJob(jobId, user.sub);
+
+        if (!job) {
+            return res.status(404).json({ error: 'Job not found' });
+        }
+
+        res.json(job);
+    } catch (e: any) {
+        if (e.message === 'ACCESS_DENIED') {
+            return res.status(403).json({ error: 'Access denied' });
+        }
+        console.error("Job fetch error:", e);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// List user's jobs
+app.get('/api/jobs', requireAuth, async (req, res) => {
+    try {
+        const user = (req as any).user;
+        const limit = parseInt(req.query.limit as string) || 10;
+
+        const jobs = jobQueue.getUserJobs(user.sub, limit);
+        res.json({ jobs });
+    } catch (e: any) {
+        console.error("Jobs list error:", e);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Queue stats (for debugging)
+app.get('/api/jobs/stats', requireAuth, async (req, res) => {
+    try {
+        const stats = jobQueue.getStats();
+        res.json(stats);
+    } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// --- PROGRESS API ENDPOINTS ---
+
+// Get user's progress from server
+app.get('/api/progress', requireAuth, async (req, res) => {
+    try {
+        const user = (req as any).user;
+        const progress = progressStore.get(user.sub);
+
+        if (!progress) {
+            return res.json({
+                userId: user.sub,
+                lastSyncedAt: 0,
+                solvedProblems: [],
+                drafts: {},
+            });
+        }
+
+        res.json(progress);
+    } catch (e: any) {
+        console.error("Progress fetch error:", e);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Push/save user's progress to server
+app.post('/api/progress', requireAuth, async (req, res) => {
+    try {
+        const user = (req as any).user;
+        const clientProgress = req.body as UserProgress;
+
+        if (!clientProgress) {
+            return res.status(400).json({ error: 'Missing progress data' });
+        }
+
+        progressStore.set(user.sub, clientProgress);
+
+        res.json({
+            success: true,
+            lastSyncedAt: Date.now()
+        });
+    } catch (e: any) {
+        console.error("Progress save error:", e);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Sync progress (bidirectional merge)
+app.post('/api/progress/sync', requireAuth, async (req, res) => {
+    try {
+        const user = (req as any).user;
+        const clientProgress = req.body as UserProgress;
+
+        if (!clientProgress) {
+            return res.status(400).json({ error: 'Missing progress data' });
+        }
+
+        // Merge and return combined progress
+        const mergedProgress = progressStore.merge(user.sub, clientProgress);
+
+        res.json(mergedProgress);
+    } catch (e: any) {
+        console.error("Progress sync error:", e);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Get progress stats (admin/debug)
+app.get('/api/progress/stats', async (req, res) => {
+    try {
+        const stats = progressStore.getStats();
+        res.json(stats);
+    } catch (e: any) {
         res.status(500).json({ error: e.message });
     }
 });

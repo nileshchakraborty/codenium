@@ -4,24 +4,61 @@ import { Problem, Solution } from '../../../domain/entities/Problem';
 import { ProblemRepository } from '../../../domain/ports/ProblemRepository';
 
 export class FileProblemRepository implements ProblemRepository {
-    private problemsFile: string;
-    private solutionsFile: string;
+    private _problemsFile: string | null = null;
+    private _solutionsFile: string | null = null;
 
-    constructor() {
-        // Try to find data relative to current file first (prod), then fallback to root (dev)
-        const prodPath = path.join(__dirname, '..', '..', '..', '..', 'api', 'data');
-        const devPath = path.join(process.cwd(), 'api', 'data');
+    private get problemsFile(): string {
+        if (!this._problemsFile) {
+            this._problemsFile = this.findFile('problems.json');
+            console.log(`[FileProblemRepository] Resolved problems.json: ${this._problemsFile}`);
+        }
+        return this._problemsFile;
+    }
 
-        const DATA_DIR = fs.existsSync(prodPath) ? prodPath : devPath;
-        console.log(`FileProblemRepository initialized with DATA_DIR: ${DATA_DIR}`);
+    private get solutionsFile(): string {
+        if (!this._solutionsFile) {
+            this._solutionsFile = this.findFile('solutions.json');
+            console.log(`[FileProblemRepository] Resolved solutions.json: ${this._solutionsFile}`);
+        }
+        return this._solutionsFile;
+    }
 
-        this.problemsFile = path.join(DATA_DIR, 'problems.json');
-        this.solutionsFile = path.join(DATA_DIR, 'solutions.json');
+    private findFile(filename: string): string {
+        const candidates = [
+            path.join(process.cwd(), 'api', 'data', filename),
+            path.join(process.cwd(), 'data', filename),
+            path.join(__dirname, '..', '..', '..', '..', 'api', 'data', filename),
+            path.join(__dirname, 'data', filename),
+            path.join('/var/task/api/data', filename),
+            path.join('/var/task', filename)
+        ];
+
+        for (const p of candidates) {
+            try {
+                if (fs.existsSync(p)) {
+                    console.log(`[FileProblemRepository] Found ${filename} at ${p}`);
+                    return p;
+                }
+            } catch (e) {
+                // Ignore errors during path checking
+            }
+        }
+
+        console.error(`[FileProblemRepository] Could not find ${filename} in any candidate:`, candidates);
+        return candidates[0]; // Return first candidate as default
     }
 
     async getAllProblems(): Promise<any> {
-        if (!fs.existsSync(this.problemsFile)) return { categories: [] };
-        return JSON.parse(fs.readFileSync(this.problemsFile, 'utf-8'));
+        try {
+            if (!fs.existsSync(this.problemsFile)) {
+                console.error(`[FileProblemRepository] problemsFile not found: ${this.problemsFile}`);
+                return { categories: [] };
+            }
+            return JSON.parse(fs.readFileSync(this.problemsFile, 'utf-8'));
+        } catch (e) {
+            console.error(`[FileProblemRepository] Error reading problems:`, e);
+            return { categories: [] };
+        }
     }
 
     async getProblemBySlug(slug: string): Promise<Problem | null> {
@@ -36,9 +73,14 @@ export class FileProblemRepository implements ProblemRepository {
     }
 
     async getSolution(slug: string): Promise<Solution | null> {
-        if (!fs.existsSync(this.solutionsFile)) return null;
-        const data = JSON.parse(fs.readFileSync(this.solutionsFile, 'utf-8'));
-        return data.solutions?.[slug] || null;
+        try {
+            if (!fs.existsSync(this.solutionsFile)) return null;
+            const data = JSON.parse(fs.readFileSync(this.solutionsFile, 'utf-8'));
+            return data.solutions?.[slug] || null;
+        } catch (e) {
+            console.error(`[FileProblemRepository] Error reading solution:`, e);
+            return null;
+        }
     }
 
     async saveSolution(slug: string, solution: Solution): Promise<void> {
