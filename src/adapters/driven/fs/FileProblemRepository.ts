@@ -8,20 +8,59 @@ export class FileProblemRepository implements ProblemRepository {
     private solutionsFile: string;
 
     constructor() {
-        // Robust path finding for Vercel / Local
+        this.problemsFile = this.findFile('problems.json');
+        this.solutionsFile = this.findFile('solutions.json');
+
+        console.log(`[FileProblemRepository] resolved:
+            problems: ${this.problemsFile}
+            solutions: ${this.solutionsFile}
+        `);
+    }
+
+    private findFile(filename: string): string {
+        // 1. Check known candidates first (fast path)
         const candidates = [
-            path.join(process.cwd(), 'api', 'data'),              // Local / Vercel Root
-            path.join(__dirname, '..', '..', '..', '..', 'api', 'data'), // Original Prod relative
-            path.join(__dirname, 'api', 'data'),                  // Possible Vercel structure
-            path.join('/var/task/api/data'),                       // AWS Lambda / Vercel absolute
-            path.join(process.cwd(), 'data')                       // Fallback
+            path.join(process.cwd(), 'api', 'data', filename),
+            path.join(process.cwd(), 'data', filename),
+            path.join(__dirname, 'api', 'data', filename),
+            path.join(__dirname, '..', 'data', filename),
+            path.join('/var/task/api/data', filename)
         ];
 
-        const DATA_DIR = candidates.find(p => fs.existsSync(p)) || candidates[0];
-        console.log(`FileProblemRepository initialized with DATA_DIR: ${DATA_DIR} (Exists: ${fs.existsSync(DATA_DIR)})`);
+        for (const p of candidates) {
+            if (fs.existsSync(p)) return p;
+        }
 
-        this.problemsFile = path.join(DATA_DIR, 'problems.json');
-        this.solutionsFile = path.join(DATA_DIR, 'solutions.json');
+        // 2. Fallback: Recursive search in CWD (slow but robust for serverless init)
+        try {
+            console.log(`[FileProblemRepository] Valid candidates failed for ${filename}, starting recursive search in ${process.cwd()}...`);
+            const found = this.searchDir(process.cwd(), filename, 0);
+            if (found) return found;
+        } catch (e) {
+            console.error("[FileProblemRepository] Recursive search failed:", e);
+        }
+
+        // Return a default path even if missing (will fail gracefully in getAllProblems)
+        return path.join(process.cwd(), 'api', 'data', filename);
+    }
+
+    private searchDir(dir: string, filename: string, depth: number): string | null {
+        if (depth > 3) return null; // Limit depth
+        try {
+            const files = fs.readdirSync(dir);
+            for (const file of files) {
+                const fullPath = path.join(dir, file);
+                const stat = fs.statSync(fullPath);
+                if (stat.isDirectory()) {
+                    if (file === 'node_modules' || file === '.git') continue;
+                    const res = this.searchDir(fullPath, filename, depth + 1);
+                    if (res) return res;
+                } else if (file === filename) {
+                    return fullPath;
+                }
+            }
+        } catch (e) { }
+        return null;
     }
 
     async getAllProblems(): Promise<any> {
