@@ -76,7 +76,15 @@ export class FileProblemRepository implements ProblemRepository {
         try {
             if (!fs.existsSync(this.solutionsFile)) return null;
             const data = JSON.parse(fs.readFileSync(this.solutionsFile, 'utf-8'));
-            return data.solutions?.[slug] || null;
+            // Handle both nested { solutions: {...} } and flat { slug: {...} } formats
+            if (data.solutions && data.solutions[slug]) {
+                return data.solutions[slug];
+            }
+            // Flat format: key is directly slug
+            if (data[slug]) {
+                return data[slug];
+            }
+            return null;
         } catch (e) {
             console.error(`[FileProblemRepository] Error reading solution:`, e);
             return null;

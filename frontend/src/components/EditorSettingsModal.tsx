@@ -82,7 +82,7 @@ export const EditorSettingsModal: React.FC<EditorSettingsModalProps> = ({ isOpen
                             ].map(theme => (
                                 <button
                                     key={theme.id}
-                                    onClick={() => onUpdate('theme', theme.id as any)}
+                                    onClick={() => onUpdate('theme', theme.id as EditorSettings['theme'])}
                                     className={`px-2 py-2 rounded-lg text-xs font-medium transition-all text-center border ${settings.theme === theme.id
                                         ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400'
                                         : 'border-transparent bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'

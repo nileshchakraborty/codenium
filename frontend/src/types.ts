@@ -60,6 +60,9 @@ export interface Solution {
     intuition: string[];
     keyInsight: string;
     mentalModel?: string;
+    commonMistakes?: string[];
+    interviewTip?: string;
+    walkthrough?: string[];
     code: string;
     initialCode?: string;
     bruteForceCode?: string;
@@ -107,6 +110,13 @@ export interface Solution {
         difficulty: string;
         pattern: string;
     };
+    implementations?: {
+        [language: string]: {
+            code?: string;
+            initialCode?: string;
+        };
+    };
+    approach?: string; // New field
 }
 
 export interface TestCaseResult {
@@ -121,4 +131,5 @@ export interface RunResponse {
     success: boolean;
     results?: TestCaseResult[];
     error?: string;
+    logs?: string;
 }

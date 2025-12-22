@@ -19,9 +19,9 @@ export class ProblemService {
         return this.problemRepo.getSolution(slug);
     }
 
-    async executeCode(code: string, testCases: any[], language?: string) {
+    async executeCode(code: string, testCases: any[], language?: string, referenceCode?: string, constraints?: string[]) {
         // Can be routed via ToolRegistry or direct. Direct for now as it's a primary usecase.
-        return this.executionService.execute(code, testCases, language);
+        return this.executionService.execute(code, testCases, language, referenceCode, constraints);
     }
 
     async getAIHint(problem: string, code: string) {

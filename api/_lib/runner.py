@@ -12,13 +12,16 @@ def execute_code(code, test_cases):
     """
     # Runner script template
     runner_code = """
+
 import json
 import inspect
 import sys
 import re
 import ast
 
-# ... [Same logic as before, but cleaner] ...
+# --- Security & Limits ---
+sys.setrecursionlimit(2000)
+
 # --- Data Structures & Helpers ---
 class ListNode:
     def __init__(self, val=0, next=None, random=None):
@@ -227,13 +230,15 @@ def run_tests_internal():
                 exec(sanitized_input, globals(), local_scope)
             
             actual_val = None
+            
+            # Helper to check if inputs are Design-style commands
+            cmd_var = next((k for k in local_scope if 'command' in k or 'method' in k or 'op' in k), None)
+            arg_var = next((k for k in local_scope if 'arg' in k or 'input' in k or 'val' in k), None)
+            is_design_input = (cmd_var and arg_var)
 
             if is_class_solution:
-                # Class Logic
-                cmd_var = next((k for k in local_scope if 'command' in k or 'method' in k or 'op' in k), None)
-                arg_var = next((k for k in local_scope if 'arg' in k or 'input' in k or 'val' in k), None)
-                
-                if cmd_var and arg_var:
+                if is_design_input:
+                    # Design Problem (e.g., Tweeter, MinStack, Trie)
                     commands = local_scope[cmd_var]
                     arguments = local_scope[arg_var]
                     
@@ -252,12 +257,77 @@ def run_tests_internal():
                             res_list.append(None)
                     actual_val = res_list
                 
-                elif full_script_mode:
-                    # Fallback: Imperative Script Result
-                    actual_val = last_expr_val
-
                 else:
-                    raise Exception("Class solution requires 'commands' and 'args' logic in test case.")
+                    # Standard Algo Problem wrapped in Class (e.g. class Solution: def solve(...))
+                    # 1. Instantiate (assume no-arg constructor for standard algos)
+                    instance = solution_func()
+                    
+                    # 2. Find the method to call
+                    # Heuristic: First public method that isn't __init__
+                    methods = [func for func in dir(instance) if callable(getattr(instance, func)) and not func.startswith("__")]
+                    if not methods:
+                        raise Exception("No public methods found in class Solution")
+                    
+                    target_method = getattr(instance, methods[0]) # Use the first one
+                    
+                    # 3. Resolve Arguments (Identical logic to function-based)
+                    sig = inspect.signature(target_method)
+                    args = []
+                    aliases = {
+                        'node': ['adjList', 'val'], 'target': ['k'],
+                        'arr': ['nums', 'vec'], 'nums': ['arr'], 'root': ['p', 'q']
+                    }
+                    
+                    for param in sig.parameters:
+                        val = None
+                        found = False
+                        if param in local_scope:
+                            val = local_scope[param]
+                            found = True
+                        elif param in aliases:
+                            for alias in aliases[param]:
+                                if alias in local_scope:
+                                    val = local_scope[alias]
+                                    found = True
+                                    break
+                        if found:
+                            # Heuristic conversions
+                            if isinstance(val, list) and param in ['l1', 'l2', 'head', 'list1', 'list2', 'headA', 'headB']:
+                                pos = local_scope.get('pos', -1)
+                                val = list_to_ll(val, pos)
+                            elif isinstance(val, list) and param in ['root', 'root1', 'root2', 'subRoot']:
+                                    val = list_to_tree(val)
+                            elif isinstance(val, list) and param in ['node'] and all(isinstance(x, list) for x in val):
+                                    val = adj_to_graph(val)
+                            elif param in ['p', 'q']:
+                                if isinstance(val, list):
+                                    val = list_to_tree(val)
+                                elif isinstance(val, int):
+                                    root_tree = None
+                                    for a in args:
+                                        if isinstance(a, TreeNode):
+                                            root_tree = a
+                                            break
+                                    if root_tree:
+                                        def find_node(node, target):
+                                            if not node: return None
+                                            if node.val == target: return node
+                                            left = find_node(node.left, target)
+                                            if left: return left
+                                            return find_node(node.right, target)
+                                        val = find_node(root_tree, val)
+                            args.append(val)
+                    
+                    # 4. Invoke
+                    result = target_method(*args)
+                    actual_val = result # Conversion happens later
+                    
+                    # Re-assign solution_func to the method for conversion logic usage
+                    # (This is a bit hacky but reuses existing conversion logic below)
+                    # We can't easily re-assign, so we just use target_method.__name__
+                    
+                    # TODO ensure convert_val uses target_method name
+                    solution_func_name = target_method.__name__
 
             else:
                 # Standard Function Execution
@@ -330,47 +400,59 @@ def run_tests_internal():
                      pass
 
                 result = solution_func(*args)
+                solution_func_name = solution_func.__name__
                 
-                # Helper to convert outputs
-                def convert_val(val, func_name=''):
-                    if isinstance(val, ListNode): return ll_to_list(val)
-                    if isinstance(val, TreeNode):
-                        # For LCA functions, return just the node value, not tree serialization
-                        if 'lowestCommonAncestor' in func_name:
-                            return val.val
-                        return tree_to_list(val)
-                    if hasattr(val, 'val') and hasattr(val, 'neighbors'): return graph_to_adj(val)
-                    # Handle Node class with random pointer (copy-list-with-random-pointer)
-                    if hasattr(val, 'val') and hasattr(val, 'next') and hasattr(val, 'random'):
-                        return ll_to_list(val)
-                    # Handle generic Node class
-                    if type(val).__name__ == 'Node' and hasattr(val, 'val'):
-                        if hasattr(val, 'random'): return ll_to_list(val)
-                        if hasattr(val, 'neighbors'): return graph_to_adj(val)
-                    return val
+            # --- Shared Output Conversion ---
+            def convert_val(val, func_name=''):
+                if isinstance(val, ListNode): return ll_to_list(val)
+                if isinstance(val, TreeNode):
+                    # For LCA functions, return just the node value, not tree serialization
+                    if 'lowestCommonAncestor' in func_name:
+                        return val.val
+                    return tree_to_list(val)
+                if hasattr(val, 'val') and hasattr(val, 'neighbors'): return graph_to_adj(val)
+                # Handle Node class with random pointer (copy-list-with-random-pointer)
+                if hasattr(val, 'val') and hasattr(val, 'next') and hasattr(val, 'random'):
+                    return ll_to_list(val)
+                # Handle generic Node class
+                if type(val).__name__ == 'Node' and hasattr(val, 'val'):
+                    if hasattr(val, 'random'): return ll_to_list(val)
+                    if hasattr(val, 'neighbors'): return graph_to_adj(val)
+                return val
 
-                actual_val = convert_val(result, solution_func.__name__)
-                
-                # Support In-Place: Only for known in-place modification functions
-                # Not for functions that return new heads/roots
-                in_place_funcs = ['sortColors', 'rotate', 'setZeroes', 'moveZeroes', 
-                                  'reverseString', 'wallsAndGates', 'gameOfLife']
-                if actual_val is None and result is None and args:
-                    if solution_func.__name__ in in_place_funcs:
-                        candidates = [convert_val(a) for a in args]
-                        if candidates and isinstance(candidates[0], list):
-                            actual_val = candidates[0]
-                    else:
-                        # For LinkedList/Tree functions that return None = empty result
-                        actual_val = []
-                
-                if solution_func.__name__ == 'groupAnagrams' and isinstance(actual_val, list):
-                    try:
-                        actual_val = sorted([sorted(x) for x in actual_val])
-                    except: pass
+            actual_val = convert_val(result, locals().get('solution_func_name', '')) # Use resolved name
             
-            # Eval expected
-            expected = eval(test['output'], globals(), {'null': None, 'true': True, 'false': False})
+            # Support In-Place: Only for known in-place modification functions
+            # Not for functions that return new heads/roots
+            in_place_funcs = ['sortColors', 'rotate', 'setZeroes', 'moveZeroes', 
+                              'reverseString', 'wallsAndGates', 'gameOfLife']
+            
+            # TODO: If Class, using in-place args is tricky unless we tracked the args
+            # For now, In-place on Class methods isn't explicitly requested but should largely work if args refer to same objs
+            
+            if actual_val is None and result is None and locals().get('args'): # Check if args exists in scope
+                if locals().get('solution_func_name', '') in in_place_funcs:
+                    candidates = [convert_val(a) for a in locals().get('args', [])]
+                    if candidates and isinstance(candidates[0], list):
+                        actual_val = candidates[0]
+                else:
+                    # For LinkedList/Tree functions that return None = empty result
+                    actual_val = []
+            
+            if locals().get('solution_func_name') == 'groupAnagrams' and isinstance(actual_val, list):
+                try:
+                    actual_val = sorted([sorted(x) for x in actual_val])
+                except: pass
+            
+            # Eval expected - handle empty/invalid output gracefully
+            expected_str = test.get('output', '').strip()
+            if not expected_str:
+                expected = None  # Empty output means we just run without comparison
+            else:
+                try:
+                    expected = eval(expected_str, globals(), {'null': None, 'true': True, 'false': False, 'True': True, 'False': False})
+                except:
+                    expected = expected_str  # Use as string if can't eval
             
             # Normalize list-of-lists for order-independent comparison (groupAnagrams, etc.)
             # Skip for [[val, rand_idx]] format (rand_idx can be None/int)
@@ -398,24 +480,30 @@ def run_tests_internal():
 
             # Compare
             passed = False
-            try:
-                # Float comparison logic
-                def is_float(x): return isinstance(x, (float, int)) and not isinstance(x, bool)
-                if is_float(actual_val) and is_float(expected):
-                    passed = abs(actual_val - expected) < 1e-5
-                else:
+            if expected is None:
+                # Custom test case with no expected output - just show result, mark as "ran"
+                passed = True  # No comparison, execution succeeded
+                expected_display = "(custom - no expected)"
+            else:
+                try:
+                    # Float comparison logic
+                    def is_float(x): return isinstance(x, (float, int)) and not isinstance(x, bool)
+                    if is_float(actual_val) and is_float(expected):
+                        passed = abs(actual_val - expected) < 1e-5
+                    else:
+                        passed = (actual_val == expected)
+                except:
                     passed = (actual_val == expected)
-            except:
-                passed = (actual_val == expected)
+                expected_display = str(expected)
                 
-            if not passed:
+            if not passed and expected is not None:
                 all_passed = False
                 
             results.append({
                 "case": i + 1,
                 "passed": passed,
                 "input": test['input'],
-                "expected": str(expected),
+                "expected": expected_display,
                 "actual": str(actual_val)
             })
             
@@ -430,6 +518,7 @@ def run_tests_internal():
             })
     
     print(json.dumps({"passed": all_passed, "results": results}))
+
 
 if __name__ == "__main__":
     try:

@@ -9,5 +9,5 @@ export interface ExecutionResult {
 }
 
 export interface ExecutionService {
-    execute(code: string, testCases: any[], language?: string): Promise<ExecutionResult>;
+    execute(code: string, testCases: any[], language?: string, referenceCode?: string, constraints?: string[]): Promise<ExecutionResult>;
 }

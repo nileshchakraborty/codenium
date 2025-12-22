@@ -91,6 +91,8 @@ export const PlaygroundAPI = {
         options?: {
             useJobQueue?: boolean;
             onStatusUpdate?: (status: { status: string }) => void;
+            referenceCode?: string; // Reference solution for computing expected output
+            constraints?: string[]; // Problem constraints for input validation
         }
     ): Promise<RunResponse> {
         // Default to sync execution (job queue doesn't work in serverless due to stateless instances)
@@ -105,6 +107,8 @@ export const PlaygroundAPI = {
                 slug,
                 testCases,
                 language,
+                referenceCode: options?.referenceCode,
+                constraints: options?.constraints,
             }, {
                 onStatusUpdate: options?.onStatusUpdate,
             });
@@ -116,6 +120,8 @@ export const PlaygroundAPI = {
             slug,
             testCases,
             language,
+            referenceCode: options?.referenceCode,
+            constraints: options?.constraints,
         });
         return response.data;
     },

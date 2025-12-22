@@ -2,7 +2,7 @@
   "categories": [
     {
       "name": "Array / String",
-      "icon": "\ud83d\udcdd",
+      "icon": "📝",
       "problems": [
         {
           "title": "Merge Sorted Array",
@@ -74,7 +74,7 @@
           "url": "https://leetcode.com/problems/majority-element/",
           "slug": "majority-element",
           "subTopic": "Array / String",
-          "description": "Given an array nums of size n, return the majority element. The majority element is the element that appears more than \u230an / 2\u230b times. You may assume that the majority element always exists in the array.",
+          "description": "Given an array nums of size n, return the majority element. The majority element is the element that appears more than ⌊n / 2⌋ times. You may assume that the majority element always exists in the array.",
           "pattern": "Boyer-Moore Voting",
           "has_solution": true,
           "algorithmHint": "Consider sorting, two pointers, or hash-based approaches.",
@@ -448,7 +448,7 @@
     },
     {
       "name": "Two Pointers",
-      "icon": "\ud83d\udc46",
+      "icon": "👆",
       "problems": [
         {
           "title": "Valid Palindrome",
@@ -585,7 +585,7 @@
     },
     {
       "name": "Sliding Window",
-      "icon": "\ud83e\ude9f",
+      "icon": "🪟",
       "problems": [
         {
           "title": "Minimum Size Subarray Sum",
@@ -695,7 +695,7 @@
     },
     {
       "name": "Matrix",
-      "icon": "\ud83d\udd22",
+      "icon": "🔢",
       "problems": [
         {
           "title": "Valid Sudoku",
@@ -729,7 +729,7 @@
           "url": "https://leetcode.com/problems/rotate-image/",
           "slug": "rotate-image",
           "subTopic": "Matrix",
-          "description": "Transpose matrix, then reverse each row.\n\nRotate matrix 90\u00b0 clockwise in-place.\nTranspose: swap matrix[i][j] with matrix[j][i].",
+          "description": "Transpose matrix, then reverse each row.\n\nRotate matrix 90° clockwise in-place.\nTranspose: swap matrix[i][j] with matrix[j][i].",
           "pattern": "Transpose + Reverse",
           "has_solution": true,
           "algorithmHint": "Analyze the constraints and look for patterns.",
@@ -766,7 +766,7 @@
     },
     {
       "name": "Hashmap",
-      "icon": "\ud83d\uddc2\ufe0f",
+      "icon": "🗂️",
       "problems": [
         {
           "title": "Ransom Note",
@@ -944,7 +944,7 @@
     },
     {
       "name": "Intervals",
-      "icon": "\ud83d\udcca",
+      "icon": "📊",
       "problems": [
         {
           "title": "Summary Ranges",
@@ -1054,7 +1054,7 @@
     },
     {
       "name": "Stack",
-      "icon": "\ud83d\udcda",
+      "icon": "📚",
       "problems": [
         {
           "title": "Valid Parentheses",
@@ -1185,7 +1185,7 @@
           "url": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
           "slug": "largest-rectangle-in-histogram",
           "subTopic": "Stack",
-          "description": "Given an array of integers `heights` representing the histogram's bar height where the width of each bar is 1, return the area of the largest rectangle in the histogram.\n\nA histogram is a graphical display of data using bars of different heights. Each bar has a width of 1 unit and a height specified by the input array. The task is to find the maximum rectangular area that can be formed within this histogram, where the rectangle must be aligned with the bars (i.e., its bottom edge must lie on the x-axis and it cannot extend beyond the boundaries of the bars).\n\nThe area of a rectangle is calculated as width \u00d7 height, where the height is determined by the minimum height of the bars that the rectangle spans, and the width is the number of consecutive bars it covers.",
+          "description": "Given an array of integers `heights` representing the histogram's bar height where the width of each bar is 1, return the area of the largest rectangle in the histogram.\n\nA histogram is a graphical display of data using bars of different heights. Each bar has a width of 1 unit and a height specified by the input array. The task is to find the maximum rectangular area that can be formed within this histogram, where the rectangle must be aligned with the bars (i.e., its bottom edge must lie on the x-axis and it cannot extend beyond the boundaries of the bars).\n\nThe area of a rectangle is calculated as width × height, where the height is determined by the minimum height of the bars that the rectangle spans, and the width is the number of consecutive bars it covers.",
           "pattern": "Stack",
           "has_solution": true,
           "algorithmHint": "Use stack for matching pairs or monotonic sequences.",
@@ -1198,7 +1198,7 @@
     },
     {
       "name": "Linked List",
-      "icon": "\ud83d\udd17",
+      "icon": "🔗",
       "problems": [
         {
           "title": "Linked List Cycle",
@@ -1371,7 +1371,7 @@
           "url": "https://leetcode.com/problems/reorder-list/",
           "slug": "reorder-list",
           "subTopic": "Linked List",
-          "description": "You are given the head of a singly linked list. Reorder the list such that it follows the pattern: L0 \u2192 Ln \u2192 L1 \u2192 Ln-1 \u2192 L2 \u2192 Ln-2 \u2192 ...\n\nThe reordering must be done by actually moving nodes, not just changing their values.\n\nReturn the reordered list's head node.",
+          "description": "You are given the head of a singly linked list. Reorder the list such that it follows the pattern: L0 → Ln → L1 → Ln-1 → L2 → Ln-2 → ...\n\nThe reordering must be done by actually moving nodes, not just changing their values.\n\nReturn the reordered list's head node.",
           "pattern": "Linked List",
           "has_solution": true,
           "algorithmHint": "Use dummy node, slow/fast pointers, or reverse in-place.",
@@ -1395,7 +1395,7 @@
     },
     {
       "name": "Binary Tree General",
-      "icon": "\ud83c\udf33",
+      "icon": "🌳",
       "problems": [
         {
           "title": "Maximum Depth of Binary Tree",
@@ -1678,7 +1678,7 @@
     },
     {
       "name": "Binary Tree BFS",
-      "icon": "\ud83c\udf0a",
+      "icon": "🌊",
       "problems": [
         {
           "title": "Binary Tree Right Side View",
@@ -1744,7 +1744,7 @@
     },
     {
       "name": "Binary Search Tree",
-      "icon": "\ud83d\udd0d",
+      "icon": "🔍",
       "problems": [
         {
           "title": "Minimum Absolute Difference in BST",
@@ -1841,7 +1841,7 @@
     },
     {
       "name": "Graph General",
-      "icon": "\ud83d\udd78\ufe0f",
+      "icon": "🕸️",
       "problems": [
         {
           "title": "Number of Islands",
@@ -2123,7 +2123,7 @@
     },
     {
       "name": "Graph BFS",
-      "icon": "\ud83c\udf10",
+      "icon": "🌐",
       "problems": [
         {
           "title": "Snakes and Ladders",
@@ -2131,7 +2131,7 @@
           "url": "https://leetcode.com/problems/snakes-and-ladders/",
           "slug": "snakes-and-ladders",
           "subTopic": "Graph",
-          "description": "BFS from square 1. Follow snakes/ladders. Min moves to n\u00b2.\n\nMin dice rolls to reach last square.\nBFS level = number of moves.",
+          "description": "BFS from square 1. Follow snakes/ladders. Min moves to n².\n\nMin dice rolls to reach last square.\nBFS level = number of moves.",
           "pattern": "BFS",
           "has_solution": true,
           "algorithmHint": "Use BFS for shortest path, DFS for exploration, Union-Find for connectivity.",
@@ -2198,7 +2198,7 @@
     },
     {
       "name": "Trie",
-      "icon": "\ud83c\udf3f",
+      "icon": "🌿",
       "problems": [
         {
           "title": "Implement Trie (Prefix Tree)",
@@ -2251,7 +2251,7 @@
     },
     {
       "name": "Backtracking",
-      "icon": "\ud83d\udd19",
+      "icon": "🔙",
       "problems": [
         {
           "title": "Letter Combinations of a Phone Number",
@@ -2442,7 +2442,7 @@
           "subTopic": "Backtracking",
           "description": "Given a string s, partition s such that every substring of the partition is a palindrome. Return all possible palindrome partitioning of s.\n\nA palindrome string is a string that reads the same backward as forward.",
           "pattern": "Backtracking",
-          "has_solution": false,
+          "has_solution": true,
           "algorithmHint": "Try all possibilities, prune invalid branches early.",
           "difficultyReason": "Combines techniques, requires careful implementation, multiple edge cases.",
           "relatedProblems": [
@@ -2457,7 +2457,7 @@
           "url": "https://leetcode.com/problems/n-queens/",
           "slug": "n-queens",
           "subTopic": "Backtracking",
-          "description": "The n-queens puzzle is the problem of placing n queens on an n\u00d7n chessboard such that no two queens attack each other. Given an integer n, return all distinct solutions to the n-queens puzzle. Each solution contains a distinct board configuration where 'Q' represents a queen and '.' represents an empty space.",
+          "description": "The n-queens puzzle is the problem of placing n queens on an n×n chessboard such that no two queens attack each other. Given an integer n, return all distinct solutions to the n-queens puzzle. Each solution contains a distinct board configuration where 'Q' represents a queen and '.' represents an empty space.",
           "pattern": "Backtracking",
           "has_solution": true,
           "algorithmHint": "Try all possibilities, prune invalid branches early.",
@@ -2472,7 +2472,7 @@
     },
     {
       "name": "Divide & Conquer",
-      "icon": "\u2702\ufe0f",
+      "icon": "✂️",
       "problems": [
         {
           "title": "Convert Sorted Array to Binary Search Tree",
@@ -2510,7 +2510,7 @@
           "url": "https://leetcode.com/problems/construct-quad-tree/",
           "slug": "construct-quad-tree",
           "subTopic": "Divide & Conquer",
-          "description": "If all same value, leaf. Else divide into 4 quadrants.\n\nBuild quad-tree from n\u00d7n grid.\nIf entire region same value, make leaf.",
+          "description": "If all same value, leaf. Else divide into 4 quadrants.\n\nBuild quad-tree from n×n grid.\nIf entire region same value, make leaf.",
           "pattern": "Divide and Conquer",
           "has_solution": true,
           "algorithmHint": "Analyze the constraints and look for patterns.",
@@ -2538,7 +2538,7 @@
     },
     {
       "name": "Kadane's Algorithm",
-      "icon": "\ud83d\udcc8",
+      "icon": "📈",
       "problems": [
         {
           "title": "Maximum Subarray",
@@ -2570,7 +2570,7 @@
     },
     {
       "name": "Binary Search",
-      "icon": "\ud83c\udfaf",
+      "icon": "🎯",
       "problems": [
         {
           "title": "Binary Search",
@@ -2755,7 +2755,7 @@
     },
     {
       "name": "Heap",
-      "icon": "\u26f0\ufe0f",
+      "icon": "⛰️",
       "problems": [
         {
           "title": "Kth Largest Element in an Array",
@@ -2902,7 +2902,7 @@
     },
     {
       "name": "Bit Manipulation",
-      "icon": "\ud83d\udd22",
+      "icon": "🔢",
       "problems": [
         {
           "title": "Add Binary",
@@ -2997,7 +2997,7 @@
           "url": "https://leetcode.com/problems/minimum-operations-to-reduce-an-integer-to-0/solutions/?submissionId=1806256289",
           "slug": "minimum-operations-to-reduce-an-integer-to-0",
           "subTopic": "Greedy",
-          "description": "Add/subtract powers of 2. Handle consecutive 1s.\n\nMin operations to make n = 0 using \u00b12^k.\nConsecutive 1s: add to clear, else subtract.",
+          "description": "Add/subtract powers of 2. Handle consecutive 1s.\n\nMin operations to make n = 0 using ±2^k.\nConsecutive 1s: add to clear, else subtract.",
           "pattern": "Bit Manipulation",
           "has_solution": true,
           "algorithmHint": "Make locally optimal choice at each step.",
@@ -3045,7 +3045,7 @@
           "url": "https://leetcode.com/problems/reverse-integer/",
           "slug": "reverse-integer",
           "subTopic": "Bit Manipulation",
-          "description": "Given a signed 32-bit integer x, return x with its digits reversed. If reversing x causes the value to go outside the signed 32-bit integer range [-2\u00b3\u00b9, 2\u00b3\u00b9 - 1], then return 0.\n\nAssume the environment does not allow you to store 64-bit integers (signed or unsigned).",
+          "description": "Given a signed 32-bit integer x, return x with its digits reversed. If reversing x causes the value to go outside the signed 32-bit integer range [-2³¹, 2³¹ - 1], then return 0.\n\nAssume the environment does not allow you to store 64-bit integers (signed or unsigned).",
           "pattern": "Bit Manipulation",
           "has_solution": true,
           "algorithmHint": "Use XOR, AND, OR operations. Think binary representation.",
@@ -3059,7 +3059,7 @@
     },
     {
       "name": "Math",
-      "icon": "\ud83e\uddee",
+      "icon": "🧮",
       "problems": [
         {
           "title": "Palindrome Number",
@@ -3187,7 +3187,7 @@
           "subTopic": "Math",
           "description": "You are given a stream of points on the X-Y plane and need to design an algorithm that can efficiently count the number of ways to form axis-aligned squares with a given query point.\n\nImplement the `DetectSquares` class:\n\n- `DetectSquares()` Initializes the object with an empty data structure.\n- `void add(int[] point)` Adds a new point to the data structure.\n- `int count(int[] point)` Counts the number of ways to form axis-aligned squares using the query point and three other points from the data structure.\n\nAn axis-aligned square has edges of equal length and aligned with the axes. The square can be formed in any orientation as long as it's axis-aligned.",
           "pattern": "Math & Geometry",
-          "has_solution": false,
+          "has_solution": true,
           "algorithmHint": "Use hash map for O(1) lookup. Store complements or counts.",
           "difficultyReason": "Combines techniques, requires careful implementation, multiple edge cases.",
           "relatedProblems": []
@@ -3196,7 +3196,7 @@
     },
     {
       "name": "Multidimensional DP",
-      "icon": "\ud83e\uddca",
+      "icon": "🧊",
       "problems": [
         {
           "title": "Best Time to Buy and Sell Stock with Cooldown",
@@ -3496,7 +3496,7 @@
     },
     {
       "name": "Prefix Sums",
-      "icon": "\ud83d\udcc1",
+      "icon": "📁",
       "problems": [
         {
           "id": "268",
@@ -3519,7 +3519,7 @@
     },
     {
       "name": "Geometry",
-      "icon": "\ud83d\udcc1",
+      "icon": "📁",
       "problems": [
         {
           "id": "1266",
@@ -3543,7 +3543,7 @@
     },
     {
       "name": "Implementation",
-      "icon": "\ud83d\udcc1",
+      "icon": "📁",
       "problems": [
         {
           "id": "412",
@@ -3591,7 +3591,7 @@
     },
     {
       "name": "Queue",
-      "icon": "\ud83d\udcc1",
+      "icon": "📁",
       "problems": [
         {
           "id": "2073",
@@ -3615,7 +3615,7 @@
     },
     {
       "name": "Sorting",
-      "icon": "\ud83d\udcc1",
+      "icon": "📁",
       "problems": [
         {
           "id": "1200",
@@ -3639,7 +3639,7 @@
     },
     {
       "name": "1-D Dynamic Programming",
-      "icon": "\ud83d\udcdd",
+      "icon": "📝",
       "problems": [
         {
           "title": "Climbing Stairs",
@@ -3855,7 +3855,7 @@
     },
     {
       "name": "Greedy",
-      "icon": "\ud83d\udcdd",
+      "icon": "📝",
       "problems": [
         {
           "title": "Hand of Straights",
