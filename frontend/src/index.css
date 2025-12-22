@@ -619,6 +619,7 @@ body {
     .line-clamp-2 {
         display: -webkit-box;
         -webkit-line-clamp: 2;
+        line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
@@ -717,7 +718,7 @@ body {
 }
 
 .modal-content {
-    background: linear-gradient(145deg, #1a1a2e, #16162a);
+    background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-xl);
     max-width: 900px;

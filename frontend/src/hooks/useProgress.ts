@@ -16,6 +16,7 @@ export interface UseProgressReturn {
     markAttempted: (slug: string) => void;
     saveDraft: (slug: string, code: string) => void;
     getDraft: (slug: string) => string | null;
+    clearDraft: (slug: string) => void;
     isSolved: (slug: string) => boolean;
     isAttempted: (slug: string) => boolean;
     sync: () => Promise<void>;
@@ -79,6 +80,10 @@ export function useProgress(): UseProgressReturn {
         return SyncService.getDraft(slug);
     }, []);
 
+    const clearDraft = useCallback((slug: string): void => {
+        SyncService.clearDraft(slug);
+    }, []);
+
     const isSolved = useCallback((slug: string): boolean => {
         return SyncService.isSolved(slug);
     }, []);
@@ -106,6 +111,7 @@ export function useProgress(): UseProgressReturn {
         markAttempted,
         saveDraft,
         getDraft,
+        clearDraft,
         isSolved,
         isAttempted,
         sync,

@@ -19,7 +19,7 @@ export function useEditorSettings() {
         try {
             const saved = localStorage.getItem('codenium_editor_settings');
             return saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS;
-        } catch (e) {
+        } catch {
             return DEFAULT_SETTINGS;
         }
     });

@@ -1,0 +1,226 @@
+[
+  {
+    "slug": "linked-list-cycle",
+    "title": "Linked List Cycle",
+    "currentInitialCode": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n"
+  },
+  {
+    "slug": "invert-binary-tree",
+    "title": "Invert Binary Tree",
+    "currentInitialCode": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n"
+  },
+  {
+    "slug": "insert-delete-getrandom-o1",
+    "title": "Insert Delete GetRandom O(1)",
+    "currentInitialCode": "import random\nclass RandomizedSet:\n    def __init__(self):\n        pass\n"
+  },
+  {
+    "slug": "min-stack",
+    "title": "Min Stack",
+    "currentInitialCode": "class MinStack:\n    def __init__(self):\n        pass\n"
+  },
+  {
+    "slug": "implement-stack-using-queues",
+    "title": "Implement Stack using Queues",
+    "currentInitialCode": "from collections import deque\nclass MyStack:\n    def __init__(self):\n        pass\n"
+  },
+  {
+    "slug": "add-two-numbers",
+    "title": "Add Two Numbers",
+    "currentInitialCode": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n"
+  },
+  {
+    "slug": "merge-two-sorted-lists",
+    "title": "Merge Two Sorted Lists",
+    "currentInitialCode": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n"
+  },
+  {
+    "slug": "copy-list-with-random-pointer",
+    "title": "Copy List with Random Pointer",
+    "currentInitialCode": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\nclass Node:  # Node definition with random pointer.\n    def __init__(self, x: int, next: 'Nod"
+  },
+  {
+    "slug": "reverse-linked-list-ii",
+    "title": "Reverse Linked List II",
+    "currentInitialCode": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n"
+  },
+  {
+    "slug": "maximum-depth-of-binary-tree",
+    "title": "Maximum Depth of Binary Tree",
+    "currentInitialCode": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n"
+  },
+  {
+    "slug": "same-tree",
+    "title": "Same Tree",
+    "currentInitialCode": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n"
+  },
+  {
+    "slug": "symmetric-tree",
+    "title": "Symmetric Tree",
+    "currentInitialCode": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n"
+  },
+  {
+    "slug": "binary-tree-level-order-traversal",
+    "title": "Binary Tree Level Order Traversal",
+    "currentInitialCode": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n"
+  },
+  {
+    "slug": "clone-graph",
+    "title": "Clone Graph",
+    "currentInitialCode": "class Node:\n    def __init__(self, val=0, neighbors=None):\n        self.val = val\n        self.neighbors = neighbors if neighbors is not None else []\n\nclass Node:  # Node definition with random pointe"
+  },
+  {
+    "slug": "combination-sum",
+    "title": "Combination Sum",
+    "currentInitialCode": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n"
+  },
+  {
+    "slug": "squares-of-a-sorted-array",
+    "title": "Squares of a Sorted Array",
+    "currentInitialCode": "class Solution:\n    def sortedSquares(self, nums):\n        pass\n"
+  },
+  {
+    "slug": "insert-into-a-binary-search-tree",
+    "title": "Insert into a Binary Search Tree",
+    "currentInitialCode": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n"
+  },
+  {
+    "slug": "reverse-nodes-in-k-group",
+    "title": "Reverse Nodes in k-Group",
+    "currentInitialCode": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n"
+  },
+  {
+    "slug": "remove-nth-node-from-end-of-list",
+    "title": "Remove Nth Node From End of List",
+    "currentInitialCode": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n"
+  },
+  {
+    "slug": "remove-duplicates-from-sorted-list-ii",
+    "title": "Remove Duplicates from Sorted List II",
+    "currentInitialCode": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n"
+  },
+  {
+    "slug": "partition-list",
+    "title": "Partition List",
+    "currentInitialCode": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n"
+  },
+  {
+    "slug": "sort-list",
+    "title": "Sort List",
+    "currentInitialCode": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n"
+  },
+  {
+    "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
+    "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+    "currentInitialCode": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n"
+  },
+  {
+    "slug": "construct-binary-tree-from-inorder-and-postorder-traversal",
+    "title": "Construct Binary Tree from Inorder and Postorder Traversal",
+    "currentInitialCode": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n"
+  },
+  {
+    "slug": "count-complete-tree-nodes",
+    "title": "Count Complete Tree Nodes",
+    "currentInitialCode": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n"
+  },
+  {
+    "slug": "balance-a-binary-search-tree",
+    "title": "Balance a Binary Search Tree",
+    "currentInitialCode": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n"
+  },
+  {
+    "slug": "remove-linked-list-elements",
+    "title": "Remove Linked List Elements",
+    "currentInitialCode": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n"
+  },
+  {
+    "slug": "convert-sorted-array-to-binary-search-tree",
+    "title": "Convert Sorted Array to Binary Search Tree",
+    "currentInitialCode": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n"
+  },
+  {
+    "slug": "find-median-from-data-stream",
+    "title": "Find Median from Data Stream",
+    "currentInitialCode": "import heapq\nclass MedianFinder:\n    def __init__(self):\n        pass\n"
+  },
+  {
+    "slug": "range-sum-query---immutable",
+    "title": "Range Sum Query - Immutable",
+    "currentInitialCode": "class Solution:\n        def __init__(self, nums):\n        pass"
+  },
+  {
+    "slug": "lru-cache",
+    "title": "LRU Cache",
+    "currentInitialCode": "class Solution:\n    def test_lru_cache(self):\n        pass\n"
+  },
+  {
+    "slug": "implement-trie-prefix-tree",
+    "title": "Implement Trie (Prefix Tree)",
+    "currentInitialCode": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\nclass Solution:\n    def test_trie(self):\n        pass\n"
+  },
+  {
+    "slug": "design-add-and-search-words-data-structure",
+    "title": "Design Add and Search Words Data Structure",
+    "currentInitialCode": "class Solution:\n    def test_word_dict(self):\n        pass\n"
+  },
+  {
+    "slug": "binary-search-tree-iterator",
+    "title": "Binary Search Tree Iterator",
+    "currentInitialCode": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n    class TreeNode:\n        def __init__(self, val=0, "
+  },
+  {
+    "slug": "reorder-list",
+    "title": "Reorder List",
+    "category": "Linked List",
+    "currentInitialCode": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n"
+  },
+  {
+    "slug": "balanced-binary-tree",
+    "title": "Balanced Binary Tree",
+    "category": "Binary Tree General",
+    "currentInitialCode": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n"
+  },
+  {
+    "slug": "subtree-of-another-tree",
+    "title": "Subtree of Another Tree",
+    "category": "Binary Tree General",
+    "currentInitialCode": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n"
+  },
+  {
+    "slug": "serialize-and-deserialize-binary-tree",
+    "title": "Serialize and Deserialize Binary Tree",
+    "category": "Binary Tree General",
+    "currentInitialCode": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n"
+  },
+  {
+    "slug": "min-cost-to-connect-all-points",
+    "title": "Min Cost to Connect All Points",
+    "category": "Graph General",
+    "currentInitialCode": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n"
+  },
+  {
+    "slug": "time-based-key-value-store",
+    "title": "Time Based Key-Value Store",
+    "category": "Binary Search",
+    "currentInitialCode": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\nclass TimeMap:\n    def __init__(self):\n        pass\n\n "
+  },
+  {
+    "slug": "kth-largest-element-in-a-stream",
+    "title": "Kth Largest Element in a Stream",
+    "category": "Heap",
+    "currentInitialCode": "import heapq\nclass KthLargest:\n    def __init__(self, k: int, nums: list[int]):\n        pass\n"
+  },
+  {
+    "slug": "design-twitter",
+    "title": "Design Twitter",
+    "category": "Heap",
+    "currentInitialCode": "import heapq\nclass Twitter:\n    def __init__(self):\n        pass\n"
+  },
+  {
+    "slug": "detect-squares",
+    "title": "Detect Squares",
+    "category": "Math",
+    "currentInitialCode": "from collections import defaultdict\n\nclass DetectSquares:\n    def __init__(self):\n        # Initialize your data structure here\n        pass\n    \n    def add(self, point: list[int]) -> None:\n        #"
+  }
+]
