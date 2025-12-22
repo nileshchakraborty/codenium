@@ -533,185 +533,191 @@ const SmartVisualizer: React.FC<SmartVisualizerProps> = ({ solution }) => {
     };
 
     return (
-        <div className="flex flex-col items-center w-full">
-            {/* Enhanced Controls */}
-            <div className="viz-controls w-full max-w-2xl mb-6 p-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
-                {/* Playback Controls Row */}
-                {/* Playback Controls Row */}
-                <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
-                    {/* Left: Playback buttons */}
-                    <div className="flex items-center gap-1 order-1">
-                        <button
-                            onClick={handlePrev}
-                            disabled={currentStep === 0}
-                            className="p-1.5 sm:p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
-                            title="Previous (←)"
+        <div className="flex flex-col w-full gap-5">
+            {/* 1. Visualization Stage - Primary Focus */}
+            <div className="viz-stage relative w-full min-h-[320px] bg-slate-950 rounded-2xl border border-slate-800 flex flex-col items-center justify-center p-8 overflow-hidden shadow-2xl bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
+                {/* Background Grid Pattern */}
+                <div className="absolute inset-0 opacity-10"
+                    style={{
+                        backgroundImage: 'linear-gradient(#334155 1px, transparent 1px), linear-gradient(90deg, #334155 1px, transparent 1px)',
+                        backgroundSize: '24px 24px'
+                    }}>
+                </div>
+
+                <div className="relative z-10 w-full flex flex-col items-center justify-center">
+                    {renderVisualizer()}
+                </div>
+
+                {/* Transient Overlay Messages */}
+                <AnimatePresence mode='wait'>
+                    {activeStepData?.transientMessage && (
+                        <motion.div
+                            key={`msg-${currentStep}`}
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: -20, opacity: 0 }}
+                            className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-slate-800/90 backdrop-blur-sm border border-slate-700 px-4 py-2 rounded-full text-sm text-slate-200 shadow-lg whitespace-nowrap z-20"
                         >
-                            <SkipBack size={16} className="sm:w-[18px] sm:h-[18px]" />
-                        </button>
-                        <button
-                            onClick={() => setIsPlaying(!isPlaying)}
-                            className="p-2 sm:p-2.5 bg-indigo-500 hover:bg-indigo-600 rounded-lg transition-colors text-white shadow-lg shadow-indigo-500/25"
-                            title="Play/Pause (Space)"
-                        >
-                            {isPlaying ? <Pause size={18} className="sm:w-5 sm:h-5" /> : <Play size={18} className="sm:w-5 sm:h-5" />}
-                        </button>
-                        <button
-                            onClick={handleNext}
-                            disabled={currentStep >= totalSteps}
-                            className="p-1.5 sm:p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
-                            title="Next (→)"
-                        >
-                            <SkipForward size={16} className="sm:w-[18px] sm:h-[18px]" />
-                        </button>
-                        <button
-                            onClick={handleReplay}
-                            className="p-1.5 sm:p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
-                            title="Replay (R)"
-                        >
-                            <RotateCcw size={16} className="sm:w-[18px] sm:h-[18px]" />
-                        </button>
+                            <span className="mr-2">💡</span> {activeStepData.transientMessage}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+
+            {/* 2. Controls & Scrubber Card */}
+            <div className="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+                {/* Scrubber */}
+                <div className="space-y-2">
+                    <div
+                        className="relative h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full cursor-pointer group touch-none"
+                        onClick={handleScrub}
+                        title="Click to seek"
+                    >
+                        <div
+                            className="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full transition-all duration-100"
+                            style={{ width: `${totalSteps > 0 ? (currentStep / totalSteps) * 100 : 0}%` }}
+                        />
+                        <div
+                            className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-indigo-600 rounded-full shadow-md transition-transform duration-100 group-hover:scale-125"
+                            style={{ left: `calc(${totalSteps > 0 ? (currentStep / totalSteps) * 100 : 0}% - 8px)` }}
+                        />
+                    </div>
+                </div>
+
+                {/* Main Controls Row */}
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                    {/* Step INFO */}
+                    <div className="flex items-center gap-2.5 order-2 sm:order-1 flex-1 sm:flex-none justify-center sm:justify-start">
+                        <span className="font-mono text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider">Step</span>
+                        <div className="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-md text-slate-700 dark:text-slate-200 font-mono text-sm border border-slate-200 dark:border-slate-700">
+                            {currentStep} <span className="text-slate-400 dark:text-slate-600 mx-1">/</span> {totalSteps}
+                        </div>
                     </div>
 
-                    {/* Center: Step counter - Order 2 on mobile (right side), Order 2 on desktop (center) */}
-                    <span className="order-2 sm:order-2 text-xs sm:text-sm font-mono text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900 px-2 sm:px-3 py-1 rounded-md border border-slate-200 dark:border-slate-700">
-                        {currentStep} / {totalSteps}
-                    </span>
+                    {/* Playback Buttons (Center) */}
+                    <div className="flex items-center gap-3 order-1 sm:order-2 w-full sm:w-auto justify-center">
+                        <button
+                            onClick={handleReplay}
+                            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                            title="Replay"
+                        >
+                            <RotateCcw size={18} />
+                        </button>
 
-                    {/* Right: Speed control - Order 3 (new row on mobile potentially) */}
-                    <div className="flex items-center gap-1.5 order-3 w-full sm:w-auto justify-center sm:justify-end mt-2 sm:mt-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-200 dark:border-slate-700">
-                        <span className="text-xs text-slate-500 dark:text-slate-400">🐢</span>
-                        <div className="flex bg-white dark:bg-slate-900 rounded-md border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+                            <button
+                                onClick={handlePrev}
+                                disabled={currentStep === 0}
+                                className="p-3 hover:bg-white dark:hover:bg-slate-700 rounded-lg text-slate-600 dark:text-slate-300 shadow-sm disabled:opacity-30 disabled:shadow-none transition-all"
+                            >
+                                <SkipBack size={20} fill="currentColor" className="text-slate-500" />
+                            </button>
+                            <button
+                                onClick={() => setIsPlaying(!isPlaying)}
+                                className="p-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-md shadow-indigo-500/25 transition-all active:scale-95"
+                            >
+                                {isPlaying ? <Pause size={22} fill="currentColor" /> : <Play size={22} fill="currentColor" className="ml-1" />}
+                            </button>
+                            <button
+                                onClick={handleNext}
+                                disabled={currentStep >= totalSteps}
+                                className="p-3 hover:bg-white dark:hover:bg-slate-700 rounded-lg text-slate-600 dark:text-slate-300 shadow-sm disabled:opacity-30 disabled:shadow-none transition-all"
+                            >
+                                <SkipForward size={20} fill="currentColor" className="text-slate-500" />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Speed Controls */}
+                    <div className="flex items-center gap-2 order-3 justify-center sm:justify-end flex-1 sm:flex-none">
+                        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
                             {speedOptions.map(s => (
                                 <button
                                     key={s}
                                     onClick={() => setSpeed(s)}
-                                    className={`px-2 py-1 text-[10px] sm:text-xs font-medium transition-colors ${speed === s
-                                        ? 'bg-indigo-500 text-white'
-                                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                                    className={`px-2.5 py-1 text-xs font-bold rounded-md transition-all ${speed === s
+                                        ? 'bg-white dark:bg-slate-600 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                                        : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
                                         }`}
                                 >
                                     {s}x
                                 </button>
                             ))}
                         </div>
-                        <span className="text-xs text-slate-500 dark:text-slate-400">🐇</span>
                     </div>
                 </div>
-
-                {/* Timeline Scrub Bar */}
-                <div
-                    className="relative h-2 bg-slate-200 dark:bg-slate-700 rounded-full cursor-pointer group"
-                    onClick={handleScrub}
-                    title="Click to jump to step"
-                >
-                    <div
-                        className="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-150"
-                        style={{ width: `${totalSteps > 0 ? (currentStep / totalSteps) * 100 : 0}%` }}
-                    />
-                    <div
-                        className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-indigo-500 rounded-full shadow-md transition-all duration-150 group-hover:scale-110"
-                        style={{ left: `calc(${totalSteps > 0 ? (currentStep / totalSteps) * 100 : 0}% - 8px)` }}
-                    />
-                </div>
-
-                {/* Keyboard shortcuts hint */}
-                <div className="flex justify-center gap-4 text-[10px] text-slate-400 dark:text-slate-500">
-                    <span>Space: Play/Pause</span>
-                    <span>←/→: Step</span>
-                    <span>R: Replay</span>
-                </div>
             </div>
 
-            {/* Stage */}
-            <div className="viz-stage relative w-full min-h-[250px] bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700/50 flex flex-col items-center justify-center p-8 pt-12 overflow-visible">
-                {renderVisualizer()}
-            </div>
-
-            {/* Transient Message - positioned below the stage */}
-            <AnimatePresence mode='wait'>
-                {activeStepData?.transientMessage && (
-                    <motion.div
-                        key={`msg-${currentStep}`}
-                        initial={{ y: 10, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: -10, opacity: 0 }}
-                        className="mt-3 bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-lg text-sm text-slate-700 dark:text-slate-200 text-center shadow-sm"
-                    >
-                        {activeStepData.transientMessage}
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Variable State Panel - Shows values for active pointers */}
-            {activeStepData?.pointers && activeStepData.pointers.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2 justify-center">
-                    <AnimatePresence>
-                        {activeStepData.pointers.map((p, idx: number) => {
-                            // Support both index-based (arrays) and value-based (graphs) pointers
-                            const hasIndex = typeof p.index === 'number';
-                            const val = hasIndex ? getActiveState()[p.index!] : p.value;
-                            const displayVal = val !== undefined ? String(val) : (p.node || '∅');
-                            return (
-                                <motion.div
-                                    key={`${p.label}-${idx}`}
-                                    initial={{ scale: 0.9, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    exit={{ scale: 0.9, opacity: 0 }}
-                                    className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700 shadow-sm"
-                                >
-                                    <span className="font-mono text-xs font-bold text-slate-500 dark:text-slate-400">{p.label}</span>
-                                    <span className="text-xs text-slate-300 dark:text-slate-600">→</span>
-                                    <span className="font-mono text-sm font-semibold text-indigo-600 dark:text-indigo-400">
-                                        {displayVal}
-                                    </span>
-                                    {hasIndex && (
-                                        <span className="text-[10px] text-slate-400 ml-0.5 opacity-75">
-                                            [{p.index}]
+            {/* 3. Description & Variables */}
+            <div className="grid grid-cols-1 gap-4">
+                {/* Variable Panel (if pointers exist) */}
+                {activeStepData?.pointers && activeStepData.pointers.length > 0 && (
+                    <div className="flex flex-wrap gap-3 justify-center bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                        <AnimatePresence>
+                            {activeStepData.pointers.map((p, idx) => {
+                                const hasIndex = typeof p.index === 'number';
+                                const val = hasIndex ? getActiveState()[p.index!] : p.value;
+                                const displayVal = val !== undefined ? String(val) : (p.node || '∅');
+                                return (
+                                    <motion.div
+                                        key={`${p.label}-${idx}`}
+                                        initial={{ scale: 0.9, opacity: 0 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        exit={{ scale: 0.9, opacity: 0 }}
+                                        className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm"
+                                    >
+                                        <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                        <span className="font-mono text-xs font-bold text-slate-600 dark:text-slate-300">{p.label}</span>
+                                        <span className="text-xs text-slate-300 dark:text-slate-600">→</span>
+                                        <span className="font-mono text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                                            {displayVal}
                                         </span>
+                                    </motion.div>
+                                );
+                            })}
+                        </AnimatePresence>
+                    </div>
+                )}
+
+                {/* Text Description */}
+                {(() => {
+                    const stepData = activeStepData as unknown as Record<string, string> | null;
+                    const stepText = activeStepData?.visual
+                        || activeStepData?.explanation
+                        || stepData?.description
+                        || stepData?.title
+                        || activeStepData?.transientMessage
+                        || `Step ${currentStep}`;
+
+                    const explanationText = activeStepData?.explanation && activeStepData?.visual
+                        ? activeStepData.explanation
+                        : null;
+
+                    return (
+                        <div ref={stepDescriptionRef} className="bg-indigo-50/50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-800/30 rounded-xl p-5 relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+                            <div className="flex gap-4">
+                                <div className="flex-shrink-0 mt-1">
+                                    <div className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs font-bold border border-indigo-200 dark:border-indigo-800">
+                                        i
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Current Action</h4>
+                                    <pre className="font-sans text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap break-words leading-relaxed">
+                                        {stepText}
+                                    </pre>
+                                    {explanationText && (
+                                        <p className="text-sm text-slate-500 dark:text-slate-400 italic mt-2">
+                                            {explanationText}
+                                        </p>
                                     )}
-                                </motion.div>
-                            );
-                        })}
-                    </AnimatePresence>
-                </div>
-            )}
-
-            {/* Text Visualization - Always show with any available text */}
-            {(() => {
-                // Use transientMessage as fallback if no visual/explanation exists
-                const stepData = activeStepData as unknown as Record<string, string> | null;
-                const stepText = activeStepData?.visual
-                    || activeStepData?.explanation
-                    || stepData?.description
-                    || stepData?.title
-                    || activeStepData?.transientMessage
-                    || `Step ${currentStep}`;
-
-                const explanationText = activeStepData?.explanation && activeStepData?.visual
-                    ? activeStepData.explanation
-                    : null;
-
-                return (
-                    <div ref={stepDescriptionRef} className="mt-4 p-4 bg-white dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-800 w-full max-w-2xl shadow-sm">
-                        <div className="flex items-start gap-3">
-                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-500/20 border border-indigo-500/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-sm">
-                                {currentStep}
-                            </div>
-                            <div className="flex-1">
-                                <pre className="font-mono text-sm text-slate-700 dark:text-slate-200 whitespace-pre-wrap break-words">
-                                    {stepText}
-                                </pre>
-                                {explanationText && (
-                                    <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 italic border-t border-slate-200 dark:border-slate-800 pt-2">
-                                        {explanationText}
-                                    </p>
-                                )}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                );
-            })()}
+                    );
+                })()}
+            </div>
         </div>
     );
 };

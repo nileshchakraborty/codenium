@@ -305,10 +305,36 @@ class SyncServiceImpl {
 
     /**
      * Get draft code (helper)
+     * Returns null if draft has expired (7 days)
      */
     getDraft(slug: string): string | null {
         const progress = this.getLocalProgress();
-        return progress.drafts[slug]?.code || null;
+        const draft = progress.drafts[slug];
+
+        if (!draft) return null;
+
+        // Check if draft has expired (7 days = 604800000 ms)
+        const DRAFT_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+        const now = Date.now();
+
+        if (draft.updatedAt && (now - draft.updatedAt > DRAFT_TTL_MS)) {
+            // Draft has expired, clear it
+            this.clearDraft(slug);
+            return null;
+        }
+
+        return draft.code || null;
+    }
+
+    /**
+     * Clear draft code for a specific problem (helper)
+     */
+    clearDraft(slug: string): void {
+        const progress = this.getLocalProgress();
+        if (progress.drafts[slug]) {
+            delete progress.drafts[slug];
+            this.saveLocalProgress(progress);
+        }
     }
 
     /**

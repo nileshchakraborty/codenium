@@ -240,8 +240,8 @@ app.get('/api/solutions/:slug', async (req, res) => {
 
 app.post('/api/execute', requireAuth, async (req, res) => {
     try {
-        const { code, testCases, language } = req.body;
-        const result = await problemService.executeCode(code, testCases, language);
+        const { code, testCases, language, referenceCode, constraints } = req.body;
+        const result = await problemService.executeCode(code, testCases, language, referenceCode, constraints);
         res.json(result);
     } catch (e: any) {
         console.error("Execution Error:", e);
