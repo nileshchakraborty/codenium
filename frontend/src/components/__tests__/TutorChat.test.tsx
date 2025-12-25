@@ -154,4 +154,108 @@ describe('TutorChat', () => {
         expect(screen.getByText(/print/)).toBeInTheDocument();
         expect(screen.getByText(/"hello"/)).toBeInTheDocument();
     });
+
+    it('handles Shift+Enter to add newline', () => {
+        render(<TutorChat {...defaultProps} />);
+        const input = screen.getByPlaceholderText('Ask a question...');
+        fireEvent.change(input, { target: { value: 'Line 1' } });
+
+        // Shift+Enter should not submit
+        fireEvent.keyDown(input, { key: 'Enter', shiftKey: true });
+        expect(TutorAPI.chat).not.toHaveBeenCalled();
+    });
+
+    it('disables input while loading', async () => {
+        const setMessages = vi.fn();
+        let resolveChat: (value: unknown) => void;
+        (TutorAPI.chat as Mock).mockImplementation(() => new Promise(r => { resolveChat = r; }));
+
+        render(<TutorChat {...defaultProps} setMessages={setMessages} />);
+        const input = screen.getByPlaceholderText('Ask a question...');
+        const button = screen.getByRole('button');
+
+        fireEvent.change(input, { target: { value: 'Test loading' } });
+
+        await act(async () => {
+            fireEvent.click(button);
+        });
+
+        // Button should show loading state
+        expect(button).toBeDisabled();
+
+        // Complete the request
+        await act(async () => {
+            resolveChat!({ response: 'Done' });
+        });
+    });
+
+    it('renders multiple message types', () => {
+        const messages = [
+            { role: 'user' as const, content: 'Question 1' },
+            { role: 'assistant' as const, content: 'Answer 1' },
+            { role: 'user' as const, content: 'Question 2' },
+            { role: 'assistant' as const, content: 'Answer 2' }
+        ];
+        render(<TutorChat {...defaultProps} messages={messages} />);
+        expect(screen.getByText('Question 1')).toBeInTheDocument();
+        expect(screen.getByText('Answer 1')).toBeInTheDocument();
+        expect(screen.getByText('Question 2')).toBeInTheDocument();
+        expect(screen.getByText('Answer 2')).toBeInTheDocument();
+    });
+
+    it('prevents sending while already loading', async () => {
+        const setMessages = vi.fn();
+        let resolveChat: (value: unknown) => void;
+        (TutorAPI.chat as Mock).mockImplementation(() => new Promise(r => { resolveChat = r; }));
+
+        render(<TutorChat {...defaultProps} setMessages={setMessages} />);
+        const input = screen.getByPlaceholderText('Ask a question...');
+        const button = screen.getByRole('button');
+
+        fireEvent.change(input, { target: { value: 'First message' } });
+
+        // Start first request
+        await act(async () => {
+            fireEvent.click(button);
+        });
+
+        // Try to send another while loading
+        fireEvent.change(input, { target: { value: 'Second message' } });
+        await act(async () => {
+            fireEvent.click(button);
+        });
+
+        // Should only have called once (first message)
+        expect(TutorAPI.chat).toHaveBeenCalledTimes(1);
+
+        await act(async () => {
+            resolveChat!({ response: 'Done' });
+        });
+    });
+
+    it('renders code block without language specifier', () => {
+        const messages = [
+            { role: 'assistant' as const, content: 'Code:\n```\nsome code here\n```' }
+        ];
+        render(<TutorChat {...defaultProps} messages={messages} />);
+        // Should render the code even without language
+        expect(screen.getByText(/some code here/)).toBeInTheDocument();
+    });
+
+    it('handles response with error message', async () => {
+        const setMessages = vi.fn();
+        // API returns error in response object
+        (TutorAPI.chat as Mock).mockResolvedValue({ error: 'Rate limit exceeded' });
+
+        render(<TutorChat {...defaultProps} setMessages={setMessages} />);
+        const input = screen.getByPlaceholderText('Ask a question...');
+
+        fireEvent.change(input, { target: { value: 'Test error' } });
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button'));
+        });
+
+        // setMessages should be called twice (user msg + error msg)
+        expect(setMessages).toHaveBeenCalledTimes(2);
+    });
 });

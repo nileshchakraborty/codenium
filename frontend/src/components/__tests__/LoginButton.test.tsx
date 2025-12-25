@@ -128,4 +128,18 @@ describe('LoginButton', () => {
         fireEvent.click(logoutBtn);
         expect(mockLogout).toHaveBeenCalled();
     });
+
+    it('cancels reset stats confirmation', () => {
+        setup(true, false);
+        fireEvent.click(screen.getByAltText('Test User').parentElement!);
+
+        // Click Reset Stats
+        fireEvent.click(screen.getByText('Reset Stats'));
+        expect(screen.getByText('Reset solved count?')).toBeInTheDocument();
+
+        // Cancel
+        fireEvent.click(screen.getByText('Cancel'));
+        expect(screen.queryByText('Reset solved count?')).not.toBeInTheDocument();
+        expect(SyncService.resetStats).not.toHaveBeenCalled();
+    });
 });

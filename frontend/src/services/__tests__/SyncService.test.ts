@@ -353,4 +353,54 @@ describe('SyncService', () => {
         const result = await SyncService.push(mockProgress);
         expect(result).toBe(false);
     });
+
+    it('getDraft returns null for expired draft', () => {
+        // Create a draft that is 8 days old (expired - TTL is 7 days)
+        const expiredDate = Date.now() - (8 * 24 * 60 * 60 * 1000);
+        const progressWithExpiredDraft: UserProgress = {
+            ...mockProgress,
+            drafts: {
+                'expired-slug': { code: 'old code', updatedAt: expiredDate }
+            }
+        };
+        localStorage.setItem('codenium_user_progress', JSON.stringify(progressWithExpiredDraft));
+
+        const draft = SyncService.getDraft('expired-slug');
+        expect(draft).toBeNull();
+
+        // Draft should be cleared
+        const updatedProgress = SyncService.getLocalProgress();
+        expect(updatedProgress.drafts['expired-slug']).toBeUndefined();
+    });
+
+    it('getDraft returns code for valid draft', () => {
+        const recentDate = Date.now() - (1 * 24 * 60 * 60 * 1000); // 1 day old
+        const progressWithValidDraft: UserProgress = {
+            ...mockProgress,
+            drafts: {
+                'valid-slug': { code: 'recent code', updatedAt: recentDate }
+            }
+        };
+        localStorage.setItem('codenium_user_progress', JSON.stringify(progressWithValidDraft));
+
+        const draft = SyncService.getDraft('valid-slug');
+        expect(draft).toBe('recent code');
+    });
+
+    it('markAttempted initializes attemptedProblems array if undefined', () => {
+        // Set progress without attemptedProblems array
+        const progressWithoutAttempted = {
+            userId: 'user123',
+            lastSyncedAt: 1000,
+            solvedProblems: [],
+            drafts: {}
+        };
+        localStorage.setItem('codenium_user_progress', JSON.stringify(progressWithoutAttempted));
+
+        SyncService.markAttempted('new-problem');
+
+        const updated = SyncService.getLocalProgress();
+        expect(updated.attemptedProblems).toHaveLength(1);
+        expect(updated.attemptedProblems[0].slug).toBe('new-problem');
+    });
 });

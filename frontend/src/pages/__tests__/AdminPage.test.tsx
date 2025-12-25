@@ -235,4 +235,131 @@ describe('AdminPage', () => {
 
         expect(fetchSpy).toHaveBeenCalledWith(expect.stringContaining('/api/admin/analytics'), expect.anything());
     });
+
+    it('navigates to Problems tab', async () => {
+        await setup();
+        const problemsTab = screen.getByRole('button', { name: /Problems/i });
+        await act(async () => {
+            fireEvent.click(problemsTab);
+        });
+
+        await waitFor(() => expect(screen.getByRole('heading', { level: 2, name: 'Problems Management' })).toBeInTheDocument());
+        expect(screen.getByText('Problems editor coming soon')).toBeInTheDocument();
+    });
+
+    it('handles logout', async () => {
+        await setup();
+        const logoutBtn = screen.getByText('Logout');
+        await act(async () => {
+            fireEvent.click(logoutBtn);
+        });
+
+        // After logout, should show login screen (mock)
+        await waitFor(() => expect(screen.getByText('Mock Login')).toBeInTheDocument());
+    });
+
+    it('handles back to site navigation', async () => {
+        await setup();
+        const backBtn = screen.getByText('Back to Site');
+        expect(backBtn).toBeInTheDocument();
+        // Note: Navigation typically doesn't do much in tests without mocking useNavigate
+    });
+
+    it('handles API errors gracefully', async () => {
+        // Override mock to return error for stats
+        fetchSpy.mockImplementationOnce(() => {
+            return Promise.resolve({ ok: false, json: async () => ({ error: 'Test Error' }) });
+        });
+
+        render(
+            <BrowserRouter>
+                <AdminPage />
+            </BrowserRouter>
+        );
+        const loginBtn = screen.getByText('Mock Login');
+        await act(async () => {
+            fireEvent.click(loginBtn);
+        });
+
+        // Should show error indicator (red text/alert exists)
+        await waitFor(() => {
+            const errorDiv = document.querySelector('.text-red-400');
+            expect(errorDiv).toBeInTheDocument();
+        });
+    });
+
+    it('cancels plan edit modal', async () => {
+        await setup();
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: /Study Plans/i }));
+        });
+
+        // Open add plan modal
+        const addBtn = screen.getByText('Add Plan');
+        await act(async () => {
+            fireEvent.click(addBtn);
+        });
+
+        // Modal should be open
+        expect(screen.getByText('New Plan')).toBeInTheDocument();
+
+        // Cancel
+        const cancelBtn = screen.getByText('Cancel');
+        await act(async () => {
+            fireEvent.click(cancelBtn);
+        });
+
+        // Modal should be closed
+        expect(screen.queryByText('New Plan')).not.toBeInTheDocument();
+    });
+
+    it('handles empty study plans', async () => {
+        // Override mock to return empty plans
+        fetchSpy.mockImplementation((url: string | URL | Request) => {
+            const urlString = url.toString();
+            if (urlString.includes('/api/admin/stats')) {
+                return Promise.resolve({ ok: true, json: async () => mockStats });
+            }
+            if (urlString.includes('/api/admin/study-plans')) {
+                return Promise.resolve({ ok: true, json: async () => ({ plans: {} }) });
+            }
+            return Promise.resolve({ ok: true, json: async () => ({}) });
+        });
+
+        render(
+            <BrowserRouter>
+                <AdminPage />
+            </BrowserRouter>
+        );
+        const loginBtn = screen.getByText('Mock Login');
+        await act(async () => {
+            fireEvent.click(loginBtn);
+        });
+        await waitFor(() => expect(screen.getByText('Admin Panel')).toBeInTheDocument());
+
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: /Study Plans/i }));
+        });
+
+        // No plans should be listed, but Add Plan button should be there
+        expect(screen.getByText('Add Plan')).toBeInTheDocument();
+    });
+
+    it('handles delete confirmation cancelled', async () => {
+        // Override confirm to return false
+        vi.spyOn(window, 'confirm').mockReturnValueOnce(false);
+
+        await setup();
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: /Study Plans/i }));
+        });
+
+        const deleteBtns = screen.getAllByTitle('Delete Plan');
+        await act(async () => {
+            fireEvent.click(deleteBtns[0]);
+        });
+
+        // DELETE should NOT be called when confirm is false
+        expect(fetchSpy).not.toHaveBeenCalledWith(expect.stringContaining('DELETE'), expect.anything());
+    });
 });

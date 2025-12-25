@@ -233,5 +233,41 @@ describe('App Component', () => {
 
         // My mock HotSection will pass 'HashMap'.
     });
+
+    it('renders loading state', () => {
+        (useProblems as Mock).mockReturnValue({
+            problems: [],
+            stats: null,
+            loading: true,
+            error: null,
+            filter: { search: '', difficulty: 'All' },
+            updateFilter: mockUpdateFilter,
+            clearFilters: vi.fn(),
+            refresh: vi.fn()
+        });
+
+        renderApp();
+        // Loading state should show spinner/loading indicator (check class)
+        const loadingSpinner = document.querySelector('.animate-spin') || screen.getByText(/Loading/i);
+        expect(loadingSpinner).toBeInTheDocument();
+    });
+
+    it('handles HotSection problem click', () => {
+        renderApp();
+        const hotProblemBtn = screen.getByText('Hot Problem');
+        fireEvent.click(hotProblemBtn);
+        expect(mockNavigate).toHaveBeenCalledWith('/problem/two-sum');
+    });
+
+    it('handles unauthenticated state', () => {
+        (useAuth as Mock).mockReturnValue({
+            isAuthenticated: false,
+            loading: false
+        });
+
+        renderApp();
+        // Status filters may not be visible or styled differently
+        expect(screen.getByText('Two Sum')).toBeInTheDocument();
+    });
 });
 

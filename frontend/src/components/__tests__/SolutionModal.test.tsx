@@ -256,9 +256,17 @@ describe('SolutionModal', () => {
             writable: true
         });
 
-        vi.stubGlobal('SpeechSynthesisUtterance', vi.fn().mockImplementation(() => ({
-            rate: 1, pitch: 1, volume: 1, onend: null, onerror: null
-        })));
+        vi.stubGlobal('SpeechSynthesisUtterance', class {
+            rate = 1;
+            pitch = 1;
+            volume = 1;
+            onend = null;
+            onerror = null;
+            text = '';
+            constructor(text: string) {
+                this.text = text;
+            }
+        });
 
         // Default Desktop
         Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 1024 });
@@ -554,5 +562,210 @@ describe('SolutionModal', () => {
 
         // Modal should close
         expect(screen.queryByText('Reset Code?')).not.toBeInTheDocument();
+    });
+
+    // Note: This test is skipped because the Monaco mock uses defaultValue="code"
+    // and doesn't sync with the component's code state.
+    it.skip('converts Python template to other languages', async () => {
+        // We need to trigger convertToLanguage. It happens when switching language 
+        // IF no draft exists and no pre-defined implementation implementation exists.
+        // Mock solution with NO implementations for target languages.
+        const pythonOnlySolution = {
+            ...mockSolution,
+            implementations: {} // Ensure no pre-defined implementations
+        };
+
+        render(<SolutionModal {...minProps} solution={pythonOnlySolution} />);
+
+        // Switch to Playground if not already (it is default or part of desktop)
+        // Switch language to Java
+        const select = screen.getByRole('combobox');
+
+        // Helper to check conversion
+        const checkLang = (lang: string, expectedSnippet: string) => {
+            fireEvent.change(select, { target: { value: lang } });
+            const editor = screen.getByTestId('monaco-mock');
+            expect(editor).toHaveValue(expect.stringContaining(expectedSnippet));
+        };
+
+        // Java
+        checkLang('java', 'public int twoSum(int nums, int target)');
+        // C++
+        checkLang('cpp', 'int twoSum(int nums, int target)');
+        // Go
+        checkLang('go', 'func twoSum(nums int, target int) int');
+        // Rust
+        checkLang('rust', 'pub fn two_sum(nums: i32, target: i32) -> i32');
+        // TypeScript
+        checkLang('typescript', 'function twoSum(nums: any, target: any): any');
+        // JavaScript
+        checkLang('javascript', 'var twoSum = function(nums, target)');
+    });
+
+    it('opens custom test case input', () => {
+        render(<SolutionModal {...minProps} />);
+
+        // Open custom case
+        const customBtn = screen.getByText(/Custom Case/i);
+        fireEvent.click(customBtn);
+
+        // Verify input area appears
+        const inputArea = screen.getByPlaceholderText(/Enter input here/i);
+        expect(inputArea).toBeInTheDocument();
+
+        // Can type in it
+        fireEvent.change(inputArea, { target: { value: '[1,2], 3' } });
+        expect(inputArea).toHaveValue('[1,2], 3');
+    });
+
+    it('shows brute force code on approach toggle', () => {
+        render(<SolutionModal {...minProps} />);
+
+        // Go to Explain tab
+        fireEvent.click(screen.getByText(/Explain/i));
+
+        // By default, optimal is selected. Click brute force.
+        const bfBtn = screen.getByText('Brute Force', { selector: 'button' });
+        fireEvent.click(bfBtn);
+
+        // Verify Brute Force section is visible
+        expect(screen.getByText(/Naive\/Brute Force Approach/i)).toBeInTheDocument();
+    });
+
+    it('falls back to Python display code if language missing for Optimal', () => {
+        const partialSolution = {
+            ...mockSolution,
+            implementations: { python: { code: 'def py(): pass' } } // No JS/TS
+        };
+        render(<SolutionModal {...minProps} solution={partialSolution} />);
+
+        // Switch to Explanation tab where code is shown
+        fireEvent.click(screen.getByText(/Explain/i));
+
+        const select = screen.getByRole('combobox');
+        fireEvent.change(select, { target: { value: 'javascript' } });
+
+        // Should show warning
+        expect(screen.getByText(/\(javascript not available, showing Python\)/i)).toBeInTheDocument();
+    });
+
+    it('shows visualizer when solution has visualization data', () => {
+        const solutionWithViz = {
+            ...mockSolution,
+            visualizationType: 'array' as const,
+            animationSteps: [{ type: 'highlight' as const, indices: [0] }]
+        };
+        render(<SolutionModal {...minProps} solution={solutionWithViz} />);
+
+        // Go to Explain tab
+        fireEvent.click(screen.getByText(/Explain/i));
+
+        // Verify visualizer section header
+        expect(screen.getByText('🎬 Visualization')).toBeInTheDocument();
+    });
+
+    it('shows tutor unauthenticated state', () => {
+        mockUseAuth.mockReturnValue({ isAuthenticated: false, login: mockLogin, user: null, logout: vi.fn(), isLoading: false, accessToken: null });
+
+        render(<SolutionModal {...minProps} />);
+
+        // Go to Tutor tab
+        fireEvent.click(screen.getByText(/Tutor/i));
+
+        // Should show start chat button for unauthenticated users
+        expect(screen.getByText('Start Chat')).toBeInTheDocument();
+    });
+
+    it('displays complexity analysis in editor', async () => {
+        vi.useFakeTimers();
+        render(<SolutionModal {...minProps} />);
+
+        // Change code to trigger complexity analysis
+        const editor = screen.getByTestId('monaco-mock');
+        fireEvent.change(editor, { target: { value: 'for i in range(n): pass' } });
+
+        // Advance timers to trigger debounced analysis
+        await act(async () => {
+            vi.advanceTimersByTime(1100);
+        });
+
+        // Complexity should be displayed (from mock) - use getAllByText since there are multiple
+        expect(screen.getAllByText('O(n)').length).toBeGreaterThan(0);
+        expect(screen.getAllByText('O(1)').length).toBeGreaterThan(0);
+
+        vi.useRealTimers();
+    });
+
+    it('renders mobile layout on narrow viewport', () => {
+        Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
+        fireEvent(window, new Event('resize'));
+
+        render(<SolutionModal {...minProps} />);
+
+        // Title should always be visible
+        expect(screen.getByText('Two Sum')).toBeInTheDocument();
+    });
+
+    it('renders with different problem statuses without errors', () => {
+        // Test solved
+        const { rerender, unmount } = render(<SolutionModal {...minProps} problemStatus="solved" />);
+        // Should render without errors
+        expect(screen.getByText('Two Sum')).toBeInTheDocument();
+
+        // Test in-progress
+        rerender(<SolutionModal {...minProps} problemStatus="in-progress" />);
+        expect(screen.getByText('Two Sum')).toBeInTheDocument();
+        unmount();
+    });
+
+    it('shows key insight when available', () => {
+        render(<SolutionModal {...minProps} />);
+
+        fireEvent.click(screen.getByText(/Explain/i));
+
+        // Key insight from mock solution
+        expect(screen.getByText('Hash map lookups are O(1)')).toBeInTheDocument();
+    });
+
+    it('handles solution without key insight', () => {
+        const solutionWithoutKeyInsight = {
+            ...mockSolution,
+            keyInsight: ''
+        };
+
+        render(<SolutionModal {...minProps} solution={solutionWithoutKeyInsight} />);
+        fireEvent.click(screen.getByText(/Explain/i));
+
+        // Should not show key insight section
+        expect(screen.queryByText('💡 Key Insight')).not.toBeInTheDocument();
+    });
+
+    it('handles different language selection', () => {
+        render(<SolutionModal {...minProps} />);
+
+        const select = screen.getByRole('combobox');
+        fireEvent.change(select, { target: { value: 'typescript' } });
+
+        // Editor should update for TypeScript
+        expect(select).toHaveValue('typescript');
+    });
+
+    it('opens custom test case input area', () => {
+        render(<SolutionModal {...minProps} />);
+
+        // Open custom case
+        fireEvent.click(screen.getByText(/Custom Case/i));
+
+        const inputArea = screen.getByPlaceholderText(/Enter input here/i);
+        expect(inputArea).toBeInTheDocument();
+        fireEvent.change(inputArea, { target: { value: '[1,2], 3' } });
+        expect(inputArea).toHaveValue('[1,2], 3');
+    });
+
+    it('displays pattern badge', () => {
+        render(<SolutionModal {...minProps} />);
+
+        // Pattern from mock solution
+        expect(screen.getByText('Two Pointers')).toBeInTheDocument();
     });
 });

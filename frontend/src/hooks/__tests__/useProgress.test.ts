@@ -131,4 +131,67 @@ describe('useProgress', () => {
 
         expect(result.current.isSyncing).toBe(false);
     });
+
+    it('calls saveDraft', () => {
+        const { result } = renderHook(() => useProgress());
+        act(() => {
+            result.current.saveDraft('slug', 'code');
+        });
+        expect(SyncService.saveDraft).toHaveBeenCalledWith('slug', 'code');
+    });
+
+    it('calls getDraft', () => {
+        vi.mocked(SyncService.getDraft).mockReturnValue('saved-code');
+        const { result } = renderHook(() => useProgress());
+        const draft = result.current.getDraft('slug');
+        expect(SyncService.getDraft).toHaveBeenCalledWith('slug');
+        expect(draft).toBe('saved-code');
+    });
+
+    it('calls clearDraft', () => {
+        const { result } = renderHook(() => useProgress());
+        act(() => {
+            result.current.clearDraft('slug');
+        });
+        expect(SyncService.clearDraft).toHaveBeenCalledWith('slug');
+    });
+
+    it('calls isSolved', () => {
+        vi.mocked(SyncService.isSolved).mockReturnValue(true);
+        const { result } = renderHook(() => useProgress());
+        const solved = result.current.isSolved('two-sum');
+        expect(SyncService.isSolved).toHaveBeenCalledWith('two-sum');
+        expect(solved).toBe(true);
+    });
+
+    it('calls isAttempted', () => {
+        vi.mocked(SyncService.isAttempted).mockReturnValue(true);
+        const { result } = renderHook(() => useProgress());
+        const attempted = result.current.isAttempted('two-sum');
+        expect(SyncService.isAttempted).toHaveBeenCalledWith('two-sum');
+        expect(attempted).toBe(true);
+    });
+
+    it('listens for progress_updated window event', () => {
+        const { result } = renderHook(() => useProgress());
+        const newProgress = { ...mockProgress, solvedProblems: [{ slug: 'new', timestamp: 5000, code: 'x' }] };
+        vi.mocked(SyncService.getLocalProgress).mockReturnValue(newProgress);
+
+        act(() => {
+            window.dispatchEvent(new Event('progress_updated'));
+        });
+
+        expect(result.current.progress).toEqual(newProgress);
+    });
+
+    it('handles null attemptedProblems', () => {
+        const progressWithNullAttempted = {
+            ...mockProgress,
+            attemptedProblems: undefined
+        };
+        vi.mocked(SyncService.getLocalProgress).mockReturnValue(progressWithNullAttempted as typeof mockProgress);
+
+        const { result } = renderHook(() => useProgress());
+        expect(result.current.attemptedCount).toBe(0);
+    });
 });

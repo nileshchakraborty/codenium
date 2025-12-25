@@ -117,4 +117,20 @@ describe('useTutor', () => {
         expect(result.current.messages).toEqual([]);
         expect(result.current.error).toBeNull();
     });
+
+    it('handles response with no content (no error but empty response)', async () => {
+        // API returns success but with null/undefined/empty response
+        vi.mocked(TutorAPI.chat).mockResolvedValue({ response: '' });
+
+        const { result } = renderHook(() => useTutor('two-sum'));
+
+        await act(async () => {
+            await result.current.sendMessage('Hi');
+        });
+
+        // User message added but no assistant message since response was empty
+        expect(result.current.messages).toHaveLength(1);
+        expect(result.current.messages[0]).toEqual({ role: 'user', content: 'Hi' });
+        expect(result.current.error).toBeNull();
+    });
 });

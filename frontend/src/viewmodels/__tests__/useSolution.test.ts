@@ -155,6 +155,43 @@ describe('useSolution', () => {
         expect(result.current.error).toBe('Gen Exception');
     });
 
+    // I will insert NEW tests here
+
+    it('handles non-Error objects thrown during fetch', async () => {
+        vi.mocked(SolutionsAPI.getBySlug).mockRejectedValue('String Error');
+        const { result } = renderHook(() => useSolution('two-sum'));
+        await waitFor(() => expect(result.current.loading).toBe(false));
+        expect(result.current.error).toBe('Failed to fetch solution');
+    });
+
+    it('handles non-Error objects thrown during generate', async () => {
+        vi.mocked(SolutionsAPI.getBySlug).mockResolvedValue(mockSolution as unknown as import('../../models/types').Solution);
+        vi.mocked(SolutionsAPI.generate).mockRejectedValue('String Error');
+
+        const { result } = renderHook(() => useSolution('two-sum'));
+        await waitFor(() => expect(result.current.loading).toBe(false));
+
+        await act(async () => {
+            await result.current.generateSolution();
+        });
+
+        expect(result.current.error).toBe('Failed to generate solution');
+    });
+
+    it('handles generation failure without specific error message', async () => {
+        vi.mocked(SolutionsAPI.getBySlug).mockResolvedValue(mockSolution as unknown as import('../../models/types').Solution);
+        vi.mocked(SolutionsAPI.generate).mockResolvedValue({ success: false }); // No error prop
+
+        const { result } = renderHook(() => useSolution('two-sum'));
+        await waitFor(() => expect(result.current.loading).toBe(false));
+
+        await act(async () => {
+            await result.current.generateSolution();
+        });
+
+        expect(result.current.error).toBe('Failed to generate solution');
+    });
+
     it('does not generate if no slug', async () => {
         const { result } = renderHook(() => useSolution(null));
         await act(async () => {
@@ -183,5 +220,31 @@ describe('useSolution', () => {
 
         expect(result.current.solution).toBeNull();
         expect(result.current.activeTab).toBe('problem');
+    });
+
+    it('handles non-Error object thrown in fetchSolution', async () => {
+        vi.mocked(SolutionsAPI.getBySlug).mockRejectedValue('string error');
+
+        const { result } = renderHook(() => useSolution('test-slug'));
+
+        await waitFor(() => {
+            expect(result.current.loading).toBe(false);
+        });
+
+        expect(result.current.error).toBe('Failed to fetch solution');
+    });
+
+    it('handles non-Error object thrown in generateSolution', async () => {
+        vi.mocked(SolutionsAPI.getBySlug).mockResolvedValue(null);
+        vi.mocked(SolutionsAPI.generate).mockRejectedValue('string error');
+
+        const { result } = renderHook(() => useSolution('test-slug'));
+        await waitFor(() => expect(result.current.loading).toBe(false));
+
+        await act(async () => {
+            await result.current.generateSolution();
+        });
+
+        expect(result.current.error).toBe('Failed to generate solution');
     });
 });

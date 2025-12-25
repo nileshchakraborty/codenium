@@ -175,4 +175,77 @@ describe('AuthContext', () => {
         await waitFor(() => expect(screen.getByText('Guest')).toBeInTheDocument());
         expect(localStorage.getItem(authUtils.TOKEN_KEY)).toBeNull();
     });
+
+    it('handles malformed user data in localStorage', async () => {
+        localStorage.setItem(authUtils.USER_KEY, 'invalid-json');
+        localStorage.setItem(authUtils.TOKEN_KEY, 'token123');
+
+        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+
+        render(<AuthProvider><TestComponent /></AuthProvider>);
+
+        await waitFor(() => expect(screen.getByText('Guest')).toBeInTheDocument());
+
+        consoleSpy.mockRestore();
+    });
+
+    it('handles token without user data', async () => {
+        localStorage.setItem(authUtils.TOKEN_KEY, 'token123');
+        localStorage.setItem('codenium_token_expiry', String(Date.now() + 10000));
+        // No user data
+
+        render(<AuthProvider><TestComponent /></AuthProvider>);
+
+        await waitFor(() => expect(screen.getByText('Guest')).toBeInTheDocument());
+    });
+
+    it('returns accessToken from context', async () => {
+        const user = { name: 'Test User', email: 'test@example.com' };
+        localStorage.setItem(authUtils.USER_KEY, JSON.stringify(user));
+        localStorage.setItem(authUtils.TOKEN_KEY, 'test-access-token');
+        localStorage.setItem('codenium_token_expiry', String(Date.now() + 10000));
+
+        const TokenTest = () => {
+            const context = useContext(AuthContext);
+            if (!context) return null;
+            return <div data-testid="token">{context.accessToken}</div>;
+        };
+
+        render(<AuthProvider><TokenTest /></AuthProvider>);
+
+        await waitFor(() => {
+            expect(screen.getByTestId('token')).toHaveTextContent('test-access-token');
+        });
+    });
+
+    it('provides mock login when client ID is missing', async () => {
+        vi.stubEnv('VITE_GOOGLE_CLIENT_ID', '');
+
+        const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => { });
+
+        const LoginTest = () => {
+            const context = useContext(AuthContext);
+            if (!context) return null;
+            return (
+                <div>
+                    <span data-testid="authenticated">{context.isAuthenticated ? 'yes' : 'no'}</span>
+                    <button onClick={context.login}>Login</button>
+                </div>
+            );
+        };
+
+        render(<AuthProvider><LoginTest /></AuthProvider>);
+
+        await waitFor(() => {
+            expect(screen.getByTestId('authenticated')).toHaveTextContent('no');
+        });
+
+        // Click login - should show alert
+        const loginBtn = screen.getByText('Login');
+        loginBtn.click();
+
+        expect(alertSpy).toHaveBeenCalledWith(expect.stringContaining('Google OAuth is not configured'));
+
+        alertSpy.mockRestore();
+    });
 });
