@@ -189,7 +189,7 @@ describe('useProgress', () => {
             ...mockProgress,
             attemptedProblems: undefined
         };
-        vi.mocked(SyncService.getLocalProgress).mockReturnValue(progressWithNullAttempted as typeof mockProgress);
+        vi.mocked(SyncService.getLocalProgress).mockReturnValue(progressWithNullAttempted as unknown as typeof mockProgress);
 
         const { result } = renderHook(() => useProgress());
         expect(result.current.attemptedCount).toBe(0);
