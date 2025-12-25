@@ -269,5 +269,16 @@ describe('App Component', () => {
         // Status filters may not be visible or styled differently
         expect(screen.getByText('Two Sum')).toBeInTheDocument();
     });
+
+    it('handles auth loading state', () => {
+        (useAuth as Mock).mockReturnValue({
+            isAuthenticated: false,
+            loading: true
+        });
+
+        renderApp();
+        // Should still render the app while auth is loading
+        expect(screen.getByTestId('theme-toggle')).toBeInTheDocument();
+    });
 });
 

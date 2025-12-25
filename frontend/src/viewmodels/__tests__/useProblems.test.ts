@@ -242,4 +242,16 @@ describe('useProblems', () => {
         expect(result.current.filteredCategories[0].problems).toHaveLength(1);
         expect(result.current.filteredCategories[0].problems[0].slug).toBe('two-sum');
     });
+
+    it('returns all problems when difficulty is All', async () => {
+        vi.mocked(ProblemsAPI.getAll).mockResolvedValue(mockStats);
+        const { result } = renderHook(() => useProblems());
+        await act(async () => { await new Promise(r => setTimeout(r, 0)); });
+
+        act(() => {
+            result.current.updateFilter({ difficulty: 'All' });
+        });
+
+        expect(result.current.filteredCategories[0].problems).toHaveLength(2);
+    });
 });
