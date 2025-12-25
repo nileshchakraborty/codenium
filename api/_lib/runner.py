@@ -193,7 +193,15 @@ def run_tests_internal():
     is_class_solution = inspect.isclass(solution_func)
 
     for i, test in enumerate(test_cases):
+        expected_str = test.get('output', '').strip()
+        expected_display = expected_str or "(custom - no expected)"
+        
         try:
+            # Print separator for logs
+            print(f"\n{'='*40}")
+            print(f" TEST CASE {i + 1}")
+            print(f"{'='*40}")
+            print(f"Input: {test['input']}")
             # Parse inputs
             local_scope = {'null': None, 'true': True, 'false': False}
             # Input Parsing Strategy
@@ -542,6 +550,10 @@ def run_tests_internal():
                 
             if not passed and expected is not None:
                 all_passed = False
+            print(f"Actual: {actual_val}")
+            print(f"Expected: {expected_display}")
+            print(f"Result: {'PASSED' if passed else 'FAILED'}")
+            print(f"\n")
                 
             results.append({
                 "case": i + 1,
@@ -554,11 +566,16 @@ def run_tests_internal():
         except Exception as e:
             all_passed = False
             import traceback
+            error_msg = traceback.format_exc()
+            print(f"Error: {error_msg}")
+            
             results.append({
                 "case": i + 1,
                 "passed": False,
                 "input": test['input'],
-                "error": traceback.format_exc()
+                "expected": expected_display,
+                "actual": "",
+                "error": error_msg
             })
     
     print(json.dumps({"passed": all_passed, "results": results}))
