@@ -1,342 +1,96 @@
 /**
- * Problem Lists - Curated study plans
+ * Problem Lists - Scalable Study Plans Architecture
  * 
- * Contains Blind 75 and Top Interview 150 lists mapped to their slugs.
- * These are the canonical LeetCode problems for interview prep.
+ * Data is stored in api/data/study-plans.json
+ * This file provides typed interfaces and helper functions.
  */
 
-// Blind 75 - Core interview problems (87 problems - extended version)
-export const BLIND_75: string[] = [
-    // Arrays & Hashing (9)
-    "two-sum",
-    "contains-duplicate",
-    "valid-anagram",
-    "group-anagrams",
-    "top-k-frequent-elements",
-    "product-of-array-except-self",
-    "longest-consecutive-sequence",
-    "encode-and-decode-strings",
-    "valid-sudoku",
+import studyPlansData from '../../../api/data/study-plans.json';
 
-    // Two Pointers (5)
-    "valid-palindrome",
-    "3sum",
-    "container-with-most-water",
-    "two-sum-ii-input-array-is-sorted",
-    "trapping-rain-water",
+// ============================================
+// Types & Interfaces
+// ============================================
 
-    // Sliding Window (4)
-    "longest-substring-without-repeating-characters",
-    "longest-repeating-character-replacement",
-    "permutation-in-string",
-    "minimum-window-substring",
+export interface StudyPlan {
+    id: string;
+    name: string;
+    icon: string;
+    description: string;
+    difficulty?: 'easy' | 'medium' | 'hard' | 'mixed';
+    estimatedHours?: number;
+    problems: string[];
+}
 
-    // Stack (2)
-    "valid-parentheses",
-    "min-stack",
+export interface StudyPlansData {
+    version: string;
+    plans: Record<string, StudyPlan>;
+}
 
-    // Binary Search (5)
-    "binary-search",
-    "search-a-2d-matrix",
-    "koko-eating-bananas",
-    "find-minimum-in-rotated-sorted-array",
-    "search-in-rotated-sorted-array",
+// Type for filter dropdown - 'all' or any plan ID
+export type ListFilter = 'all' | string;
 
-    // Linked List (6)
-    "reverse-linked-list",
-    "merge-two-sorted-lists",
-    "reorder-list",
-    "remove-nth-node-from-end-of-list",
-    "linked-list-cycle",
-    "merge-k-sorted-lists",
+// ============================================
+// Data Access
+// ============================================
 
-    // Trees (14)
-    "invert-binary-tree",
-    "maximum-depth-of-binary-tree",
-    "same-tree",
-    "subtree-of-another-tree",
-    "lowest-common-ancestor-of-a-binary-search-tree",
-    "binary-tree-level-order-traversal",
-    "validate-binary-search-tree",
-    "kth-smallest-element-in-a-bst",
-    "construct-binary-tree-from-preorder-and-inorder-traversal",
-    "binary-tree-maximum-path-sum",
-    "serialize-and-deserialize-binary-tree",
-    "count-good-nodes-in-binary-tree",
-    "binary-tree-right-side-view",
-    "diameter-of-binary-tree",
+const data = studyPlansData as StudyPlansData;
 
-    // Tries (3)
-    "implement-trie-prefix-tree",
-    "design-add-and-search-words-data-structure",
-    "word-search-ii",
+/**
+ * Get all available study plans
+ */
+export const getAllPlans = (): StudyPlan[] => {
+    return Object.values(data.plans);
+};
 
-    // Heap / Priority Queue (3)
-    "kth-largest-element-in-a-stream",
-    "kth-largest-element-in-an-array",
-    "find-median-from-data-stream",
+/**
+ * Get plan IDs for dropdown options
+ */
+export const getPlanIds = (): string[] => {
+    return Object.keys(data.plans);
+};
 
-    // Backtracking (4)
-    "subsets",
-    "combination-sum",
-    "permutations",
-    "word-search",
+/**
+ * Get a specific study plan by ID
+ */
+export const getStudyPlan = (planId: string): StudyPlan | null => {
+    return data.plans[planId] || null;
+};
 
-    // Graphs (8)
-    "number-of-islands",
-    "clone-graph",
-    "pacific-atlantic-water-flow",
-    "course-schedule",
-    "graph-valid-tree",
-    "number-of-connected-components-in-an-undirected-graph",
-    "rotting-oranges",
-    "walls-and-gates",
+/**
+ * Get problems for a specific plan
+ */
+export const getPlanProblems = (planId: string): string[] => {
+    const plan = data.plans[planId];
+    return plan ? plan.problems : [];
+};
 
-    // Dynamic Programming (12)
-    "climbing-stairs",
-    "house-robber",
-    "house-robber-ii",
-    "longest-palindromic-substring",
-    "palindromic-substrings",
-    "decode-ways",
-    "coin-change",
-    "maximum-product-subarray",
-    "word-break",
-    "longest-increasing-subsequence",
-    "partition-equal-subset-sum",
-    "unique-paths",
+/**
+ * Check if a problem slug is in a specific plan
+ */
+export const isInPlan = (slug: string, planId: string): boolean => {
+    const plan = data.plans[planId];
+    return plan ? plan.problems.includes(slug) : false;
+};
 
-    // Greedy (2)
-    "maximum-subarray",
-    "jump-game",
+// ============================================
+// Legacy Compatibility Exports
+// (Maintain backward compatibility with existing code)
+// ============================================
 
-    // Intervals (5)
-    "insert-interval",
-    "merge-intervals",
-    "non-overlapping-intervals",
-    "meeting-rooms",
-    "meeting-rooms-ii",
+/** @deprecated Use getStudyPlan('blind75').problems instead */
+export const BLIND_75: string[] = data.plans.blind75?.problems || [];
 
-    // Math & Bit Manipulation (5)
-    "single-number",
-    "number-of-1-bits",
-    "counting-bits",
-    "reverse-bits",
-    "missing-number",
-];
+/** @deprecated Use getStudyPlan('top150').problems instead */
+export const TOP_150: string[] = data.plans.top150?.problems || [];
 
-// Top Interview 150+ - Extended interview list (no duplicates)
-export const TOP_150: string[] = [
-    // Array / String
-    "merge-sorted-array",
-    "remove-element",
-    "remove-duplicates-from-sorted-array",
-    "remove-duplicates-from-sorted-array-ii",
-    "majority-element",
-    "rotate-array",
-    "best-time-to-buy-and-sell-stock",
-    "best-time-to-buy-and-sell-stock-ii",
-    "best-time-to-buy-and-sell-stock-iii",
-    "jump-game",
-    "jump-game-ii",
-    "h-index",
-    "product-of-array-except-self",
-    "gas-station",
-    "candy",
-    "trapping-rain-water",
-    "roman-to-integer",
-    "integer-to-roman",
-    "length-of-last-word",
-    "longest-common-prefix",
-    "reverse-words-in-a-string",
-    "zigzag-conversion",
-    "find-the-index-of-the-first-occurrence-in-a-string",
-    "text-justification",
+/** @deprecated Use isInPlan(slug, 'blind75') instead */
+export const isInBlind75 = (slug: string): boolean => isInPlan(slug, 'blind75');
 
-    // Two Pointers
-    "valid-palindrome",
-    "is-subsequence",
-    "two-sum-ii-input-array-is-sorted",
-    "container-with-most-water",
-    "3sum",
-    "two-sum",
+/** @deprecated Use isInPlan(slug, 'top150') instead */
+export const isInTop150 = (slug: string): boolean => isInPlan(slug, 'top150');
 
-    // Sliding Window
-    "minimum-size-subarray-sum",
-    "longest-substring-without-repeating-characters",
-    "substring-with-concatenation-of-all-words",
-    "minimum-window-substring",
-
-    // Matrix
-    "valid-sudoku",
-    "spiral-matrix",
-    "rotate-image",
-    "set-matrix-zeroes",
-    "game-of-life",
-
-    // Hashmap
-    "ransom-note",
-    "isomorphic-strings",
-    "word-pattern",
-    "valid-anagram",
-    "group-anagrams",
-    "happy-number",
-    "contains-duplicate-ii",
-    "longest-consecutive-sequence",
-
-    // Intervals
-    "summary-ranges",
-    "merge-intervals",
-    "insert-interval",
-    "minimum-number-of-arrows-to-burst-balloons",
-
-    // Stack
-    "valid-parentheses",
-    "simplify-path",
-    "min-stack",
-    "evaluate-reverse-polish-notation",
-    "basic-calculator",
-    "daily-temperatures",
-    "largest-rectangle-in-histogram",
-
-    // Linked List
-    "linked-list-cycle",
-    "add-two-numbers",
-    "merge-two-sorted-lists",
-    "copy-list-with-random-pointer",
-    "reverse-linked-list",
-    "reverse-linked-list-ii",
-    "reverse-nodes-in-k-group",
-    "remove-nth-node-from-end-of-list",
-    "remove-duplicates-from-sorted-list-ii",
-    "rotate-list",
-    "partition-list",
-    "lru-cache",
-
-    // Binary Tree General
-    "maximum-depth-of-binary-tree",
-    "same-tree",
-    "invert-binary-tree",
-    "symmetric-tree",
-    "construct-binary-tree-from-preorder-and-inorder-traversal",
-    "construct-binary-tree-from-inorder-and-postorder-traversal",
-    "populating-next-right-pointers-in-each-node-ii",
-    "flatten-binary-tree-to-linked-list",
-    "path-sum",
-    "sum-root-to-leaf-numbers",
-    "binary-tree-maximum-path-sum",
-    "count-complete-tree-nodes",
-    "lowest-common-ancestor-of-a-binary-tree",
-    "binary-search-tree-iterator",
-
-    // Binary Tree BFS
-    "binary-tree-right-side-view",
-    "average-of-levels-in-binary-tree",
-    "binary-tree-level-order-traversal",
-    "binary-tree-zigzag-level-order-traversal",
-
-    // Binary Search Tree
-    "minimum-absolute-difference-in-bst",
-    "kth-smallest-element-in-a-bst",
-    "validate-binary-search-tree",
-
-    // Graph General
-    "number-of-islands",
-    "surrounded-regions",
-    "clone-graph",
-    "evaluate-division",
-    "course-schedule",
-    "course-schedule-ii",
-
-    // Graph BFS
-    "snakes-and-ladders",
-    "minimum-genetic-mutation",
-    "word-ladder",
-
-    // Trie
-    "implement-trie-prefix-tree",
-    "design-add-and-search-words-data-structure",
-    "word-search-ii",
-
-    // Backtracking
-    "letter-combinations-of-a-phone-number",
-    "combinations",
-    "permutations",
-    "combination-sum",
-    "n-queens-ii",
-    "generate-parentheses",
-    "word-search",
-
-    // Divide & Conquer
-    "convert-sorted-array-to-binary-search-tree",
-    "sort-list",
-    "construct-quad-tree",
-    "merge-k-sorted-lists",
-
-    // Binary Search
-    "search-insert-position",
-    "search-a-2d-matrix",
-    "find-peak-element",
-    "search-in-rotated-sorted-array",
-    "find-first-and-last-position-of-element-in-sorted-array",
-    "find-minimum-in-rotated-sorted-array",
-    "median-of-two-sorted-arrays",
-
-    // Heap / Priority Queue
-    "kth-largest-element-in-an-array",
-    "ipo",
-    "find-k-pairs-with-smallest-sums",
-    "find-median-from-data-stream",
-    "task-scheduler",
-    "design-twitter",
-
-    // Bit Manipulation
-    "add-binary",
-    "reverse-bits",
-    "number-of-1-bits",
-    "single-number",
-    "single-number-ii",
-    "bitwise-and-of-numbers-range",
-
-    // Math
-    "palindrome-number",
-    "plus-one",
-    "factorial-trailing-zeroes",
-    "sqrtx",
-    "powx-n",
-    "max-points-on-a-line",
-
-    // 1D DP
-    "climbing-stairs",
-    "house-robber",
-    "word-break",
-    "coin-change",
-    "longest-increasing-subsequence",
-
-    // Multidimensional DP
-    "triangle",
-    "minimum-path-sum",
-    "unique-paths-ii",
-    "longest-common-subsequence",
-    "edit-distance",
-    "interleaving-string",
-    "maximal-square",
-    "distinct-subsequences",
-];
-
-export type ListFilter = 'all' | 'blind75' | 'top150';
-
-// Helper to check if a slug is in a list
-export const isInBlind75 = (slug: string): boolean => BLIND_75.includes(slug);
-export const isInTop150 = (slug: string): boolean => TOP_150.includes(slug);
-
+/** @deprecated Use getPlanProblems(filter) instead */
 export const getProblemList = (filter: ListFilter): string[] | null => {
-    switch (filter) {
-        case 'blind75':
-            return BLIND_75;
-        case 'top150':
-            return TOP_150;
-        default:
-            return null; // null means all problems
-    }
+    if (filter === 'all') return null;
+    return getPlanProblems(filter) || null;
 };

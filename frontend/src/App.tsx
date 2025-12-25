@@ -11,7 +11,7 @@ import { useAuth } from './hooks/useAuth';
 import { SearchEngine } from './utils/SearchEngine';
 import { ThemeToggle } from './components/ThemeToggle';
 import { LoginButton } from './components/LoginButton';
-import { BLIND_75, TOP_150, type ListFilter } from './data/problemLists';
+import { getAllPlans, getPlanProblems, type ListFilter } from './data/problemLists';
 import { HotSection } from './components/HotSection';
 import CodeniumLogo from './assets/logo.svg';
 import { Search, Filter, ChevronUp, ChevronDown, Check, Zap, CheckCircle, Pencil } from 'lucide-react';
@@ -48,9 +48,8 @@ function App() {
     // Filter function based on list selection
     const isInList = (slug: string) => {
       if (listFilter === 'all') return true;
-      if (listFilter === 'blind75') return BLIND_75.includes(slug);
-      if (listFilter === 'top150') return TOP_150.includes(slug);
-      return true;
+      const planProblems = getPlanProblems(listFilter);
+      return planProblems.includes(slug);
     };
 
     let totalEasy = 0, totalMedium = 0, totalHard = 0;
@@ -162,10 +161,9 @@ function App() {
 
       // List filter
       let matchesList = true;
-      if (listFilter === 'blind75') {
-        matchesList = BLIND_75.includes(p.slug);
-      } else if (listFilter === 'top150') {
-        matchesList = TOP_150.includes(p.slug);
+      if (listFilter !== 'all') {
+        const planProblems = getPlanProblems(listFilter);
+        matchesList = planProblems.includes(p.slug);
       }
 
       // Status filter
@@ -303,8 +301,9 @@ function App() {
                 className="appearance-none bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl py-2.5 pl-4 pr-10 text-sm font-medium text-slate-900 dark:text-slate-200 focus:outline-none focus:border-purple-500 cursor-pointer transition-colors"
               >
                 <option value="all">📚 All Problems</option>
-                <option value="blind75">🔥 Blind 75</option>
-                <option value="top150">⭐ Top 150</option>
+                {getAllPlans().map(plan => (
+                  <option key={plan.id} value={plan.id}>{plan.icon} {plan.name}</option>
+                ))}
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
             </div>
@@ -313,12 +312,12 @@ function App() {
             {isAuthenticated && listFilter !== 'all' && (
               <div className="flex items-center gap-4 bg-slate-900 rounded-xl px-4 py-2 border border-slate-800">
                 <div className="flex items-center gap-3 text-sm">
-                  <span className="text-emerald-400 font-medium">{stats.categories.flatMap(c => c.problems).filter(p => p.difficulty === 'Easy' && (listFilter === 'blind75' ? BLIND_75.includes(p.slug) : TOP_150.includes(p.slug)) && isSolved(p.slug)).length}/{stats.categories.flatMap(c => c.problems).filter(p => p.difficulty === 'Easy' && (listFilter === 'blind75' ? BLIND_75.includes(p.slug) : TOP_150.includes(p.slug))).length}</span>
-                  <span className="text-amber-400 font-medium">{stats.categories.flatMap(c => c.problems).filter(p => p.difficulty === 'Medium' && (listFilter === 'blind75' ? BLIND_75.includes(p.slug) : TOP_150.includes(p.slug)) && isSolved(p.slug)).length}/{stats.categories.flatMap(c => c.problems).filter(p => p.difficulty === 'Medium' && (listFilter === 'blind75' ? BLIND_75.includes(p.slug) : TOP_150.includes(p.slug))).length}</span>
-                  <span className="text-rose-400 font-medium">{stats.categories.flatMap(c => c.problems).filter(p => p.difficulty === 'Hard' && (listFilter === 'blind75' ? BLIND_75.includes(p.slug) : TOP_150.includes(p.slug)) && isSolved(p.slug)).length}/{stats.categories.flatMap(c => c.problems).filter(p => p.difficulty === 'Hard' && (listFilter === 'blind75' ? BLIND_75.includes(p.slug) : TOP_150.includes(p.slug))).length}</span>
+                  <span className="text-emerald-400 font-medium">{stats.categories.flatMap(c => c.problems).filter(p => p.difficulty === 'Easy' && getPlanProblems(listFilter).includes(p.slug) && isSolved(p.slug)).length}/{stats.categories.flatMap(c => c.problems).filter(p => p.difficulty === 'Easy' && getPlanProblems(listFilter).includes(p.slug)).length}</span>
+                  <span className="text-amber-400 font-medium">{stats.categories.flatMap(c => c.problems).filter(p => p.difficulty === 'Medium' && getPlanProblems(listFilter).includes(p.slug) && isSolved(p.slug)).length}/{stats.categories.flatMap(c => c.problems).filter(p => p.difficulty === 'Medium' && getPlanProblems(listFilter).includes(p.slug)).length}</span>
+                  <span className="text-rose-400 font-medium">{stats.categories.flatMap(c => c.problems).filter(p => p.difficulty === 'Hard' && getPlanProblems(listFilter).includes(p.slug) && isSolved(p.slug)).length}/{stats.categories.flatMap(c => c.problems).filter(p => p.difficulty === 'Hard' && getPlanProblems(listFilter).includes(p.slug)).length}</span>
                 </div>
                 <div className="h-5 w-px bg-slate-700" />
-                <span className="text-white font-bold">{solvedCount}<span className="text-slate-500 font-normal">/{listFilter === 'blind75' ? BLIND_75.length : TOP_150.length}</span></span>
+                <span className="text-white font-bold">{solvedCount}<span className="text-slate-500 font-normal">/{getPlanProblems(listFilter).length}</span></span>
               </div>
             )}
           </div>
