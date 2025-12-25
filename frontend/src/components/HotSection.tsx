@@ -32,6 +32,43 @@ export const HotSection: React.FC<HotSectionProps> = ({ onProblemClick, onTopicC
         return () => clearInterval(interval);
     }, []);
 
+    // Simulate live activity - Increment views/solves periodically
+    useEffect(() => {
+        if (hotProblems.length === 0) return;
+
+        const interval = setInterval(() => {
+            setHotProblems(currentProblems => {
+                // formatting check to avoid errors if state is cleared
+                if (currentProblems.length === 0) return [];
+
+                // Create a shallow copy
+                const updated = [...currentProblems];
+
+                // Pick 1-3 random problems to update
+                const updateCount = Math.floor(Math.random() * 3) + 1;
+
+                for (let i = 0; i < updateCount; i++) {
+                    const idx = Math.floor(Math.random() * updated.length);
+                    const problem = { ...updated[idx] };
+
+                    // Increment views (1-5)
+                    problem.views += Math.floor(Math.random() * 5) + 1;
+
+                    // Increment solves (0-2) - less frequent
+                    if (Math.random() > 0.3) {
+                        problem.solves += Math.floor(Math.random() * 2);
+                    }
+
+                    updated[idx] = problem;
+                }
+
+                return updated;
+            });
+        }, 3000); // Update every 3 seconds
+
+        return () => clearInterval(interval);
+    }, [hotProblems.length]);
+
     const formatSlug = useCallback((slug: string) => {
         return slug.split('-').map(word =>
             word.charAt(0).toUpperCase() + word.slice(1)
@@ -54,7 +91,7 @@ export const HotSection: React.FC<HotSectionProps> = ({ onProblemClick, onTopicC
     }
 
     return (
-        <div className="mb-6 p-4 bg-white/50 dark:bg-gradient-to-r dark:from-amber-500/5 dark:via-rose-500/5 dark:to-purple-500/5 rounded-2xl border border-slate-200 dark:border-amber-500/10 shadow-sm dark:shadow-none">
+        <div className="mb-6 p-4 bg-white/50 dark:bg-transparent dark:bg-gradient-to-r dark:from-amber-500/5 dark:via-rose-500/5 dark:to-purple-500/5 rounded-2xl border border-slate-200 dark:border-amber-500/10 shadow-sm dark:shadow-none">
             <div className="flex items-center gap-2 mb-4">
                 <Flame className="text-amber-500" size={20} />
                 <h2 className="text-lg font-bold text-gray-900 dark:text-white">Hot Right Now</h2>
