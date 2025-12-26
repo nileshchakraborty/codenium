@@ -20,7 +20,7 @@ export const HotSection: React.FC<HotSectionProps> = ({ onProblemClick, onTopicC
     useEffect(() => {
         const fetchRecommendations = async () => {
             setLoading(true);
-            const data = await RecommendationService.getRecommendations(6, 5);
+            const data = await RecommendationService.getRecommendations(6, 6);
             setHotProblems(data.hotProblems);
             setHotTopics(data.hotTopics);
             setLoading(false);
@@ -32,42 +32,48 @@ export const HotSection: React.FC<HotSectionProps> = ({ onProblemClick, onTopicC
         return () => clearInterval(interval);
     }, []);
 
-    // Simulate live activity - Increment views/solves periodically
+    // Simulate live activity - Persist updates to server
     useEffect(() => {
         if (hotProblems.length === 0) return;
 
-        const interval = setInterval(() => {
-            setHotProblems(currentProblems => {
-                // formatting check to avoid errors if state is cleared
-                if (currentProblems.length === 0) return [];
+        const timer = setTimeout(async () => {
+            // Prepare updates
+            const updates: { slug: string; views?: number; solves?: number }[] = [];
 
-                // Create a shallow copy
-                const updated = [...currentProblems];
+            // Pick 1-3 random problems to update
+            const updateCount = Math.floor(Math.random() * 3) + 1;
 
-                // Pick 1-3 random problems to update
-                const updateCount = Math.floor(Math.random() * 3) + 1;
+            for (let i = 0; i < updateCount; i++) {
+                const idx = Math.floor(Math.random() * hotProblems.length);
+                const problem = hotProblems[idx];
 
-                for (let i = 0; i < updateCount; i++) {
-                    const idx = Math.floor(Math.random() * updated.length);
-                    const problem = { ...updated[idx] };
+                const u: { slug: string; views?: number; solves?: number } = { slug: problem.slug };
+                // Increment views (1-5)
+                u.views = Math.floor(Math.random() * 5) + 1;
 
-                    // Increment views (1-5)
-                    problem.views += Math.floor(Math.random() * 5) + 1;
-
-                    // Increment solves (0-2) - less frequent
-                    if (Math.random() > 0.3) {
-                        problem.solves += Math.floor(Math.random() * 2);
-                    }
-
-                    updated[idx] = problem;
+                // Increment solves (0-2) - less frequent
+                if (Math.random() > 0.3) {
+                    u.solves = Math.floor(Math.random() * 2);
                 }
+                updates.push(u);
+            }
 
-                return updated;
-            });
-        }, 3000); // Update every 3 seconds
+            if (updates.length > 0) {
+                try {
+                    const newData = await RecommendationService.updateStats(updates);
+                    if (newData && newData.hotProblems && newData.hotProblems.length > 0) {
+                        setHotProblems(newData.hotProblems);
+                        // We could update topics too if returned
+                        if (newData.hotTopics) setHotTopics(newData.hotTopics);
+                    }
+                } catch (e) {
+                    console.error("Failed to persist simulation", e);
+                }
+            }
+        }, 3000); // update every 3 seconds
 
-        return () => clearInterval(interval);
-    }, [hotProblems.length]);
+        return () => clearTimeout(timer);
+    }, [hotProblems]);
 
     const formatSlug = useCallback((slug: string) => {
         return slug.split('-').map(word =>

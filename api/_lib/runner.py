@@ -198,9 +198,10 @@ def run_tests_internal():
         
         try:
             # Print separator for logs
-            print(f"\n{'='*40}")
+            print()
+            print('='*40)
             print(f" TEST CASE {i + 1}")
-            print(f"{'='*40}")
+            print('='*40)
             print(f"Input: {test['input']}")
             # Parse inputs
             local_scope = {'null': None, 'true': True, 'false': False}
@@ -553,7 +554,7 @@ def run_tests_internal():
             print(f"Actual: {actual_val}")
             print(f"Expected: {expected_display}")
             print(f"Result: {'PASSED' if passed else 'FAILED'}")
-            print(f"\n")
+            print()
                 
             results.append({
                 "case": i + 1,
