@@ -11,6 +11,11 @@ type Monaco = typeof import('monaco-editor');
 export const registerCompleters = (monaco: Monaco): IDisposable[] => {
     const disposables: IDisposable[] = [];
 
+    // Guard for test environments where monaco.languages may not be available
+    if (!monaco?.languages?.registerCompletionItemProvider) {
+        return disposables;
+    }
+
     // Helper to create a completion item without specifying range (Monaco fills it)
     const createSuggestion = (
         label: string,

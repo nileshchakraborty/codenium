@@ -58,7 +58,11 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ videoId }) => {
             tag.id = 'youtube-iframe-api';
             tag.src = "https://www.youtube.com/iframe_api";
             const firstScriptTag = document.getElementsByTagName('script')[0];
-            firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+            if (firstScriptTag?.parentNode) {
+                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+            } else {
+                document.head.appendChild(tag);
+            }
         }
 
         const checkAPIReady = setInterval(() => {
