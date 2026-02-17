@@ -30,7 +30,7 @@ run-frontend:
 	cd frontend && npm run dev
 
 test:
-	python3 validate_all.py
+	python3 scripts/validate_all.py
 
 build:
 	@echo "Building Frontend..."

@@ -21,7 +21,7 @@ kill_port 3000
 
 # Run Validation
 echo "🧪 Validating Infrastructure..."
-npx ts-node backend-node/scripts/validate_infrastructure.ts
+node scripts/validate_infrastructure.js
 if [ $? -ne 0 ]; then
     echo "❌ Validation failed. Check your environment variables and connections."
     exit 1

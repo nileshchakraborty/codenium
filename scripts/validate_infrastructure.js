@@ -1,13 +1,11 @@
-
-import { redisService } from '../src/services/RedisService';
-import { supabase } from '../src/repositories/SupabaseClient';
-import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
-import path from 'path';
-import axios from 'axios';
+const Redis = require('ioredis');
+const { createClient } = require('@supabase/supabase-js');
+const dotenv = require('dotenv');
+const path = require('path');
+const axios = require('axios');
 
 // Load environment variables
-const envPath = path.resolve(__dirname, '../../.env');
+const envPath = path.resolve(__dirname, '../.env');
 dotenv.config({ path: envPath });
 
 async function validateInfrastructure() {
@@ -19,12 +17,14 @@ async function validateInfrastructure() {
     // 1. Validate Redis
     try {
         console.log('Testing Redis (L2 Cache)...');
-        // Simple write/read test
-        const testKey = 'infra_test_key';
-        await redisService.set(testKey, { status: 'ok' }, 10);
-        const result = await redisService.get<{ status: string }>(testKey);
+        const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+        const redis = new Redis(redisUrl, { maxRetriesPerRequest: 1 });
+        
+        await redis.set('infra_test_key', 'ok', 'EX', 10);
+        const result = await redis.get('infra_test_key');
+        await redis.quit();
 
-        if (result && result.status === 'ok') {
+        if (result === 'ok') {
             console.log('✅ Redis is Connected and Writable');
         } else {
             console.error('❌ Redis Read/Write Failed');
@@ -45,7 +45,7 @@ async function validateInfrastructure() {
             console.error('❌ Supabase Credentials Missing in .env');
             allPassed = false;
         } else {
-            // Test connection by fetching a simple query (e.g. count of problems)
+            const supabase = createClient(url, key);
             const { count, error } = await supabase
                 .from('problems')
                 .select('*', { count: 'exact', head: true });
@@ -70,11 +70,10 @@ async function validateInfrastructure() {
             const baseUrl = process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434';
             const model = process.env.OLLAMA_MODEL || 'deepseek-coder';
             
-            // Normalize URL and call tags endpoint to verify connection and model list
             const normalizedBaseUrl = baseUrl.replace(/\/+$/, '');
             const url = normalizedBaseUrl.endsWith('/api') ? `${normalizedBaseUrl}/tags` : `${normalizedBaseUrl}/api/tags`;
             
-            const headers: Record<string, string> = {};
+            const headers = {};
             if (process.env.OLLAMA_API_KEY) {
                 headers['Authorization'] = `Bearer ${process.env.OLLAMA_API_KEY}`;
             }
@@ -83,13 +82,12 @@ async function validateInfrastructure() {
             
             if (response.status === 200) {
                 console.log(`✅ Ollama is Connected. Base URL: ${baseUrl}`);
-                // Check if specific model is available
                 const models = response.data.models || [];
-                const modelExists = models.find((m: any) => m.name.includes(model));
+                const modelExists = models.find((m) => m.name.includes(model));
                 if (modelExists) {
                     console.log(`✅ Model "${model}" is available`);
                 } else {
-                    console.warn(`⚠️ Warning: Model "${model}" not found in local Ollama instance (available: ${models.map((m: any) => m.name).join(', ')})`);
+                    console.warn(`⚠️ Warning: Model "${model}" not found in local Ollama instance`);
                 }
             } else {
                 console.error('❌ Ollama Connection Failed with status:', response.status);
@@ -104,9 +102,8 @@ async function validateInfrastructure() {
                 console.log('✅ OpenAI Configured (API key present)');
             }
         }
-    } catch (e: any) {
+    } catch (e) {
         console.error('❌ Ollama/AI Connection Error:', e.message);
-        // Don't fail the entire infra check if AI is down (to allow offline dev), but warn
         console.warn('⚠️  Proceeding with caution - AI features may not work.');
     }
 
