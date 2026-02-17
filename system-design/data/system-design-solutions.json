@@ -1,0 +1,452 @@
+{
+  "design-rate-limiter": {
+    "title": "Design a Distributed Rate Limiter",
+    "videoId": "MIJFyUPG4Z4",
+    "description": "Design a system that can limit the number of requests a user can make to an API in a distributed environment.",
+    "intuition": [
+      "Start by asking: where in the request path should limiting happen? At the edge (API Gateway) or deeper?",
+      "Think about the trade-off between accuracy and latency — a centralized counter is accurate but slow; local counters are fast but inconsistent.",
+      "The core challenge is synchronizing rate counts across distributed nodes without adding latency."
+    ],
+    "walkthrough": [
+      "Clarify requirements: per-user vs per-IP, fixed window vs sliding window, hard vs soft limits",
+      "Choose algorithm: Token Bucket (allows bursts) vs Sliding Window Log (precise) vs Fixed Window Counter (simple)",
+      "Place rate limiter at API Gateway layer for centralized enforcement",
+      "Use Redis for distributed counters — atomic INCR + EXPIRE for window-based counting",
+      "Handle race conditions with Redis Lua scripts for atomic check-and-increment",
+      "Add rate limit headers (X-RateLimit-Remaining, X-RateLimit-Reset) to responses",
+      "Design fallback: if Redis is down, fail-open (allow) or fail-closed (deny)?"
+    ],
+    "hints": [
+      "Think about where to store the request count. An in-memory store won't work across multiple servers — what shared, fast store could you use?",
+      "Consider the Token Bucket algorithm: each user gets a bucket that refills at a fixed rate. How would you implement this with Redis?",
+      "Use Redis INCR with EXPIRE for atomic counter operations. A Lua script can make the check-and-increment atomic to prevent race conditions."
+    ],
+    "keyInsight": "The sliding window algorithm with Redis provides the best balance: it prevents the boundary burst problem of fixed windows while keeping O(1) time complexity per check. The real challenge isn't the algorithm — it's handling the distributed synchronization gracefully.",
+    "mentalModel": "Think of it like a nightclub bouncer with a clicker counter. Each user has their own counter that resets every minute. The bouncer (Redis) is shared across all doors (servers) so no matter which door you try, your count is tracked globally.",
+    "expectedArchitectureSummary": "A good architecture shows clients hitting a Load Balancer, which routes to API Gateway instances. Each gateway checks with a shared Redis cluster before forwarding to backend services. A Rules Engine/Config Store feeds rate limit rules to the gateway. The Redis cluster uses replication for availability.",
+    "difficulty": "Medium",
+    "pattern": "Distributed Counting + Sliding Window",
+    "relatedProblems": ["design-notification-system", "design-unique-id-generator"]
+  },
+  "design-url-shortener": {
+    "title": "Design a URL Shortener (TinyURL)",
+    "videoId": "iUU4O1sWtJA",
+    "description": "Design a service that takes a long URL and generates a short, unique alias for it.",
+    "intuition": [
+      "The core problem is mapping: how do you create a short, unique key for each long URL?",
+      "This is fundamentally a read-heavy system — 100x more redirects than URL creations.",
+      "The short URL length determines your address space: 7 chars in base62 = 3.5 trillion unique URLs."
+    ],
+    "walkthrough": [
+      "Calculate scale: 100M new URLs/day × 365 days × 10 years = 365B URLs total",
+      "Choose ID generation: base62 encoding of auto-increment ID vs MD5 hash truncation vs pre-generated key pool",
+      "Design the write path: generate short key → store (shortKey, longURL) → return short URL",
+      "Design the read path: lookup shortKey → 301/302 redirect to longURL",
+      "Add caching layer (Redis) for hot URLs — most redirects hit a small set of popular URLs",
+      "Handle custom aliases: check uniqueness, reserve the key",
+      "Add analytics: track clicks asynchronously (don't slow down redirects)"
+    ],
+    "hints": [
+      "How many characters do you need for the short URL? Think about base62 encoding (a-z, A-Z, 0-9) and how many unique combinations each length gives you.",
+      "The redirect should be blazing fast. What layer can you add between the application server and database to serve repeated lookups in microseconds?",
+      "Consider pre-generating a pool of unique keys in advance. A separate Key Generation Service can pre-compute keys so the write path doesn't need to check for collisions."
+    ],
+    "keyInsight": "The smartest approach is a pre-generated key pool: generate millions of unique base62 keys in advance and assign them to URLs on creation. This eliminates collision checks entirely and makes writes O(1). The KGS (Key Generation Service) pattern is reusable across many system design problems.",
+    "mentalModel": "Think of a coat check at a restaurant. When you arrive (create URL), you get a numbered ticket (short key). When you return (redirect), you hand in the ticket and get your coat (long URL) back instantly. The restaurant pre-prints all tickets — it doesn't generate them on the fly.",
+    "expectedArchitectureSummary": "A good architecture shows: Client → Load Balancer → Application Servers (read/write split). Write path goes through a Key Generation Service to a Database. Read path hits a Cache (Redis) first, falls back to Database. An Analytics Service processes click events asynchronously via a Message Queue.",
+    "difficulty": "Easy",
+    "pattern": "Key-Value Mapping + Caching",
+    "relatedProblems": ["design-unique-id-generator"]
+  },
+  "design-distributed-cache": {
+    "title": "Design a Distributed Cache",
+    "videoId": "dGAgxozNWFE",
+    "description": "Design a highly available and scalable distributed cache system like Redis or Memcached.",
+    "intuition": [
+      "A cache is only useful if it's faster than the source — every design decision should optimize for sub-millisecond latency.",
+      "The hardest problem isn't caching — it's cache invalidation and consistency with the source of truth.",
+      "Data distribution across nodes is the key architectural decision: how do you spread data evenly and handle node additions/removals?"
+    ],
+    "walkthrough": [
+      "Define the API: GET(key), SET(key, value, TTL), DELETE(key)",
+      "Choose data distribution: Consistent Hashing to minimize key redistribution when nodes change",
+      "Design the hash ring with virtual nodes to prevent hotspots",
+      "Implement eviction policies: LRU (most common), LFU (frequency-based), TTL-based expiry",
+      "Add replication: each key stored on N consecutive nodes on the hash ring for availability",
+      "Handle cache stampede: use locking or probabilistic early expiration",
+      "Design the client library: it needs to know the hash ring topology and route requests"
+    ],
+    "hints": [
+      "When you add or remove a cache node, you don't want to invalidate everything. What hashing technique ensures only a small fraction of keys need to move?",
+      "What happens when a popular cache key expires and 1000 requests simultaneously try to rebuild it? This is called a cache stampede — how would you prevent it?",
+      "Use Consistent Hashing with virtual nodes. Each physical node gets 100-200 virtual positions on the hash ring, ensuring even data distribution. Replicate each key to the next N nodes on the ring for fault tolerance."
+    ],
+    "keyInsight": "Consistent hashing with virtual nodes is the backbone of every distributed cache. Without virtual nodes, adding a single server can create massive imbalance. With 150+ virtual nodes per server, data distribution stays within 5-10% of perfectly balanced — even during node failures.",
+    "mentalModel": "Imagine a circular clock with 12 positions. Each cache server owns a section of the clock. When you need to store data, you hash the key to a position on the clock and walk clockwise to the nearest server. Adding a new server only steals keys from its clockwise neighbor, not from everyone.",
+    "expectedArchitectureSummary": "A good architecture shows: Clients with a Cache Client Library that understands the hash ring. Multiple Cache Nodes arranged in a Consistent Hash Ring. A Replication Manager syncing data across replica nodes. A Health Monitor detecting failed nodes and updating the ring. An Eviction Policy Engine running on each node.",
+    "difficulty": "Medium",
+    "pattern": "Consistent Hashing + Replication",
+    "relatedProblems": ["design-rate-limiter", "design-distributed-sql"]
+  },
+  "design-notification-system": {
+    "title": "Design a Notification System",
+    "videoId": "_vj_g4p75Es",
+    "description": "Design a robust notification system for push, SMS, and email with priority queues and retries.",
+    "intuition": [
+      "The system is essentially a fan-out pipeline: one event → multiple channels → millions of recipients.",
+      "Each delivery channel (push, SMS, email) has different latency expectations and failure modes.",
+      "The key challenge is reliability: you need at-least-once delivery with deduplication, not exactly-once."
+    ],
+    "walkthrough": [
+      "Identify notification types: transactional (password reset), promotional (marketing), system alerts",
+      "Design the ingestion API: accept notification requests with recipient, channel, priority, template",
+      "Route to channel-specific queues: separate queues for push, SMS, email with priority ordering",
+      "Implement workers per channel: Push workers talk to APNs/FCM, SMS workers to Twilio, Email to SES",
+      "Add retry logic with exponential backoff and dead-letter queues for persistent failures",
+      "Build user preference service: check do-not-disturb, channel preferences, frequency caps",
+      "Add rate limiting per user to prevent notification fatigue"
+    ],
+    "hints": [
+      "Should you use one big queue or separate queues per channel? Think about how SMS failures shouldn't block email delivery.",
+      "How do you ensure a notification is delivered at least once without spamming the user with duplicates? Think about idempotency keys.",
+      "Use separate priority queues per channel (Push, SMS, Email). Each has dedicated worker pools. Add an idempotency table to prevent duplicate sends — check the notification ID before sending."
+    ],
+    "keyInsight": "The priority queue architecture is critical: urgent notifications (2FA codes) must bypass the queue of millions of marketing emails. Separate queues per channel AND per priority level give you independent scaling and prevent head-of-line blocking.",
+    "mentalModel": "Think of a post office sorting facility. Letters arrive at intake (API), get sorted by type (channel) and urgency (priority) into different conveyor belts (queues). Each belt leads to specialized workers (push/SMS/email). If a delivery fails, the letter goes back to a retry pile, not to the front of the main line.",
+    "expectedArchitectureSummary": "A good architecture shows: Notification Service receiving requests → routing to channel-specific Priority Queues (push, SMS, email). Worker pools per channel connect to third-party providers (APNs, FCM, Twilio, SES). A User Preference Store is checked before sending. Failed deliveries go to a Retry Queue with a Dead Letter Queue. A Template Engine renders notification content.",
+    "difficulty": "Medium",
+    "pattern": "Fan-out + Priority Queues + Retry",
+    "relatedProblems": ["design-news-feed", "design-whatsapp"]
+  },
+  "design-metrics-monitoring": {
+    "title": "Design a Metrics Monitoring System",
+    "videoId": "9B6yYRMWvrg",
+    "description": "Design a real-time metrics collection and alerting system for infrastructure health.",
+    "intuition": [
+      "This is a write-heavy, append-only workload — fundamentally different from typical CRUD applications.",
+      "Time-series data has a unique access pattern: recent data is queried frequently, old data rarely.",
+      "The alerting system must be decoupled from data ingestion — a spike in metrics shouldn't delay alerts."
+    ],
+    "walkthrough": [
+      "Define metric types: counters (requests), gauges (CPU%), histograms (latency distribution)",
+      "Choose collection model: Pull (Prometheus-style, server scrapes agents) vs Push (agents send to collector)",
+      "Design the ingestion pipeline: Agents → Collector → Kafka → Time-series DB writer",
+      "Select storage: Time-series database (InfluxDB, Prometheus TSDB) optimized for append + range queries",
+      "Implement downsampling: raw data (7 days) → 1-min averages (30 days) → 1-hour averages (1 year)",
+      "Build query service for dashboards: support aggregations across time ranges and tag dimensions",
+      "Design alerting engine: evaluate rules against incoming data, fire alerts via notification system"
+    ],
+    "hints": [
+      "Metrics data is append-only and time-ordered. What type of specialized database is optimized for this exact access pattern?",
+      "Storing raw data forever is prohibitively expensive. How can you keep recent data at full resolution while compressing older data?",
+      "Use a Time-Series Database (like InfluxDB or Prometheus TSDB) for storage. Implement a downsampling pipeline: keep raw data for 7 days, then compact to 1-minute averages for 30 days, then 1-hour averages for 1 year. Use Kafka as a buffer between collectors and the database."
+    ],
+    "keyInsight": "The pull-based collection model (Prometheus-style) is superior for monitoring: the central server controls scrape frequency, can detect when a target is down (no data = alert), and doesn't require agents to know about the monitoring infrastructure. Push is better for short-lived jobs.",
+    "mentalModel": "Think of a hospital monitoring system. Each patient (server) has sensors (agents) that constantly measure vitals (metrics). A central nurse station (collector) polls each room on a schedule (pull model). Readings go into medical charts (time-series DB). If a vital crosses a threshold, an alarm sounds immediately (alerting engine) — independent of how busy the charting system is.",
+    "expectedArchitectureSummary": "A good architecture shows: Metrics Agents on servers → Metrics Collectors (pull or push) → Kafka message queue → Time-Series Database writers. A Query Service serves dashboard requests. An Alerting Engine evaluates rules against the data stream and fires alerts via a Notification Service. A downsampling job periodically compacts old data.",
+    "difficulty": "Medium",
+    "pattern": "Time-Series Pipeline + Alerting",
+    "relatedProblems": ["design-notification-system", "design-web-crawler"]
+  },
+  "design-unique-id-generator": {
+    "title": "Design a Distributed Unique ID Generator",
+    "videoId": "g3BV_holJK4",
+    "description": "Design a system that generates unique and sortable IDs in a distributed environment.",
+    "intuition": [
+      "Auto-increment IDs from a single database don't scale — they create a single point of failure and bottleneck.",
+      "UUIDs are unique but not sortable and waste space (128 bits). We need something better.",
+      "The key insight is embedding time into the ID structure so IDs are naturally time-ordered."
+    ],
+    "walkthrough": [
+      "Compare approaches: UUID, database auto-increment, ticket server (Flickr), Snowflake (Twitter)",
+      "Choose Snowflake: 64-bit ID = 1 bit sign + 41 bits timestamp + 10 bits machine ID + 12 bits sequence",
+      "41 bits timestamp = ~69 years from custom epoch — sufficient for most systems",
+      "10 bits machine ID = 1024 unique workers — assign via Zookeeper at startup",
+      "12 bits sequence = 4096 IDs per millisecond per worker — handle via local atomic counter",
+      "Handle clock skew: if system clock goes backward, wait until it catches up or reject requests",
+      "Design the service: each application server gets a worker ID and generates IDs locally — no network calls"
+    ],
+    "hints": [
+      "Think about what information you can embed in the ID itself. If the ID contains a timestamp, what property does that automatically give you?",
+      "You need 1024 servers to generate IDs independently. How do you assign each server a unique worker ID without a single point of failure?",
+      "Use the Snowflake algorithm: 64-bit ID with timestamp (41 bits) + worker ID (10 bits) + sequence number (12 bits). Worker IDs are assigned via Zookeeper at startup. Each worker generates IDs locally with zero network overhead."
+    ],
+    "keyInsight": "The Snowflake design is brilliant because ID generation requires ZERO network calls — each worker generates IDs using only its local clock, its pre-assigned worker ID, and a local sequence counter. This makes it O(1) time, zero latency, and infinitely scalable horizontally.",
+    "mentalModel": "Think of a chain of bakeries (workers). Each bakery has a unique store number (worker ID) and a daily ticket counter (sequence). Every ticket has today's date + store number + counter. No two bakeries ever produce the same ticket, and tickets from the same day are naturally ordered — all without the bakeries ever talking to each other.",
+    "expectedArchitectureSummary": "A good architecture shows: Application servers each running an ID Generator Service locally. A Zookeeper/Coordination Service assigns unique Worker IDs at startup. Each generator combines Timestamp + Worker ID + Sequence Number into a 64-bit ID. An NTP service keeps clocks synchronized across data centers.",
+    "difficulty": "Easy",
+    "pattern": "Snowflake Algorithm + Bit Packing",
+    "relatedProblems": ["design-url-shortener", "design-distributed-sql"]
+  },
+  "design-proximity-service": {
+    "title": "Design a Proximity Service (Yelp)",
+    "videoId": "M4lR_Va97cQ",
+    "description": "Design a system to find nearby places like restaurants or gas stations within a specific radius.",
+    "intuition": [
+      "The naive approach (calculate distance to every business) is O(n) — way too slow for 200M businesses.",
+      "The core challenge is spatial indexing: how do you organize 2D location data for fast radius queries?",
+      "This is extremely read-heavy: searching is 1000x more frequent than adding/updating businesses."
+    ],
+    "walkthrough": [
+      "Compare spatial indexing approaches: Geohashing vs Quadtrees vs R-trees",
+      "Choose Geohashing: convert (lat, lng) to a string prefix. Nearby locations share common prefixes",
+      "Handle edge cases: locations near geohash boundaries need to search adjacent cells too",
+      "Design read path: hash user location → query businesses in user's cell + 8 adjacent cells",
+      "Add caching: geohash cells are natural cache keys — cache business lists per cell",
+      "Design write path: business creates/updates listing → update geohash index + invalidate cache",
+      "Implement ranking: sort results by distance, then by rating/relevance"
+    ],
+    "hints": [
+      "You need to search a 2D space efficiently. What if you could convert 2D coordinates into a 1D string where nearby points share a common prefix?",
+      "Geohashing has an edge case: two points can be physically close but in different geohash cells. How do you handle searches near cell boundaries?",
+      "Use Geohashing to convert (lat, lng) into string prefixes. For a search, query the user's geohash cell plus all 8 adjacent cells. This handles boundary edge cases. Cache the business list per geohash cell since it rarely changes."
+    ],
+    "keyInsight": "Geohashing converts a 2D spatial problem into a 1D string prefix problem, which databases are extremely good at. A geohash prefix like 'dr5ru' represents a small area — all businesses in that area can be indexed under this key. Searching nearby = searching by prefix + 8 neighbors.",
+    "mentalModel": "Imagine a city divided into a grid of zip codes. To find nearby restaurants, you don't search the entire city — you just look at your zip code and the 8 surrounding ones. Geohashing works the same way, but the 'zip codes' are computed from coordinates and can be made smaller or larger by adjusting precision.",
+    "expectedArchitectureSummary": "A good architecture shows: Client sends (lat, lng, radius) → Load Balancer → Location Service computes geohash + adjacent cells → queries Geospatial Index → filters/ranks results. A Business Database stores details. A Cache (Redis) stores business lists per geohash cell. A Search Ranking Service sorts by distance + relevance.",
+    "difficulty": "Medium",
+    "pattern": "Geospatial Indexing + Caching",
+    "relatedProblems": ["design-ride-sharing", "design-web-crawler"]
+  },
+  "design-cloud-storage": {
+    "title": "Design Dropbox / Google Drive",
+    "videoId": "jLM1nGgsT-I",
+    "description": "Design a secure and efficient cloud file storage and synchronization service.",
+    "intuition": [
+      "The biggest bandwidth cost isn't uploading — it's syncing changes. If you edit 1 byte of a 1GB file, you shouldn't re-upload the whole thing.",
+      "Conflict resolution is the hardest UX problem: what happens when two people edit the same file offline?",
+      "Chunking is the foundational decision — it enables delta sync, parallel uploads, and deduplication."
+    ],
+    "walkthrough": [
+      "Design file chunking: split files into 4MB blocks, hash each block for deduplication",
+      "Implement delta sync: when a file changes, identify which chunks changed, upload only those",
+      "Design metadata schema: file tree structure, version history, sharing permissions",
+      "Build sync protocol: client maintains local file tree hash → compares with server → syncs diff",
+      "Handle conflicts: last-write-wins for simple files, create conflict copies for simultaneous edits",
+      "Use block storage (S3) for file chunks, SQL database for metadata",
+      "Add real-time notifications: WebSocket connection pushes sync updates to other devices"
+    ],
+    "hints": [
+      "If a user changes one paragraph of a 100MB document, how can you avoid re-uploading the entire file? Think about breaking the file into pieces.",
+      "Two users edit a file offline and then both come online. How do you detect this conflict and what's the user-friendly resolution?",
+      "Split files into 4MB chunks, hash each chunk with SHA-256. On edit, only upload chunks whose hash changed (delta sync). Store chunks in S3 with content-addressable keys (hash = filename). For conflicts, create a 'conflicted copy' like Dropbox does."
+    ],
+    "keyInsight": "Content-addressable storage (using chunk hash as the storage key) gives you three things for free: deduplication (identical chunks stored once), integrity verification (hash = checksum), and efficient delta sync (only changed hashes need uploading). This single design decision solves three hard problems.",
+    "mentalModel": "Think of a book stored by paragraphs. Each paragraph has a fingerprint (hash). When you edit chapter 5, only the changed paragraphs get new fingerprints. You send only those new paragraphs to the library (server). If someone else has the same paragraph in a different book, the library already has it — no duplicate storage needed.",
+    "expectedArchitectureSummary": "A good architecture shows: Desktop/Mobile Client with a local file watcher → Chunking Service splits files → only changed chunks uploaded to Block Storage (S3). A Metadata Database tracks file tree, versions, and chunk references. A Sync Service coordinates changes across devices. WebSocket Notifications push updates in real-time. A Message Queue handles async processing.",
+    "difficulty": "Hard",
+    "pattern": "Chunking + Delta Sync + Content-Addressable Storage",
+    "relatedProblems": ["design-youtube", "design-whatsapp"]
+  },
+  "design-distributed-sql": {
+    "title": "Design a Distributed SQL Database",
+    "videoId": "cODCpXtPHbQ",
+    "description": "How to design a scalable SQL database with ACID properties and horizontal partitioning.",
+    "intuition": [
+      "The fundamental tension: SQL databases provide ACID guarantees, but distributing data across nodes makes consistency hard.",
+      "Sharding gives you horizontal scale but breaks joins and transactions that span shards.",
+      "The consensus algorithm (Raft/Paxos) is the heart — it's how multiple nodes agree on the order of operations."
+    ],
+    "walkthrough": [
+      "Choose sharding strategy: range-based (good for range queries) vs hash-based (even distribution)",
+      "Design the query flow: SQL → Parser → Planner → check if query spans one shard or multiple",
+      "Implement single-shard transactions: handled locally with standard ACID",
+      "Implement cross-shard transactions: use 2-Phase Commit (2PC) coordinated by a transaction manager",
+      "Add consensus (Raft): each shard has 3-5 replicas, leader handles writes, followers handle reads",
+      "Handle range splits: when a shard gets too large, split it and reassign ranges",
+      "Design the metadata layer: track which ranges live on which nodes (similar to GFS master)"
+    ],
+    "hints": [
+      "How do you decide which shard a row belongs to? Think about what happens when you need to query a range of values vs querying by exact key.",
+      "A transaction updates two rows on different shards. How do you ensure either both update or neither does? Think about a two-phase protocol.",
+      "Use range-based sharding with a Raft consensus group per shard (3-5 replicas). Cross-shard transactions use Two-Phase Commit. A metadata service tracks the range-to-node mapping. CockroachDB and Google Spanner use this exact architecture."
+    ],
+    "keyInsight": "The insight that makes distributed SQL work is treating each shard as an independent Raft group. Within a shard, you get strong consistency from Raft. Across shards, you use 2PC. The metadata service is itself a Raft group, so even the 'map' of where data lives is highly available.",
+    "mentalModel": "Think of a library system with branches. Each branch (shard) manages books in a specific call number range. Each branch has a head librarian (Raft leader) and assistants (followers) who keep copies. If a patron wants to borrow books from two branches, a coordinator ensures both branches process the request or neither does (2PC).",
+    "expectedArchitectureSummary": "A good architecture shows: SQL Parser → Query Planner/Optimizer → routes to appropriate Shard(s). Each Shard is a Raft consensus group (leader + followers). A Distributed Transaction Manager handles cross-shard 2PC. A Metadata Service (also Raft-replicated) tracks range-to-node mapping. A Storage Engine on each node handles local persistence.",
+    "difficulty": "Hard",
+    "pattern": "Sharding + Raft Consensus + 2PC",
+    "relatedProblems": ["design-distributed-cache", "design-unique-id-generator"]
+  },
+  "design-web-crawler": {
+    "title": "Design a Web Crawler",
+    "videoId": "6u25GckPhLU",
+    "description": "Design a scalable web crawler to index the internet.",
+    "intuition": [
+      "A web crawler is essentially a distributed BFS over a graph of billions of nodes (pages) connected by edges (links).",
+      "The bottleneck isn't computation — it's network I/O and politeness constraints (can't hammer one domain).",
+      "Duplicate detection at billion-page scale requires probabilistic data structures — exact tracking is too memory-intensive."
+    ],
+    "walkthrough": [
+      "Design the URL Frontier: a priority queue that respects per-domain politeness (rate limiting)",
+      "Implement the fetch cycle: dequeue URL → DNS resolve → HTTP fetch → parse → extract links → enqueue",
+      "Add duplicate URL detection: use a Bloom Filter for O(1) probabilistic membership testing",
+      "Handle near-duplicate pages: use SimHash or MinHash for content fingerprinting",
+      "Design politeness: maintain per-domain queues with configurable crawl delays from robots.txt",
+      "Implement distributed coordination: partition URL space by domain hash across crawler workers",
+      "Store crawled content: store raw HTML in distributed storage, metadata in a database"
+    ],
+    "hints": [
+      "You need to check if a URL has been seen before, but you'll encounter billions of URLs. What space-efficient data structure gives you fast membership testing with a small false-positive rate?",
+      "You can't crawl all pages from one domain at once — that would DDoS the site. How do you enforce a crawl delay per domain while still maximizing overall throughput?",
+      "Use a Bloom Filter for URL deduplication (1% false positive rate, 1GB for 1B URLs). For politeness, maintain separate per-domain FIFO queues with timers. A URL Frontier selects the next URL from whichever domain queue has cooled down."
+    ],
+    "keyInsight": "The URL Frontier design is the most critical part. It must balance three competing goals: priority (important pages first), freshness (recrawl changed pages), and politeness (don't overwhelm any domain). A well-designed frontier uses a two-level queue: front queues for priority, back queues for per-domain rate limiting.",
+    "mentalModel": "Think of a team of journalists (crawler workers) covering a city. Each journalist has an assignment list (URL queue) organized by neighborhood (domain). They can only visit one address per neighborhood per hour (politeness). A central editor (frontier) distributes the hottest leads first (priority) while ensuring no neighborhood gets overwhelmed.",
+    "expectedArchitectureSummary": "A good architecture shows: Seed URLs → URL Frontier (Priority + Politeness queues) → DNS Resolver → Fetcher Workers → Content Parser → Link Extractor → new URLs back to Frontier. A Bloom Filter checks for duplicate URLs before enqueueing. Parsed content goes to Content Storage. A Duplicate Content Detector (SimHash) identifies near-duplicate pages.",
+    "difficulty": "Hard",
+    "pattern": "Distributed BFS + Bloom Filter + Politeness",
+    "relatedProblems": ["design-metrics-monitoring", "design-url-shortener"]
+  },
+  "design-ride-sharing": {
+    "title": "Design Uber / Lyft",
+    "videoId": "lsKU38RKQSo",
+    "description": "Design a real-time ride-sharing service with matching, routing, and location tracking.",
+    "intuition": [
+      "The matching problem is time-critical: a rider waiting more than 30 seconds feels like something is broken.",
+      "Driver location data is high-frequency (every 3-5 seconds from millions of drivers) — this is a massive write-heavy geo workload.",
+      "The system has two very different modes: real-time (matching, tracking) and batch (pricing, analytics)."
+    ],
+    "walkthrough": [
+      "Design location service: drivers send GPS coordinates every 3-5 seconds → stored in geospatial index",
+      "Build matching engine: rider requests ride → query nearby available drivers → rank by ETA → offer to best match",
+      "Implement the dispatch flow: offer ride to driver → 10s to accept → if declined, offer to next → confirm match",
+      "Design real-time tracking: WebSocket connection streams driver location to rider during trip",
+      "Build pricing engine: base fare + distance + time + surge multiplier (based on supply/demand ratio)",
+      "Handle trip lifecycle: request → match → pickup → in-progress → completed → payment → rating",
+      "Design surge pricing: monitor supply/demand ratio per geographic zone, adjust multiplier dynamically"
+    ],
+    "hints": [
+      "Millions of drivers sending location updates every 3 seconds is a massive write load. What type of spatial index allows fast 'find drivers within 3km' queries on constantly moving data?",
+      "What happens if the matched driver doesn't accept within 10 seconds? Design a cascading offer system that doesn't leave the rider waiting forever.",
+      "Use a geospatial index (Geohash or H3) for driver locations, updated in-memory (Redis) every 3-5 seconds. For matching, query all drivers in the rider's cell + adjacent cells, rank by ETA, and cascade offers with timeouts. Use WebSockets for real-time tracking."
+    ],
+    "keyInsight": "The location index must be in-memory (not on disk) because driver positions change every 3 seconds. Using Redis with geospatial commands (GEOADD, GEORADIUS) gives you sub-millisecond lookups on constantly moving data. The matching engine should be stateless — it queries the location index, doesn't store state itself.",
+    "mentalModel": "Think of an air traffic control tower (dispatch). Radar (GPS) shows all planes (drivers) in real-time on a map (geospatial index). When a passenger (rider) needs a ride, the controller finds the closest available plane, radios it (offer), and if the pilot doesn't respond in 10 seconds, tries the next one. During the flight (trip), the passenger sees the plane's position in real-time on their screen (WebSocket tracking).",
+    "expectedArchitectureSummary": "A good architecture shows: Rider/Driver Apps → Load Balancer → Ride Service handles trip lifecycle. A Location Service with Redis geospatial index tracks all driver positions. A Matching/Dispatch Engine finds and assigns drivers. A Pricing Engine calculates surge-adjusted fares. WebSocket connections stream real-time tracking data. Payment Service handles billing post-trip.",
+    "difficulty": "Hard",
+    "pattern": "Real-time Geospatial + Event-Driven Dispatch",
+    "relatedProblems": ["design-proximity-service", "design-whatsapp"]
+  },
+  "design-youtube": {
+    "title": "Design YouTube",
+    "videoId": "IUrQ5_g3XKs",
+    "description": "Design a video sharing platform with upload, processing, and streaming capabilities.",
+    "intuition": [
+      "Video upload and video streaming are fundamentally different workloads — upload is write-heavy and async, streaming is read-heavy and real-time.",
+      "Transcoding is the most expensive operation: one uploaded video becomes 10+ versions (resolutions × formats).",
+      "CDN is not optional — serving video without edge servers means buffering for everyone outside your data center."
+    ],
+    "walkthrough": [
+      "Design upload path: client uploads to blob storage → enqueue transcoding job → process in parallel",
+      "Build transcoding pipeline: split video into segments → transcode each to multiple resolutions → package for adaptive bitrate",
+      "Implement adaptive bitrate streaming (HLS/DASH): client selects quality based on bandwidth",
+      "Design metadata service: title, description, tags, thumbnails, view counts",
+      "Build CDN strategy: push popular content to edge servers, pull on-demand for long-tail content",
+      "Add recommendation engine: collaborative filtering + content-based + trending signals",
+      "Implement search: full-text search on metadata + auto-generated captions"
+    ],
+    "hints": [
+      "A user uploads a 4K video. How do you serve it to someone on a slow 3G connection? Think about creating multiple versions of the same video.",
+      "Transcoding a 1-hour video takes 30+ minutes. How do you parallelize this to reduce the time to availability?",
+      "Use a transcoding pipeline that splits the video into 10-second segments, each processed independently in parallel across a worker fleet. Generate multiple resolutions (240p to 4K) and package as HLS/DASH for adaptive bitrate streaming. A CDN serves segments from edge servers close to viewers."
+    ],
+    "keyInsight": "Segment-based transcoding is the key to both speed and streaming. By splitting a video into 10-second segments, you can: (1) transcode segments in parallel across 100 workers, (2) start serving early segments while later ones are still processing, and (3) let the client switch quality level at each segment boundary (adaptive bitrate).",
+    "mentalModel": "Think of publishing a book (video). The manuscript (upload) goes to a print shop (transcoding pipeline). Instead of printing one copy at a time, you break the book into chapters (segments) and send each to a different printer (worker) simultaneously. Each chapter is printed in multiple sizes (resolutions). Local bookstores (CDN edge) stock the popular books; rare books are shipped on demand from the warehouse (origin).",
+    "expectedArchitectureSummary": "A good architecture shows: Client → Upload Service → Blob Storage. A Transcoding Pipeline (workers) processes videos into multiple formats/resolutions. Transcoded segments go to a CDN for edge delivery. A Metadata Database stores video info. A Streaming Server serves HLS/DASH manifests. A Search Service and Recommendation Engine drive discovery.",
+    "difficulty": "Hard",
+    "pattern": "Transcoding Pipeline + CDN + Adaptive Bitrate",
+    "relatedProblems": ["design-cloud-storage", "design-news-feed"]
+  },
+  "design-whatsapp": {
+    "title": "Design WhatsApp",
+    "videoId": "cr6p0n0N-VA",
+    "description": "Design a real-time messaging system with end-to-end encryption and delivery status.",
+    "intuition": [
+      "The protocol choice (WebSocket vs HTTP long polling) determines your real-time capability and connection overhead.",
+      "Message ordering within a conversation seems simple but becomes hard in a distributed system with multiple servers.",
+      "The key architectural decision is whether messages are stored server-side or only pass-through (E2E encryption implies limited server-side processing)."
+    ],
+    "walkthrough": [
+      "Design connection layer: each user maintains a persistent WebSocket connection to a gateway server",
+      "Build message routing: sender → sender's gateway → message service → recipient's gateway → recipient",
+      "Handle offline delivery: if recipient is offline, store message in a persistent queue, deliver on reconnect",
+      "Implement delivery receipts: sent (server received) → delivered (client received) → read (user opened)",
+      "Design group messaging: fan-out messages to all group members via their respective gateways",
+      "Add end-to-end encryption: Signal Protocol — keys exchanged between clients, server sees only ciphertext",
+      "Build presence service: track online/offline/last-seen status per user"
+    ],
+    "hints": [
+      "How do you deliver messages in real-time without the client constantly polling the server? Think about persistent connections.",
+      "User A sends a message to User B, but B is offline. How do you ensure B receives it later — even if the sending server restarts?",
+      "Use persistent WebSocket connections through Gateway Servers. When a user sends a message, route it through the Message Service to the recipient's gateway. If the recipient is offline, store in a durable Message Queue (Kafka/SQS) and deliver when they reconnect. Use message sequence numbers per conversation for ordering."
+    ],
+    "keyInsight": "The gateway-per-user architecture is what makes WhatsApp-scale messaging work. Each user's WebSocket terminates at one gateway server. A connection registry maps user IDs to gateway IPs. To send a message, you look up which gateway the recipient is connected to and route directly — no broadcast needed.",
+    "mentalModel": "Think of a phone switchboard operator. Each person (user) has a phone line (WebSocket) plugged into a specific operator (gateway). To call someone, the operator looks up which operator the other person is connected to (connection registry) and routes the call directly. If the person isn't home (offline), the operator takes a message (queue) and delivers it when they're back.",
+    "expectedArchitectureSummary": "A good architecture shows: Mobile Clients connected via WebSockets to Gateway Servers. A Connection Registry maps users to gateways. A Chat/Message Service handles routing and persistence. A Message Queue stores messages for offline users. A Group Service fans out group messages. A Presence Service tracks online status. Media is stored separately in Object Storage (S3).",
+    "difficulty": "Medium",
+    "pattern": "WebSocket Gateway + Message Queue + E2E Encryption",
+    "relatedProblems": ["design-notification-system", "design-news-feed"]
+  },
+  "design-ticketmaster": {
+    "title": "Design Ticketmaster",
+    "videoId": "fhdPyoO6aXI",
+    "description": "Design an online ticketing system that handles high-concurrency during popular event sales.",
+    "intuition": [
+      "This is fundamentally a concurrency problem: 100K users trying to buy 50K tickets simultaneously.",
+      "The biggest fear is double-selling: two users buying the same seat. This requires pessimistic locking or optimistic concurrency control.",
+      "Flash sale traffic is bursty — the system is idle 99% of the time and slammed for 0.01% during popular on-sales."
+    ],
+    "walkthrough": [
+      "Design the virtual queue: when demand exceeds capacity, put users in a waiting room with position tracking",
+      "Implement seat selection: show available seats → user selects → temporarily hold seat (10 min TTL in Redis)",
+      "Handle the hold-to-purchase flow: seat reserved → user enters payment → confirm → release hold if timeout",
+      "Prevent double-booking: use Redis SETNX (set-if-not-exists) for atomic seat reservation",
+      "Design inventory service: track ticket states (available → held → sold) with ACID transactions",
+      "Build payment integration: idempotent payment processing to handle retries safely",
+      "Plan for scale: pre-warm infrastructure, use CDN for static event pages, rate limit API"
+    ],
+    "hints": [
+      "100K users hit 'Buy' simultaneously. You can't let all of them reach the booking page at once. What kind of system can fairly manage this surge?",
+      "User A selects seat 14B and starts entering payment. How do you prevent User B from buying the same seat during those 10 minutes?",
+      "Use a Virtual Queue (Redis Sorted Set with timestamps) to manage traffic surges. For seat reservation, use Redis SETNX to atomically claim a seat with a 10-minute TTL. If payment completes, mark as SOLD in the database. If TTL expires, the seat automatically becomes available again."
+    ],
+    "keyInsight": "The temporary hold pattern with TTL is the elegant solution: Redis SETNX atomically claims a seat, and the TTL auto-releases it if the user abandons checkout. This means you never need a cleanup job — abandoned seats recover automatically. Combined with a virtual queue to control concurrency, you prevent both double-selling and system overload.",
+    "mentalModel": "Think of a bakery with a number dispenser at the door (virtual queue). Only 10 customers inside at a time. When you pick a pastry (select seat), the baker puts a 'RESERVED' tag on it with a 10-minute timer (Redis TTL). If you pay in time, it's yours. If you dawdle, the tag disappears and the pastry goes back on display for the next customer.",
+    "expectedArchitectureSummary": "A good architecture shows: Client → CDN for static pages → Load Balancer → Virtual Queue Service (Redis) that throttles arrivals. An Event/Inventory Service tracks seat availability. A Booking Service handles the hold (Redis SETNX + TTL) → payment → confirmation flow. A Payment Service processes charges. A Notification Service confirms purchases. The Database uses ACID transactions for final seat state.",
+    "difficulty": "Hard",
+    "pattern": "Virtual Queue + Optimistic Locking + TTL Holds",
+    "relatedProblems": ["design-rate-limiter", "design-notification-system"]
+  },
+  "design-news-feed": {
+    "title": "Design Facebook News Feed",
+    "videoId": "Qj4-GruzyDU",
+    "description": "Design a news feed system that aggregates and ranks updates from friends and pages.",
+    "intuition": [
+      "The core challenge is fan-out: when a user with 500 friends posts, do you push the post to all 500 feeds or compute each feed on-demand?",
+      "Celebrity users break the push model: a user with 10M followers can't push to 10M feeds per post.",
+      "Feed ranking is what makes the experience feel personalized — chronological feed is simple but less engaging."
+    ],
+    "walkthrough": [
+      "Design the post flow: user creates post → store in Posts DB → trigger fan-out",
+      "Implement hybrid fan-out: push for normal users (< 1000 followers), pull for celebrities",
+      "Build feed cache: each user has a pre-computed feed list in Redis (post IDs, sorted by rank)",
+      "Design ranking: combine recency, engagement signals (likes, comments), user affinity, content type",
+      "Handle feed reads: fetch post IDs from cache → hydrate with full post data → return",
+      "Add real-time updates: new posts from close friends pushed via WebSocket notification",
+      "Implement pagination: cursor-based, not offset-based (feed changes between page loads)"
+    ],
+    "hints": [
+      "When a user posts, should you immediately push it to all followers' feeds, or wait until each follower opens their app and compute it then? What are the trade-offs?",
+      "A celebrity with 50M followers posts. If you push to all 50M feeds, that's 50M writes for one post. How can you handle this differently?",
+      "Use a hybrid fan-out model: for normal users (< 1000 followers), push the post to each follower's feed cache (fan-out on write). For celebrities (> 1000 followers), don't push — merge their posts into each user's feed at read time (fan-out on read). Store pre-computed feeds in Redis as sorted sets."
+    ],
+    "keyInsight": "The hybrid fan-out model is what separates a toy design from a production one. Pure push (fan-out on write) can't handle celebrities — one post by Taylor Swift would generate 200M+ write operations. Pure pull (fan-out on read) makes feed loads slow because you'd merge 500 friends' posts per request. The hybrid approach gives you the best of both: fast reads for normal posts, manageable writes for celebrities.",
+    "mentalModel": "Think of a neighborhood newsletter system. Regular neighbors (normal users) photocopy their update and slide it into each neighbor's mailbox (push). The town mayor (celebrity) doesn't — that would mean 50,000 photocopies. Instead, each resident walks to the town hall bulletin board to see the mayor's latest post when they check their mailbox (pull). The mailbox is your pre-computed feed cache.",
+    "expectedArchitectureSummary": "A good architecture shows: Post Service stores new posts → Fan-out Service pushes to follower feed caches (Redis sorted sets) for normal users. A Feed Service merges cached posts + celebrity posts at read time. A Ranking Service scores and sorts items. A Social Graph Database stores friend/follow relationships. A Media Storage serves post images/videos. WebSocket pushes real-time updates for close friends' posts.",
+    "difficulty": "Medium",
+    "pattern": "Hybrid Fan-out + Feed Ranking",
+    "relatedProblems": ["design-notification-system", "design-youtube"]
+  }
+}

@@ -557,6 +557,13 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                     <p className="text-slate-700 dark:text-slate-300 text-base sm:text-lg leading-8 whitespace-pre-line">
                         {solution.problemStatement || solution.description || 'No description available.'}
                     </p>
+                    {solution.source && (
+                        <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800">
+                            <p className="text-xs text-slate-500 dark:text-slate-400 italic">
+                                Source: {solution.source}
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
 

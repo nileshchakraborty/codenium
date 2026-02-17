@@ -15,9 +15,9 @@ export class OllamaService implements AIService {
 
         console.log(`OllamaService initialized with model: ${this.model} at ${this.baseUrl}`);
 
-        // Resilience: Configure Axios with Retry logic
+        const timeout = parseInt(process.env.AI_TIMEOUT || '60') * 1000;
         this.client = axios.create({
-            timeout: 60000, // 60s timeout for local inference
+            timeout: timeout, 
         });
 
         axiosRetry(this.client, {
@@ -38,12 +38,17 @@ export class OllamaService implements AIService {
                 headers['Authorization'] = `Bearer ${this.apiKey}`;
             }
 
-            // Handle both local (http://localhost:11434) and cloud (https://ollama.com/api) base URLs
-            // Cloud URL already includes /api, local doesn't
-            // First normalize: remove trailing slash
             const normalizedBaseUrl = this.baseUrl.replace(/\/+$/, '');
-            const chatPath = normalizedBaseUrl.endsWith('/api') ? '/chat' : '/api/chat';
-            const url = normalizedBaseUrl + chatPath;
+            let url = '';
+            
+            // If the URL already looks like a full endpoint, use it directly
+            if (normalizedBaseUrl.endsWith('/api/chat') || normalizedBaseUrl.endsWith('/chat')) {
+                url = normalizedBaseUrl;
+            } else if (normalizedBaseUrl.endsWith('/api')) {
+                url = `${normalizedBaseUrl}/chat`;
+            } else {
+                url = `${normalizedBaseUrl}/api/chat`;
+            }
 
             console.log(`OllamaService calling: ${url}`);
 
@@ -92,10 +97,11 @@ export class OllamaService implements AIService {
         }
     }
 
-    async answerQuestion(problemTitle: string, problemDesc: string, chatHistory: any[], userMessage: string): Promise<any> {
+    async answerQuestion(problemTitle: string, problemDesc: string, chatHistory: any[], userMessage: string, systemPrompt?: string): Promise<any> {
         try {
+            const defaultSystemPrompt = "You are a Socratic LeetCode tutor. Help the user solve the problem by asking guiding questions. Do not give the answer directly unless asked repeatedly. Keep responses concise.";
             const messages: any[] = [
-                { role: "system", content: "You are a Socratic LeetCode tutor..." },
+                { role: "system", content: systemPrompt || defaultSystemPrompt },
                 { role: "system", content: `Context: ${problemTitle}. ${problemDesc}` }
             ];
 
@@ -119,6 +125,27 @@ export class OllamaService implements AIService {
             return JSON.parse(content);
         } catch (error: any) {
             console.error("AI Error:", error);
+            return { error: error.message };
+        }
+    }
+
+    async analyzeDesign(problemTitle: string, problemDesc: string, elements: string[], expectedComponents?: string[]): Promise<any> {
+        try {
+            const systemPrompt = `You are a System Design Interviewer. Analyze the user's architecture drawing based on the text labels provided. 
+Problem: ${problemTitle}
+Description: ${problemDesc}
+Expected Components: ${expectedComponents?.join(', ') || 'N/A'}
+
+Analyze if the labels provided (${elements.join(', ')}) cover the necessary components for a scalable, highly available system. 
+Point out missing critical components, suggest improvements, and give a brief overall feedback. Keep it constructive and concise.`;
+
+            const content = await this.chat([
+                { role: "system", content: systemPrompt },
+                { role: "user", content: `My architecture has these components: ${elements.join(', ')}` }
+            ]);
+
+            return { content };
+        } catch (error: any) {
             return { error: error.message };
         }
     }

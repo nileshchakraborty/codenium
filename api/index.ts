@@ -166,7 +166,9 @@ const executionService = new LocalExecutionService();
 const aiProvider = process.env.AI_PROVIDER || (process.env.OPENAI_API_KEY ? 'openai' : 'ollama');
 console.log(`Selecting AI Provider: ${aiProvider}`);
 
-let aiService;
+import { AIService } from '../src/domain/ports/AIService';
+
+let aiService: AIService;
 if (aiProvider === 'openai') {
     if (!process.env.OPENAI_API_KEY) {
         console.warn("WARNING: AI_PROVIDER is 'openai' but OPENAI_API_KEY is missing!");
@@ -194,6 +196,120 @@ const problemService = new ProblemService(
 app.get('/api/health', (req, res) => {
     res.json({ status: 'healthy', architecture: 'hexagonal', check: 'vercel-native' });
 });
+
+// --- SYSTEM DESIGN ENDPOINTS ---
+import { FileSystemDesignRepository } from '../src/adapters/driven/fs/FileSystemDesignRepository';
+const systemDesignRepo = new FileSystemDesignRepository();
+
+app.get('/api/system-design/topics', async (req, res) => {
+    try {
+        const topics = await systemDesignRepo.getTopics();
+        res.json({ topics });
+    } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.get('/api/system-design/problems', async (req, res) => {
+    try {
+        const problems = await systemDesignRepo.getProblems();
+        res.json({ problems });
+    } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.post('/api/system-design/problems', async (req, res) => {
+    try {
+        const problem = req.body.problem;
+        if (!problem || !problem.slug || !problem.title) {
+            return res.status(400).json({ error: 'Missing problem data' });
+        }
+        await systemDesignRepo.addProblem(problem);
+        res.json({ success: true });
+    } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.get('/api/system-design/problems/:slug', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const problem = await systemDesignRepo.getProblemBySlug(slug);
+        if (problem) {
+            res.json({ problem });
+        } else {
+            res.status(404).json({ error: 'Problem not found' });
+        }
+    } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.get('/api/system-design/solutions/:slug', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const solution = await systemDesignRepo.getSolution(slug);
+        if (solution) {
+            res.json({ solution });
+        } else {
+            res.status(404).json({ error: 'Solution not found' });
+        }
+    } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.post('/api/system-design/ai/chat', requireAuth, async (req, res) => {
+    try {
+        const { slug, message, history } = req.body;
+        const problem = await systemDesignRepo.getProblemBySlug(slug);
+        const solution = await systemDesignRepo.getSolution(slug);
+        
+        const title = problem ? problem.title : slug;
+        
+        let contextParts = [];
+        if (problem) {
+            contextParts.push(`Description: ${problem.description}`);
+            if (problem.functionalRequirements?.length) {
+                contextParts.push(`Functional Requirements: ${problem.functionalRequirements.join(', ')}`);
+            }
+            if (problem.nonFunctionalRequirements?.length) {
+                contextParts.push(`Non-Functional Requirements: ${problem.nonFunctionalRequirements.join(', ')}`);
+            }
+            if (problem.constraints) {
+                contextParts.push(`Constraints: ${JSON.stringify(problem.constraints)}`);
+            }
+        }
+        
+        if (solution) {
+            contextParts.push(`High-level Intuition: ${solution.intuition.join(' ')}`);
+            contextParts.push(`Key Insight: ${solution.keyInsight}`);
+            if (solution.expectedArchitectureSummary) {
+                contextParts.push(`Architecture Summary: ${solution.expectedArchitectureSummary}`);
+            }
+        }
+
+        const desc = contextParts.length > 0 ? contextParts.join('\n\n') : "System Design Problem";
+        const systemPrompt = "You are a System Design Expert and Tutor. Help the user design a scalable system. Focus on requirements, high-level architecture, data models, and API design. Be Socratic but helpful. Guide them through the thought process rather than giving immediate answers. Reference specific requirements or constraints from the provided context.";
+
+        const result = await aiService.answerQuestion(title, desc, history || [], message, systemPrompt);
+        res.json(result);
+    } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.post('/api/system-design/analyze', async (req, res) => {
+    try {
+        const { canvasElements, problemTitle, problemDescription, expectedComponents } = req.body;
+        const result = await aiService.analyzeDesign(problemTitle, problemDescription, canvasElements, expectedComponents);
+        res.json(result);
+    } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 
 app.get('/api/problems', async (req, res) => {
     try {

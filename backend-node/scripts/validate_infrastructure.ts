@@ -4,6 +4,7 @@ import { supabase } from '../src/repositories/SupabaseClient';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import path from 'path';
+import axios from 'axios';
 
 // Load environment variables
 const envPath = path.resolve(__dirname, '../../.env');
@@ -59,6 +60,54 @@ async function validateInfrastructure() {
     } catch (e) {
         console.error('❌ Supabase Error:', e);
         allPassed = false;
+    }
+
+    // 3. Validate Ollama (AI Service)
+    try {
+        const aiProvider = process.env.AI_PROVIDER || 'ollama';
+        if (aiProvider === 'ollama') {
+            console.log('Testing Ollama (AI Service)...');
+            const baseUrl = process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434';
+            const model = process.env.OLLAMA_MODEL || 'deepseek-coder';
+            
+            // Normalize URL and call tags endpoint to verify connection and model list
+            const normalizedBaseUrl = baseUrl.replace(/\/+$/, '');
+            const url = normalizedBaseUrl.endsWith('/api') ? `${normalizedBaseUrl}/tags` : `${normalizedBaseUrl}/api/tags`;
+            
+            const headers: Record<string, string> = {};
+            if (process.env.OLLAMA_API_KEY) {
+                headers['Authorization'] = `Bearer ${process.env.OLLAMA_API_KEY}`;
+            }
+
+            const response = await axios.get(url, { headers, timeout: 5000 });
+            
+            if (response.status === 200) {
+                console.log(`✅ Ollama is Connected. Base URL: ${baseUrl}`);
+                // Check if specific model is available
+                const models = response.data.models || [];
+                const modelExists = models.find((m: any) => m.name.includes(model));
+                if (modelExists) {
+                    console.log(`✅ Model "${model}" is available`);
+                } else {
+                    console.warn(`⚠️ Warning: Model "${model}" not found in local Ollama instance (available: ${models.map((m: any) => m.name).join(', ')})`);
+                }
+            } else {
+                console.error('❌ Ollama Connection Failed with status:', response.status);
+                allPassed = false;
+            }
+        } else if (aiProvider === 'openai') {
+            console.log('Testing OpenAI (AI Service)...');
+            if (!process.env.OPENAI_API_KEY) {
+                console.error('❌ OPENAI_API_KEY is missing');
+                allPassed = false;
+            } else {
+                console.log('✅ OpenAI Configured (API key present)');
+            }
+        }
+    } catch (e: any) {
+        console.error('❌ Ollama/AI Connection Error:', e.message);
+        // Don't fail the entire infra check if AI is down (to allow offline dev), but warn
+        console.warn('⚠️  Proceeding with caution - AI features may not work.');
     }
 
     if (allPassed) {

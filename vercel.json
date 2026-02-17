@@ -31,15 +31,20 @@
             "destination": "/api/index.ts"
         },
         {
+            "source": "/system-design/(.*)",
+            "destination": "/system-design/frontend/index.html"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }
     ],
     "functions": {
         "api/index.ts": {
-            "maxDuration": 30,
+            "maxDuration": 60,
             "memory": 1024,
-            "includeFiles": "{api/data/**,api/_lib/**,api/_runners/**,api/_services/**,src/**}"
+            "includeFiles": "{api/data/**,api/_lib/**,api/_runners/**,api/_services/**,src/**,system-design/src/**}"
         }
     }
+
 }

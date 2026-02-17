@@ -60,10 +60,11 @@ export class OpenAIService implements AIService {
         }
     }
 
-    async answerQuestion(problemTitle: string, problemDesc: string, chatHistory: any[], userMessage: string): Promise<any> {
+    async answerQuestion(problemTitle: string, problemDesc: string, chatHistory: any[], userMessage: string, systemPrompt?: string): Promise<any> {
         try {
+            const defaultSystemPrompt = "You are a Socratic LeetCode tutor. Help the user solve the problem by asking guiding questions.";
             const messages: any[] = [
-                { role: "system", content: "You are a Socratic LeetCode tutor..." }, // Should ideally import shared prompt
+                { role: "system", content: systemPrompt || defaultSystemPrompt },
                 { role: "system", content: `Context: ${problemTitle}. ${problemDesc}` }
             ];
 
@@ -93,6 +94,30 @@ export class OpenAIService implements AIService {
             });
             const content = completion.choices[0].message.content;
             return JSON.parse(content || '{}');
+        } catch (error: any) {
+            console.error("AI Error:", error);
+            return { error: error.message };
+        }
+    }
+
+    async analyzeDesign(problemTitle: string, problemDesc: string, elements: string[], expectedComponents?: string[]): Promise<any> {
+        try {
+            const systemPrompt = `You are a System Design Interviewer. Analyze the user's architecture drawing based on the text labels provided. 
+Problem: ${problemTitle}
+Description: ${problemDesc}
+Expected Components: ${expectedComponents?.join(', ') || 'N/A'}
+
+Analyze if the labels provided (${elements.join(', ')}) cover the necessary components for a scalable, highly available system. 
+Point out missing critical components, suggest improvements, and give a brief overall feedback. Keep it constructive and concise.`;
+
+            const completion = await this.openai.chat.completions.create({
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: `My architecture has these components: ${elements.join(', ')}` }
+                ],
+                model: this.model,
+            });
+            return { content: completion.choices[0].message.content };
         } catch (error: any) {
             console.error("AI Error:", error);
             return { error: error.message };

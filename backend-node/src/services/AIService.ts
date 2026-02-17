@@ -93,6 +93,34 @@ Keep it concise and educational.`;
         return this.chat(prompt);
     }
 
+    async analyzeArchitecture(
+        canvasElements: string[],
+        problemTitle: string,
+        problemDescription: string,
+        expectedComponents?: string[]
+    ): Promise<AIResponse> {
+        const componentsList = expectedComponents?.length
+            ? `\n\nExpected components for a good solution: ${expectedComponents.join(', ')}`
+            : '';
+
+        const prompt = `You are a senior system design interviewer reviewing a candidate's architecture diagram.
+
+Problem: "${problemTitle}"
+Description: ${problemDescription}${componentsList}
+
+The candidate has drawn the following components/labels on their whiteboard:
+${canvasElements.map((el, i) => `${i + 1}. ${el}`).join('\n')}
+
+Provide brief, actionable feedback (3-5 bullet points max):
+1. What they got right
+2. What's missing or could be improved
+3. One specific suggestion for their next step
+
+Be encouraging but specific. Keep each point to 1-2 sentences.`;
+
+        return this.chat(prompt);
+    }
+
     private async chat(prompt: string): Promise<AIResponse> {
         try {
             const client = this.getClient();

@@ -1,46 +1,46 @@
 {
     "hotProblems": [
         {
-            "slug": "two-sum",
-            "views": 150,
-            "solves": 45,
-            "score": 195
-        },
-        {
-            "slug": "valid-parentheses",
-            "views": 120,
-            "solves": 38,
-            "score": 158
-        },
-        {
             "slug": "climbing-stairs",
-            "views": 110,
-            "solves": 42,
-            "score": 152
+            "views": 473,
+            "solves": 80,
+            "score": 633
+        },
+        {
+            "slug": "two-sum",
+            "views": 461,
+            "solves": 80,
+            "score": 621
         },
         {
             "slug": "merge-two-sorted-lists",
-            "views": 95,
-            "solves": 30,
-            "score": 125
+            "views": 463,
+            "solves": 72,
+            "score": 607
+        },
+        {
+            "slug": "valid-parentheses",
+            "views": 431,
+            "solves": 76,
+            "score": 583
         },
         {
             "slug": "longest-substring-without-repeating-characters",
-            "views": 92,
-            "solves": 32,
-            "score": 124
+            "views": 389,
+            "solves": 65,
+            "score": 519
         },
         {
             "slug": "binary-search",
-            "views": 88,
-            "solves": 35,
-            "score": 123
+            "views": 358,
+            "solves": 65,
+            "score": 488
         },
         {
             "slug": "smoke-test",
-            "views": 4,
-            "solves": 0,
-            "score": 4
+            "views": 372,
+            "solves": 45,
+            "score": 462
         }
     ],
     "hotTopics": [

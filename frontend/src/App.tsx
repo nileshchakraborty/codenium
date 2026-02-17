@@ -1,10 +1,5 @@
-/* eslint-disable max-lines-per-function */
-/**
- * App.tsx - Refactored with MVVM Pattern
- * Uses viewmodel hooks for state management
- */
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import type { Problem } from './models';
 import { useProblems } from './viewmodels';
 import { useProgress } from './hooks/useProgress';
@@ -54,6 +49,8 @@ function App() {
   // ViewModels
   const problems = useProblems();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isSystemDesign = location.pathname === '/system-design';
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Auth state
@@ -298,6 +295,22 @@ function App() {
                 Codenium
               </h1>
             </div>
+
+            {/* Navigation Links */}
+            <nav className="flex items-center gap-6 ml-8">
+              <button 
+                onClick={() => navigate('/')}
+                className={`text-sm font-semibold pb-1 transition-all ${!isSystemDesign ? 'text-indigo-500 border-b-2 border-indigo-500' : 'text-slate-500 hover:text-indigo-400'}`}
+              >
+                Algo & DS
+              </button>
+              <button 
+                onClick={() => navigate('/system-design')}
+                className={`text-sm font-semibold pb-1 transition-all ${isSystemDesign ? 'text-indigo-500 border-b-2 border-indigo-500' : 'text-slate-500 hover:text-indigo-400'}`}
+              >
+                System Design
+              </button>
+            </nav>
 
             {/* Controls Row - Login button outside scroll area */}
             <div className="flex items-center gap-3 sm:gap-4 justify-between lg:justify-end w-full lg:w-auto">
@@ -580,8 +593,14 @@ function App() {
           })}
         </div>
 
-        <footer className="mt-12 text-center text-slate-500 dark:text-slate-600 text-sm">
-          <p>Built with ❤️ for Visual Learners | Codenium</p>
+        <footer className="mt-12 text-center text-slate-500 dark:text-slate-600 text-sm pb-8">
+          <p className="mb-2">Built with ❤️ for Visual Learners | Codenium</p>
+          <button 
+            onClick={() => navigate('/credits')}
+            className="text-xs text-slate-400 hover:text-indigo-500 underline transition-colors"
+          >
+            Data Sources & Credits
+          </button>
         </footer>
       </div>
     </div>

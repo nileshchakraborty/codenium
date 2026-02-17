@@ -4,6 +4,7 @@ import { statsRepository } from '../repositories/StatsRepository';
 import { executionService } from '../services/ExecutionService';
 import { aiService } from '../services/AIService';
 import { ExecuteRequest, TutorRequest } from '../types';
+import { systemDesignRepository } from '../repositories/SystemDesignRepository';
 
 const router = Router();
 
@@ -11,6 +12,84 @@ const router = Router();
 router.get('/health', (req: Request, res: Response) => {
     res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
+
+/**
+ * System Design Endpoints
+ */
+router.get('/system-design/topics', async (req: Request, res: Response) => {
+    try {
+        const topics = await systemDesignRepository.getTopics();
+        res.json({ topics });
+    } catch (error) {
+        console.error('Error fetching SD topics:', error);
+        res.status(500).json({ error: 'Failed to fetch topics' });
+    }
+});
+
+router.get('/system-design/problems', async (req: Request, res: Response) => {
+    try {
+        const problems = await systemDesignRepository.getProblems();
+        res.json({ problems });
+    } catch (error) {
+        console.error('Error fetching SD problems:', error);
+        res.status(500).json({ error: 'Failed to fetch problems' });
+    }
+});
+
+router.get('/system-design/problems/:slug', async (req: Request, res: Response) => {
+    try {
+        const { slug } = req.params;
+        const problem = await systemDesignRepository.getProblemBySlug(slug);
+        if (!problem) {
+            res.status(404).json({ error: 'Problem not found' });
+            return;
+        }
+        res.json({ problem });
+    } catch (error) {
+        console.error('Error fetching SD problem:', error);
+        res.status(500).json({ error: 'Failed to fetch problem' });
+    }
+});
+
+router.get('/system-design/solutions/:slug', async (req: Request, res: Response) => {
+    try {
+        const { slug } = req.params;
+        const solution = await systemDesignRepository.getSolution(slug);
+        if (!solution) {
+            res.status(404).json({ error: 'Solution not found' });
+            return;
+        }
+        res.json({ solution });
+    } catch (error) {
+        console.error('Error fetching SD solution:', error);
+        res.status(500).json({ error: 'Failed to fetch solution' });
+    }
+});
+
+// Analyze architecture drawing via AI
+router.post('/system-design/analyze', async (req: Request, res: Response) => {
+    try {
+        const { canvasElements, problemTitle, problemDescription, expectedComponents } = req.body;
+
+        if (!canvasElements || !Array.isArray(canvasElements) || !problemTitle) {
+            res.status(400).json({ error: 'Missing canvasElements array or problemTitle' });
+            return;
+        }
+
+        const response = await aiService.analyzeArchitecture(
+            canvasElements,
+            problemTitle,
+            problemDescription || '',
+            expectedComponents
+        );
+        res.json(response);
+    } catch (error) {
+        console.error('Error analyzing architecture:', error);
+        res.status(500).json({ error: 'AI analysis failed' });
+    }
+});
+
+
 
 // Get recommendations
 router.get('/recommendations', async (req: Request, res: Response) => {
@@ -45,11 +124,11 @@ router.post('/stats/interaction', async (req: Request, res: Response) => {
     }
 });
 
-// Get all problems
+// Get all problems (categorized for frontend Stats format)
 router.get('/problems', async (req: Request, res: Response) => {
     try {
-        const problems = await problemRepository.getAllProblems();
-        res.json({ problems });
+        const data = await problemRepository.getCategorizedProblems();
+        res.json(data);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch problems' });
     }

@@ -20,6 +20,7 @@ export interface Problem {
     topics: string[];
     companies?: string[];
     premium?: boolean;
+    source?: string;
 }
 
 export interface Solution {

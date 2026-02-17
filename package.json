@@ -2,8 +2,13 @@
   "name": "codenium",
   "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "frontend",
+    "system-design/frontend"
+  ],
   "scripts": {
     "build": "npm install --prefix frontend && make build",
+    "build:system-design": "npm install --prefix system-design/frontend && cd system-design/frontend && npm run build",
     "prepare": "husky"
   },
   "engines": {

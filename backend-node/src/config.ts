@@ -17,4 +17,8 @@ export const config = {
     problemsPath: process.env.PROBLEMS_PATH || '../data/problems.json',
     solutionsPath: process.env.SOLUTIONS_PATH || '../data/solutions.json',
     statsPath: process.env.STATS_PATH || '../data/stats.json',
+    sdProblemsPath: process.env.SD_PROBLEMS_PATH || '../system-design/data/system-design-problems.json',
+    sdSolutionsPath: process.env.SD_SOLUTIONS_PATH || '../system-design/data/system-design-solutions.json',
+    sdTopicsPath: process.env.SD_TOPICS_PATH || '../system-design/data/topics.json',
 };
+

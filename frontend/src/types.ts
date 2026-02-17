@@ -11,6 +11,7 @@ export interface Problem {
     algorithmHint?: string;
     difficultyReason?: string;
     description?: string;
+    source?: string;
 }
 
 export interface Stats {
@@ -120,6 +121,7 @@ export interface Solution {
         };
     };
     approach?: string; // New field
+    source?: string;
 }
 
 export interface TestCaseResult {

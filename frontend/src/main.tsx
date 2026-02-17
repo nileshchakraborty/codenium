@@ -9,6 +9,8 @@ import ProblemPage from './components/ProblemPage.tsx'
 import AdminPage from './pages/AdminPage.tsx'
 import CategoryOrderPage from './pages/CategoryOrderPage.tsx'
 import ProblemOrderPage from './pages/ProblemOrderPage.tsx'
+import CreditsPage from './pages/CreditsPage.tsx'
+import SystemDesignApp from '@system-design/App.tsx'
 import { ThemeProvider } from './context/ThemeContext'
 import { AuthProvider } from './context/AuthContext'
 import { ToastProvider } from './components/ToastProvider'
@@ -32,6 +34,8 @@ createRoot(document.getElementById('root')!).render(
               {/* Admin sub-pages for order management */}
               <Route path="/admin/category-order" element={<CategoryOrderPage />} />
               <Route path="/admin/problem-order" element={<ProblemOrderPage />} />
+              <Route path="/system-design" element={<SystemDesignApp />} />
+              <Route path="/credits" element={<CreditsPage />} />
               {/* Redirect /admin to /access-admin */}
               <Route path="/admin" element={<Navigate to="/access-admin" replace />} />
             </Routes>

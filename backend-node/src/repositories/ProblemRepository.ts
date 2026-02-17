@@ -152,6 +152,54 @@ class ProblemRepository {
         return localData;
     }
 
+    async getCategorizedProblems(): Promise<{ categories: any[]; easy: number; medium: number; hard: number }> {
+        // Read directly from local JSON which has curated categories
+        const filePath = this.getProblemsPath();
+        if (fs.existsSync(filePath)) {
+            try {
+                const raw = fs.readFileSync(filePath, 'utf-8');
+                const data = JSON.parse(raw);
+                if (data.categories && Array.isArray(data.categories)) {
+                    let easy = 0, medium = 0, hard = 0;
+                    const categories = data.categories.map((cat: any) => {
+                        const problems = cat.problems || [];
+                        problems.forEach((p: any) => {
+                            if (p.difficulty === 'Easy') easy++;
+                            else if (p.difficulty === 'Medium') medium++;
+                            else if (p.difficulty === 'Hard') hard++;
+                        });
+                        return {
+                            name: cat.name,
+                            icon: cat.icon || '📦',
+                            count: problems.length,
+                            problems,
+                        };
+                    });
+                    return { categories, easy, medium, hard };
+                }
+            } catch (e) {
+                console.error('Failed to parse categorized problems');
+            }
+        }
+        // Fallback: group all problems by subTopic
+        const problems = await this.getAllProblems();
+        const categoryMap = new Map<string, any[]>();
+        problems.forEach(p => {
+            const cat = (p as any).subTopic || (p as any).pattern || 'Other';
+            if (!categoryMap.has(cat)) categoryMap.set(cat, []);
+            categoryMap.get(cat)!.push(p);
+        });
+        const categories = Array.from(categoryMap.entries()).map(([name, probs]) => ({
+            name, icon: '📦', count: probs.length, problems: probs,
+        }));
+        return {
+            categories,
+            easy: problems.filter(p => p.difficulty === 'Easy').length,
+            medium: problems.filter(p => p.difficulty === 'Medium').length,
+            hard: problems.filter(p => p.difficulty === 'Hard').length,
+        };
+    }
+
     async getAllProblems(): Promise<Problem[]> {
         const data = await this.loadProblems();
         return Object.entries(data.problems).map(([slug, problem]) => ({

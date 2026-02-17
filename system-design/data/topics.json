@@ -1,0 +1,22 @@
+[
+  {
+    "id": "foundations",
+    "title": "Foundations",
+    "description": "Core building blocks of distributed systems: API design, load balancing, and caching strategies."
+  },
+  {
+    "id": "storage",
+    "title": "Storage",
+    "description": "Database design, SQL vs NoSQL, sharding, replication, and consistency models."
+  },
+  {
+    "id": "distributed-systems",
+    "title": "Distributed Systems",
+    "description": "Message queues, distributed transactions, consensus algorithms, and event-driven architecture."
+  },
+  {
+    "id": "system-design-case-studies",
+    "title": "System Design Case Studies",
+    "description": "Deep dives into real-world architectures like WhatsApp, YouTube, Netflix, and Uber."
+  }
+]
