@@ -35,6 +35,8 @@ export class FileSystemDesignRepository {
             path.join(process.cwd(), 'data', filename),
             path.join(__dirname, '..', '..', '..', '..', 'api', 'data', filename),
             path.join('/var/task/api/data', filename),
+            // Fallback for Vercel flat structure if needed
+            path.join(process.cwd(), filename), 
         ];
 
         // Specific candidates for system-design folder
@@ -45,15 +47,19 @@ export class FileSystemDesignRepository {
 
         const candidates = [...sdCandidates, ...baseCandidates];
 
+        console.log(`[FileSystemDesignRepository] Searching for ${filename} in:`);
+        candidates.forEach(p => console.log(`  - ${p}`));
+
         for (const p of candidates) {
             try {
                 if (fs.existsSync(p)) {
-                    console.log(`[FileSystemDesignRepository] Found ${filename} at ${p}`);
+                    console.log(`[FileSystemDesignRepository] ✅ Found ${filename} at ${p}`);
                     return p;
                 }
             } catch (e) {}
         }
-
+        
+        console.error(`[FileSystemDesignRepository] ❌ Could not find ${filename} in any candidate path.`);
         return candidates[0];
     }
 

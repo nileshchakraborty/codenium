@@ -1,0 +1,853 @@
+{
+  "metadata": {
+    "version": "2.0",
+    "lastUpdated": "2026-02-16",
+    "totalProblems": 15
+  },
+  "categories": [
+    {
+      "id": "foundations",
+      "name": "Foundations",
+      "icon": "🏗️",
+      "description": "Foundations architecture patterns and concepts",
+      "sequence": 1,
+      "problemIds": [
+        "design-rate-limiter",
+        "design-url-shortener",
+        "design-distributed-cache",
+        "design-notification-system",
+        "design-metrics-monitoring",
+        "design-unique-id-generator"
+      ]
+    },
+    {
+      "id": "storage",
+      "name": "Storage",
+      "icon": "💾",
+      "description": "Storage architecture patterns and concepts",
+      "sequence": 2,
+      "problemIds": [
+        "design-proximity-service",
+        "design-cloud-storage",
+        "design-distributed-sql"
+      ]
+    },
+    {
+      "id": "distributed-systems",
+      "name": "Distributed Systems",
+      "icon": "🌐",
+      "description": "Distributed Systems architecture patterns and concepts",
+      "sequence": 3,
+      "problemIds": [
+        "design-web-crawler",
+        "design-ride-sharing"
+      ]
+    },
+    {
+      "id": "system-design-case-studies",
+      "name": "System Design Case Studies",
+      "icon": "🏢",
+      "description": "System Design Case Studies architecture patterns and concepts",
+      "sequence": 4,
+      "problemIds": [
+        "design-youtube",
+        "design-whatsapp",
+        "design-ticketmaster",
+        "design-news-feed"
+      ]
+    }
+  ],
+  "problemsById": {
+    "design-rate-limiter": {
+      "id": "sd-1",
+      "title": "Design a Distributed Rate Limiter",
+      "slug": "design-rate-limiter",
+      "difficulty": "Medium",
+      "description": "Design a system that can limit the number of requests a user can make to an API in a distributed environment.",
+      "estimatedTimeMinutes": 45,
+      "companies": [
+        "Google",
+        "Amazon",
+        "Meta"
+      ],
+      "isPremium": false,
+      "realWorldUse": "API throttling, DDoS protection, fair resource allocation",
+      "topics": [
+        "Distributed Systems",
+        "API Design",
+        "Redis"
+      ],
+      "has_solution": true,
+      "videoId": "MIJFyUPG4Z4",
+      "functionalRequirements": [
+        "Limit API requests per user/IP within a configurable time window",
+        "Support different rate limiting rules per API endpoint",
+        "Return clear error responses (HTTP 429) when limit exceeded",
+        "Allow burst traffic within acceptable bounds"
+      ],
+      "nonFunctionalRequirements": [
+        "Low latency — rate check must complete in < 10ms",
+        "High availability — must not become a single point of failure",
+        "Distributed — must work consistently across multiple server instances",
+        "Eventually consistent — small over-allowance is acceptable"
+      ],
+      "constraints": {
+        "dailyActiveUsers": "500M",
+        "peakQPS": "10,000 requests/sec per user",
+        "ruleGranularity": "Per user, per IP, per endpoint"
+      },
+      "expectedComponents": [
+        "Client",
+        "API Gateway",
+        "Rate Limiter Service",
+        "Rules Engine",
+        "Redis/Cache",
+        "Load Balancer",
+        "Configuration Store"
+      ],
+      "estimatedTime": "45-60 mins",
+      "source": "System Design Interview"
+    },
+    "design-url-shortener": {
+      "id": "sd-2",
+      "title": "Design a URL Shortener (TinyURL)",
+      "slug": "design-url-shortener",
+      "difficulty": "Easy",
+      "description": "Design a service that takes a long URL and generates a short, unique alias for it.",
+      "estimatedTimeMinutes": 30,
+      "companies": [
+        "Google",
+        "Amazon",
+        "Twitter"
+      ],
+      "isPremium": false,
+      "realWorldUse": "Marketing campaigns, link tracking, QR codes",
+      "topics": [
+        "Basics",
+        "Hashing",
+        "Database Design"
+      ],
+      "has_solution": true,
+      "videoId": "iUU4O1sWtJA",
+      "functionalRequirements": [
+        "Given a long URL, generate a unique short URL",
+        "Redirect short URL to original long URL with minimal latency",
+        "Allow optional custom short aliases",
+        "Track click analytics (count, referrer, geo)"
+      ],
+      "nonFunctionalRequirements": [
+        "High availability — URL redirection must always work",
+        "Low latency — redirect should complete in < 50ms",
+        "Short URLs should not be guessable (avoid sequential IDs)",
+        "System should handle 100:1 read-to-write ratio"
+      ],
+      "constraints": {
+        "dailyNewURLs": "100M",
+        "readToWriteRatio": "100:1",
+        "urlLength": "7 characters (base62)"
+      },
+      "expectedComponents": [
+        "Client",
+        "Load Balancer",
+        "Application Server",
+        "URL Generation Service",
+        "Database",
+        "Cache (Redis)",
+        "Analytics Service"
+      ],
+      "estimatedTime": "30-45 mins",
+      "source": "System Design Interview"
+    },
+    "design-distributed-cache": {
+      "id": "sd-5",
+      "title": "Design a Distributed Cache",
+      "slug": "design-distributed-cache",
+      "difficulty": "Medium",
+      "description": "Design a highly available and scalable distributed cache system like Redis or Memcached.",
+      "estimatedTimeMinutes": 45,
+      "companies": [
+        "Redis Labs",
+        "Amazon",
+        "Google"
+      ],
+      "isPremium": false,
+      "realWorldUse": "Session storage, CDN, database query optimization",
+      "topics": [
+        "Caching",
+        "Consistency",
+        "Distributed Systems"
+      ],
+      "has_solution": true,
+      "videoId": "dGAgxozNWFE",
+      "functionalRequirements": [
+        "Support GET, SET, DELETE operations with TTL",
+        "Distribute data across multiple cache nodes",
+        "Handle cache eviction (LRU, LFU, TTL-based)",
+        "Support atomic operations for race condition prevention"
+      ],
+      "nonFunctionalRequirements": [
+        "Sub-millisecond read latency for cached data",
+        "Horizontal scalability — add nodes without downtime",
+        "High availability — survive node failures with replication",
+        "Consistent hashing for minimal key redistribution"
+      ],
+      "constraints": {
+        "dataSize": "Terabytes of cached data",
+        "readLatency": "< 1ms for cache hits",
+        "hitRate": "Target 95%+ cache hit rate"
+      },
+      "expectedComponents": [
+        "Client",
+        "Cache Client Library",
+        "Consistent Hash Ring",
+        "Cache Nodes",
+        "Replication Manager",
+        "Health Monitor",
+        "Eviction Policy Engine"
+      ],
+      "estimatedTime": "45-60 mins",
+      "source": "System Design Interview"
+    },
+    "design-notification-system": {
+      "id": "sd-11",
+      "title": "Design a Notification System",
+      "slug": "design-notification-system",
+      "difficulty": "Medium",
+      "description": "Design a robust notification system for push, SMS, and email with priority queues and retries.",
+      "estimatedTimeMinutes": 45,
+      "companies": [
+        "Twilio",
+        "SendGrid",
+        "Amazon"
+      ],
+      "isPremium": false,
+      "realWorldUse": "Alerts, reminders, multi-channel messaging",
+      "topics": [
+        "Message Queues",
+        "Push Networks",
+        "Rate Limiting"
+      ],
+      "has_solution": true,
+      "videoId": "_vj_g4p75Es",
+      "functionalRequirements": [
+        "Send notifications via push, SMS, and email channels",
+        "Support priority levels (urgent, high, normal, low)",
+        "Retry failed deliveries with exponential backoff",
+        "Allow users to configure notification preferences",
+        "Support template-based notification content"
+      ],
+      "nonFunctionalRequirements": [
+        "High throughput — handle millions of notifications per day",
+        "At-least-once delivery guarantee",
+        "Real-time for push, near-real-time for email/SMS",
+        "Graceful degradation when third-party providers are down"
+      ],
+      "constraints": {
+        "dailyNotifications": "10M+",
+        "channels": "Push, SMS, Email",
+        "deliveryLatency": "< 5s for push, < 30s for SMS/email"
+      },
+      "expectedComponents": [
+        "Client",
+        "Notification Service",
+        "Message Queue",
+        "Priority Queue",
+        "Worker Pool",
+        "Push Provider (APNs/FCM)",
+        "SMS Provider (Twilio)",
+        "Email Provider (SES)",
+        "User Preference Store",
+        "Template Engine",
+        "Retry/DLQ Handler"
+      ],
+      "estimatedTime": "45-60 mins",
+      "source": "System Design Interview"
+    },
+    "design-metrics-monitoring": {
+      "id": "sd-13",
+      "title": "Design a Metrics Monitoring System",
+      "slug": "design-metrics-monitoring",
+      "difficulty": "Medium",
+      "description": "Design a real-time metrics collection and alerting system for infrastructure health.",
+      "estimatedTimeMinutes": 45,
+      "companies": [
+        "Datadog",
+        "New Relic",
+        "Splunk"
+      ],
+      "isPremium": false,
+      "realWorldUse": "Infrastructure monitoring, alerting, observability",
+      "topics": [
+        "Time-series DB",
+        "Alerting",
+        "Pull vs Push"
+      ],
+      "has_solution": true,
+      "videoId": "9B6yYRMWvrg",
+      "functionalRequirements": [
+        "Collect metrics from thousands of servers (CPU, memory, disk, network)",
+        "Store time-series data efficiently with configurable retention",
+        "Support real-time dashboards and historical queries",
+        "Trigger alerts based on thresholds and anomaly detection",
+        "Downsample old data to save storage"
+      ],
+      "nonFunctionalRequirements": [
+        "Handle millions of metrics data points per second",
+        "Query latency < 1s for dashboard rendering",
+        "High write throughput — append-only workload",
+        "Fault tolerant — monitoring must survive partial failures"
+      ],
+      "constraints": {
+        "metricsPerSecond": "10M data points/sec",
+        "retention": "Raw: 7 days, downsampled: 1 year",
+        "servers": "100,000+ monitored hosts"
+      },
+      "expectedComponents": [
+        "Metrics Agents",
+        "Metrics Collector",
+        "Message Queue (Kafka)",
+        "Time-series Database",
+        "Query Service",
+        "Alerting Engine",
+        "Alert Notification Service",
+        "Dashboard/Visualization"
+      ],
+      "estimatedTime": "45-60 mins",
+      "source": "System Design Interview"
+    },
+    "design-unique-id-generator": {
+      "id": "sd-14",
+      "title": "Design a Distributed Unique ID Generator",
+      "slug": "design-unique-id-generator",
+      "difficulty": "Easy",
+      "description": "Design a system that generates unique and sortable IDs in a distributed environment.",
+      "estimatedTimeMinutes": 30,
+      "companies": [
+        "Twitter",
+        "Snowflake",
+        "Instagram"
+      ],
+      "isPremium": false,
+      "realWorldUse": "Distributed ID generation, database sharding",
+      "topics": [
+        "Snowflake ID",
+        "Zookeeper",
+        "Consistency"
+      ],
+      "has_solution": true,
+      "videoId": "g3BV_holJK4",
+      "functionalRequirements": [
+        "Generate globally unique IDs across all nodes",
+        "IDs must be roughly time-sortable",
+        "Support high throughput ID generation (10K+ per second per node)",
+        "IDs should fit in 64 bits for efficient storage and indexing"
+      ],
+      "nonFunctionalRequirements": [
+        "No coordination between nodes required for generation",
+        "Low latency — ID generation must be < 1ms",
+        "Monotonically increasing within a single node",
+        "Survive clock skew across data centers"
+      ],
+      "constraints": {
+        "idSize": "64 bits",
+        "throughput": "10,000 IDs/sec per node",
+        "datacenterCount": "Multiple data centers"
+      },
+      "expectedComponents": [
+        "ID Generator Service",
+        "Timestamp Component",
+        "Machine/Worker ID",
+        "Sequence Counter",
+        "Zookeeper/Coordination Service",
+        "Clock Sync (NTP)"
+      ],
+      "estimatedTime": "30-45 mins",
+      "source": "System Design Interview"
+    },
+    "design-proximity-service": {
+      "id": "sd-8",
+      "title": "Design a Proximity Service (Yelp)",
+      "slug": "design-proximity-service",
+      "difficulty": "Medium",
+      "description": "Design a system to find nearby places like restaurants or gas stations within a specific radius.",
+      "estimatedTimeMinutes": 45,
+      "companies": [
+        "Yelp",
+        "Google",
+        "Uber"
+      ],
+      "isPremium": false,
+      "realWorldUse": "Location search, restaurant discovery, nearby services",
+      "topics": [
+        "Geohashing",
+        "Quadtrees",
+        "Indexing"
+      ],
+      "has_solution": true,
+      "videoId": "M4lR_Va97cQ",
+      "functionalRequirements": [
+        "Search for businesses within a given radius of user's location",
+        "Filter results by category, rating, price range",
+        "Return results ranked by distance and relevance",
+        "Business owners can add/update/delete their listings"
+      ],
+      "nonFunctionalRequirements": [
+        "Low latency — search results in < 200ms",
+        "High availability — location search must always work",
+        "Read-heavy workload (1000:1 read-to-write ratio)",
+        "Handle location updates efficiently"
+      ],
+      "constraints": {
+        "totalBusinesses": "200M worldwide",
+        "dailySearches": "500M",
+        "searchRadius": "1km to 50km configurable"
+      },
+      "expectedComponents": [
+        "Client (Mobile/Web)",
+        "Load Balancer",
+        "Location Service",
+        "Geospatial Index (Geohash/Quadtree)",
+        "Business Database",
+        "Cache (Redis)",
+        "Search Ranking Service"
+      ],
+      "estimatedTime": "45-60 mins",
+      "source": "System Design Interview"
+    },
+    "design-cloud-storage": {
+      "id": "sd-12",
+      "title": "Design Dropbox / Google Drive",
+      "slug": "design-cloud-storage",
+      "difficulty": "Hard",
+      "description": "Design a secure and efficient cloud file storage and synchronization service.",
+      "estimatedTimeMinutes": 60,
+      "companies": [
+        "Dropbox",
+        "Google",
+        "Microsoft"
+      ],
+      "isPremium": false,
+      "realWorldUse": "File sync, backup, collaboration",
+      "topics": [
+        "Block Storage",
+        "Sync Conflict Resolution",
+        "Delta Sync"
+      ],
+      "has_solution": true,
+      "videoId": "jLM1nGgsT-I",
+      "functionalRequirements": [
+        "Upload, download, and sync files across multiple devices",
+        "Support file versioning and rollback",
+        "Handle large files efficiently using chunked uploads",
+        "Share files/folders with other users with permissions",
+        "Real-time sync notifications across devices"
+      ],
+      "nonFunctionalRequirements": [
+        "High durability — never lose a file (99.999999999%)",
+        "Bandwidth efficient — only sync changed blocks (delta sync)",
+        "Handle conflicts when same file edited on multiple devices",
+        "Support offline editing with eventual sync"
+      ],
+      "constraints": {
+        "totalUsers": "500M",
+        "avgFilesPerUser": "1,000",
+        "maxFileSize": "10GB",
+        "storageScale": "Exabytes"
+      },
+      "expectedComponents": [
+        "Client (Desktop/Mobile)",
+        "Load Balancer",
+        "API Server",
+        "Metadata Database",
+        "Block Storage (S3)",
+        "Chunking Service",
+        "Sync Service",
+        "Notification Service (WebSocket)",
+        "Message Queue",
+        "CDN"
+      ],
+      "estimatedTime": "60-90 mins",
+      "source": "System Design Interview"
+    },
+    "design-distributed-sql": {
+      "id": "sd-15",
+      "title": "Design a Distributed SQL Database",
+      "slug": "design-distributed-sql",
+      "difficulty": "Hard",
+      "description": "How to design a scalable SQL database with ACID properties and horizontal partitioning.",
+      "estimatedTimeMinutes": 60,
+      "companies": [
+        "Google",
+        "CockroachDB",
+        "Amazon"
+      ],
+      "isPremium": false,
+      "realWorldUse": "Global databases, multi-region apps, ACID transactions",
+      "topics": [
+        "SQL",
+        "ACID",
+        "Sharding",
+        "Consensus"
+      ],
+      "has_solution": true,
+      "videoId": "cODCpXtPHbQ",
+      "functionalRequirements": [
+        "Support standard SQL queries (SELECT, INSERT, UPDATE, DELETE)",
+        "Maintain ACID transaction guarantees across shards",
+        "Horizontally partition data across nodes (sharding)",
+        "Support multi-region replication with strong consistency"
+      ],
+      "nonFunctionalRequirements": [
+        "Strong consistency for transactions (linearizability)",
+        "Horizontal scalability — add nodes to increase capacity",
+        "Fault tolerant — survive node and even region failures",
+        "Acceptable latency trade-off for global consistency"
+      ],
+      "constraints": {
+        "dataSize": "Petabytes",
+        "regions": "Multi-region (3+ data centers)",
+        "transactionsPerSec": "100K+ globally distributed"
+      },
+      "expectedComponents": [
+        "SQL Parser",
+        "Query Planner/Optimizer",
+        "Distributed Transaction Manager",
+        "Shard Manager",
+        "Consensus Layer (Raft/Paxos)",
+        "Storage Engine",
+        "Replication Manager",
+        "Range/Hash Partitioner"
+      ],
+      "estimatedTime": "60-90 mins",
+      "source": "System Design Interview"
+    },
+    "design-web-crawler": {
+      "id": "sd-7",
+      "title": "Design a Web Crawler",
+      "slug": "design-web-crawler",
+      "difficulty": "Hard",
+      "description": "Design a scalable web crawler to index the internet. Handle politeness, duplicate detection, and high-throughput.",
+      "estimatedTimeMinutes": 60,
+      "companies": [
+        "Google",
+        "Microsoft",
+        "DuckDuckGo"
+      ],
+      "isPremium": false,
+      "realWorldUse": "Search indexing, price monitoring, data aggregation",
+      "topics": [
+        "BFS",
+        "URL Fingerprinting",
+        "Distributed Storage"
+      ],
+      "has_solution": true,
+      "videoId": "6u25GckPhLU",
+      "functionalRequirements": [
+        "Crawl billions of web pages and extract content",
+        "Follow links using BFS/priority-based traversal",
+        "Respect robots.txt and crawl politeness rules",
+        "Detect and avoid duplicate/near-duplicate pages",
+        "Support incremental re-crawling for freshness"
+      ],
+      "nonFunctionalRequirements": [
+        "High throughput — crawl 1B+ pages per week",
+        "Distributed — run across hundreds of machines",
+        "Fault tolerant — resume after partial failures",
+        "Politeness — don't overwhelm any single domain"
+      ],
+      "constraints": {
+        "pagesPerWeek": "1B+",
+        "crawlDelay": "1-10s per domain (politeness)",
+        "storageScale": "Petabytes of crawled content"
+      },
+      "expectedComponents": [
+        "Seed URL Store",
+        "URL Frontier (Priority Queue)",
+        "DNS Resolver",
+        "Fetcher Workers",
+        "Content Parser",
+        "Duplicate Detector (Bloom Filter)",
+        "URL Filter",
+        "Content Storage",
+        "Link Extractor"
+      ],
+      "estimatedTime": "60-90 mins",
+      "source": "System Design Interview"
+    },
+    "design-ride-sharing": {
+      "id": "sd-9",
+      "title": "Design Uber / Lyft",
+      "slug": "design-ride-sharing",
+      "difficulty": "Hard",
+      "description": "Design a real-time ride-sharing service with matching, routing, and location tracking.",
+      "estimatedTimeMinutes": 60,
+      "companies": [
+        "Uber",
+        "Lyft",
+        "Didi"
+      ],
+      "isPremium": false,
+      "realWorldUse": "Transportation, food delivery, package delivery",
+      "topics": [
+        "Real-time Geo-location",
+        "Dispatch System",
+        "Matching Algorithms"
+      ],
+      "has_solution": true,
+      "videoId": "lsKU38RKQSo",
+      "functionalRequirements": [
+        "Riders request rides with pickup/dropoff locations",
+        "Match riders with nearby available drivers in real-time",
+        "Track driver location in real-time during the ride",
+        "Calculate fare based on distance, time, and surge pricing",
+        "Support trip history and ratings"
+      ],
+      "nonFunctionalRequirements": [
+        "Real-time matching — find driver in < 30 seconds",
+        "Location updates at 3-5 second intervals",
+        "High availability — ride requests always processed",
+        "Handle geographic hotspots (events, rush hour)"
+      ],
+      "constraints": {
+        "dailyRides": "20M+",
+        "concurrentDrivers": "5M+ online simultaneously",
+        "locationUpdateFrequency": "Every 3-5 seconds"
+      },
+      "expectedComponents": [
+        "Rider App",
+        "Driver App",
+        "Load Balancer",
+        "Ride Service",
+        "Matching/Dispatch Engine",
+        "Location Service (Geospatial Index)",
+        "Pricing Engine",
+        "Payment Service",
+        "Trip Storage",
+        "WebSocket/Push Notification Service"
+      ],
+      "estimatedTime": "60-90 mins",
+      "source": "System Design Interview"
+    },
+    "design-youtube": {
+      "id": "sd-3",
+      "title": "Design YouTube",
+      "slug": "design-youtube",
+      "difficulty": "Hard",
+      "description": "Design a video sharing platform like YouTube with video upload, processing, and streaming capabilities.",
+      "estimatedTimeMinutes": 60,
+      "companies": [
+        "Google",
+        "Netflix",
+        "Amazon"
+      ],
+      "isPremium": false,
+      "realWorldUse": "Video platforms, livestreaming, educational content",
+      "topics": [
+        "Video Streaming",
+        "CDN",
+        "Transcoding"
+      ],
+      "has_solution": true,
+      "videoId": "IUrQ5_g3XKs",
+      "functionalRequirements": [
+        "Upload videos in various formats and resolutions",
+        "Transcode videos into multiple formats/resolutions (adaptive bitrate)",
+        "Stream videos with minimal buffering",
+        "Support video search, recommendations, and trending",
+        "Like, comment, subscribe, and share functionality"
+      ],
+      "nonFunctionalRequirements": [
+        "Low startup latency for video playback (< 2s)",
+        "Global CDN — serve videos close to users worldwide",
+        "Handle viral content — massive traffic spikes",
+        "Cost-efficient storage for petabytes of video"
+      ],
+      "constraints": {
+        "dailyActiveUsers": "2B",
+        "videosUploadedPerDay": "500K+",
+        "avgVideoSize": "500MB",
+        "storageScale": "Exabytes"
+      },
+      "expectedComponents": [
+        "Client (Web/Mobile)",
+        "Load Balancer",
+        "API Server",
+        "Upload Service",
+        "Transcoding Pipeline",
+        "Object Storage (S3)",
+        "CDN",
+        "Metadata Database",
+        "Search Service",
+        "Recommendation Engine",
+        "Streaming Server"
+      ],
+      "estimatedTime": "60-90 mins",
+      "source": "System Design Interview"
+    },
+    "design-whatsapp": {
+      "id": "sd-4",
+      "title": "Design WhatsApp",
+      "slug": "design-whatsapp",
+      "difficulty": "Medium",
+      "description": "Design a real-time messaging system with end-to-end encryption and delivery status.",
+      "estimatedTimeMinutes": 45,
+      "companies": [
+        "Meta",
+        "Telegram",
+        "Signal"
+      ],
+      "isPremium": false,
+      "realWorldUse": "Messaging apps, team collaboration, customer support",
+      "topics": [
+        "Real-time Systems",
+        "WebSockets",
+        "Distributed Systems"
+      ],
+      "has_solution": true,
+      "videoId": "cr6p0n0N-VA",
+      "functionalRequirements": [
+        "Send and receive text, image, and video messages in real-time",
+        "Support 1:1 and group chats",
+        "Show message delivery status (sent, delivered, read)",
+        "End-to-end encryption for message privacy",
+        "Offline message storage and delivery on reconnect"
+      ],
+      "nonFunctionalRequirements": [
+        "Real-time delivery — message latency < 500ms",
+        "High availability — messaging always works",
+        "Ordered message delivery within a conversation",
+        "Support millions of concurrent WebSocket connections"
+      ],
+      "constraints": {
+        "dailyActiveUsers": "2B",
+        "messagesPerDay": "100B+",
+        "maxGroupSize": "1024 members",
+        "concurrentConnections": "Hundreds of millions"
+      },
+      "expectedComponents": [
+        "Client (Mobile)",
+        "Load Balancer",
+        "WebSocket Gateway",
+        "Chat Service",
+        "Message Queue",
+        "Message Storage",
+        "User Presence Service",
+        "Group Service",
+        "Push Notification Service",
+        "Media Storage (S3)"
+      ],
+      "estimatedTime": "45-60 mins",
+      "source": "System Design Interview"
+    },
+    "design-ticketmaster": {
+      "id": "sd-6",
+      "title": "Design Ticketmaster",
+      "slug": "design-ticketmaster",
+      "difficulty": "Hard",
+      "description": "Design an online ticketing system that handles high-concurrency during popular sales.",
+      "estimatedTimeMinutes": 60,
+      "companies": [
+        "Ticketmaster",
+        "StubHub",
+        "Eventbrite"
+      ],
+      "isPremium": false,
+      "realWorldUse": "Event ticketing, concert sales, flash sales",
+      "topics": [
+        "Concurrency",
+        "Transactions",
+        "API Design"
+      ],
+      "has_solution": true,
+      "videoId": "fhdPyoO6aXI",
+      "functionalRequirements": [
+        "Browse events and view available seats/sections",
+        "Reserve and purchase tickets with seat selection",
+        "Handle concurrent purchases — prevent double-booking",
+        "Support ticket hold/timeout for payment window",
+        "Virtual waiting queue for high-demand events"
+      ],
+      "nonFunctionalRequirements": [
+        "Handle extreme traffic spikes (100K+ concurrent users per event)",
+        "Strong consistency — no double-selling of tickets",
+        "Low latency during checkout flow",
+        "Fair queuing — first-come, first-served ordering"
+      ],
+      "constraints": {
+        "concurrentUsersPerEvent": "100K+",
+        "ticketInventory": "50K-100K per event",
+        "paymentTimeout": "10 minutes hold window"
+      },
+      "expectedComponents": [
+        "Client (Web/Mobile)",
+        "Load Balancer",
+        "CDN",
+        "API Gateway",
+        "Event Service",
+        "Inventory Service",
+        "Booking Service",
+        "Payment Service",
+        "Virtual Queue (Redis)",
+        "Database (ACID transactions)",
+        "Notification Service"
+      ],
+      "estimatedTime": "60-90 mins",
+      "source": "System Design Interview"
+    },
+    "design-news-feed": {
+      "id": "sd-10",
+      "title": "Design Facebook News Feed",
+      "slug": "design-news-feed",
+      "difficulty": "Medium",
+      "description": "Design a news feed system that aggregates and ranks updates from friends and pages.",
+      "estimatedTimeMinutes": 45,
+      "companies": [
+        "Meta",
+        "Twitter",
+        "LinkedIn"
+      ],
+      "isPremium": false,
+      "realWorldUse": "Social feeds, news aggregation, content recommendations",
+      "topics": [
+        "Fan-out",
+        "Feed Aggregation",
+        "Ranking Systems"
+      ],
+      "has_solution": true,
+      "videoId": "Qj4-GruzyDU",
+      "functionalRequirements": [
+        "Publish posts (text, images, videos, links)",
+        "Generate personalized news feed from friends/follows",
+        "Rank and sort feed items by relevance and recency",
+        "Support like, comment, share interactions on posts",
+        "Real-time feed updates for new posts"
+      ],
+      "nonFunctionalRequirements": [
+        "Feed generation latency < 500ms",
+        "Handle celebrity users with millions of followers",
+        "Support both push (fan-out on write) and pull (fan-out on read)",
+        "Eventually consistent — slight delay for non-celebrity posts is OK"
+      ],
+      "constraints": {
+        "dailyActiveUsers": "2B",
+        "postsPerDay": "1B+",
+        "avgFriendsPerUser": "500",
+        "feedRefreshRate": "Every 30 seconds"
+      },
+      "expectedComponents": [
+        "Client (Web/Mobile)",
+        "Load Balancer",
+        "Post Service",
+        "Fan-out Service",
+        "Feed Cache (Redis)",
+        "Feed Ranking Service",
+        "Social Graph Database",
+        "Media Storage",
+        "Notification Service",
+        "Message Queue"
+      ],
+      "estimatedTime": "45-60 mins",
+      "source": "System Design Interview"
+    }
+  }
+}
