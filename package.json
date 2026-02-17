@@ -9,10 +9,10 @@
   "scripts": {
     "build": "npm install --prefix frontend && make build",
     "build:system-design": "npm install --prefix system-design/frontend && cd system-design/frontend && npm run build",
-    "prepare": "husky"
+    "prepare": "if [ \"$NODE_ENV\" != \"production\" ]; then husky; fi"
   },
   "engines": {
-    "node": "24.x"
+    "node": ">=20.0.0"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.89.0",
