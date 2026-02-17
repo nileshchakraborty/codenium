@@ -2,6 +2,7 @@
  * SignInGate - Component that requires user to sign in before viewing content
  * Used to gate premium features like viewing solutions
  */
+import React from 'react';
 import { Lock, LogIn } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 

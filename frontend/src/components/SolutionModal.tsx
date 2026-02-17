@@ -1007,17 +1007,6 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                 }
 
                 {/* 6. Code Solution */}
-                {/* 6. Code Solution */}
-                {/*
-                    Unified Auth Protection
-
-                    - [/] Plan auth protection strategy for premium features
-                    - [ ] Implement `AuthUnlockModal` for Code Execution (Algo/DS)
-                    - [ ] Implement `AuthUnlockModal` for Design Analysis (System Design)
-                    - [ ] Implement `SignInGate` for System Design (Explain & Tutor tabs)
-                    - [ ] Update Algo/DS Tutor tab to use premium `AuthUnlockModal`
-                    - [ ] Verify auth protection logic across all gated features
-                */}
                 {
                     (() => {
                         // Determine display code based on active approach and selected language

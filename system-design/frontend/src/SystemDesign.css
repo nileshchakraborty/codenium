@@ -1,10 +1,11 @@
+@import "../../../frontend/src/styles/tokens.css";
+
 /* ===========================
    System Design Module Styles
    Uses shared Codenium tokens
    =========================== */
 
-/* Import shared design tokens from main app */
-@import "../../../frontend/src/styles/tokens.css";
+/* Import shared design tokens from main app (Moved to top) */
 
 
 /* System Design Module Container */
