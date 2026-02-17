@@ -11,6 +11,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@system-design': path.resolve(__dirname, '../system-design/frontend/src'),
+      '@': path.resolve(__dirname, './src'),
+      react: path.resolve(__dirname, '../node_modules/react'),
+      'react-dom': path.resolve(__dirname, '../node_modules/react-dom'),
     },
   },
   server: {
@@ -32,9 +35,6 @@ export default defineConfig({
     setupFiles: './src/setupTests.ts',
     css: true,
     server: {
-      deps: {
-        inline: ['react', 'react-dom']
-      }
     },
     coverage: {
       provider: 'v8',
