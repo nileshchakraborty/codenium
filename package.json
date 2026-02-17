@@ -9,7 +9,7 @@
   "scripts": {
     "build": "npm install --prefix frontend && make build",
     "build:system-design": "npm install --prefix system-design/frontend && cd system-design/frontend && npm run build",
-    "prepare": "if [ \"$NODE_ENV\" != \"production\" ]; then husky; fi"
+    "prepare": "if [ \"$NODE_ENV\" != \"production\" ] && command -v husky > /dev/null 2>&1; then husky; fi"
   },
   "engines": {
     "node": ">=20.0.0"
