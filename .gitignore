@@ -135,3 +135,6 @@ coverage/
 lint-output.txt
 
 api_clean.txt
+
+# Scripts with credentials
+scripts/find_video_mismatches.py
