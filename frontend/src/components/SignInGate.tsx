@@ -24,7 +24,7 @@ export function SignInGate({ feature, description, children }: SignInGateProps) 
 
     if (!isAuthenticated) {
         return (
-            <div className="flex flex-col items-center justify-center h-full min-h-[300px] p-8 text-center">
+            <div className="flex flex-col items-center justify-center h-full min-h-[300px] p-8 text-center bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 m-4">
                 <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center mb-6">
                     <Lock className="w-10 h-10 text-purple-400" />
                 </div>

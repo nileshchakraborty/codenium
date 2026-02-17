@@ -1023,7 +1023,7 @@ html, body, #root {
   
   /* Smooth scrolling */
   scroll-behavior: smooth;
-  background: var(--bg-canvas); /* Default background */
+  background: var(--bg-card); /* Use card background for better contrast */
 }
 
 /* Specific override for AI chat to ensure it fills space and has its own background */
@@ -1031,7 +1031,7 @@ html, body, #root {
   padding: 0 !important;
   display: flex !important;
   flex-direction: column;
-  background: #0f172a !important;
+  background: var(--bg-primary) !important;
 }
 
 /* Custom scrollbar for content */
@@ -2269,7 +2269,7 @@ html, body, #root {
   flex: 1;
   min-height: 0;
   position: relative;
-  background: #0f172a !important;
+  background: var(--bg-primary) !important;
   overflow: hidden !important;
   padding: 0 !important;
 }
@@ -2277,18 +2277,18 @@ html, body, #root {
 .left-pane {
   display: flex;
   flex-direction: column;
-  background: #0f172a;
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--bg-card);
+  border-right: 1px solid var(--border);
   height: 100%;
 }
 
 .left-pane .tab-header-container {
   padding: 0.75rem 1rem !important;
-  background: #0f172a !important;
+  background: var(--bg-secondary) !important;
   gap: 0.5rem !important;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--border);
 }
 
 .active-tab {
@@ -2307,7 +2307,7 @@ html, body, #root {
   flex-direction: column;
   gap: 1.5rem;
   scroll-behavior: smooth;
-  background: #0f172a;
+  background: var(--bg-primary);
 }
 
 .ai-empty-state {
@@ -2387,30 +2387,30 @@ html, body, #root {
 }
 
 .ai-message-bubble--ai {
-  background: #1e293b; /* Darker blue/grey bubble */
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  color: #f1f5f9;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
 }
 
 .ai-message-bubble--user {
-  background: rgba(99, 102, 241, 0.1);
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  color: #f1f5f9;
+  background: var(--accent-glow);
+  border: 1px solid var(--accent);
+  color: var(--text-primary);
 }
 
 .ai-input-area {
   position: relative; 
   padding: 1.25rem;
-  background: #0f172a;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
   flex-shrink: 0; 
   z-index: 10;
   width: 100%;
 }
 
 .ai-input-box {
-  background: #1e293b;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 14px;
   display: flex;
   align-items: center;
@@ -2430,7 +2430,7 @@ html, body, #root {
   background: transparent;
   padding: 0.75rem;
   font-size: 1rem;
-  color: #f1f5f9;
+  color: var(--text-primary);
 }
 
 .ai-input-box input::placeholder {

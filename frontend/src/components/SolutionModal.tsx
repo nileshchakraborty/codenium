@@ -27,7 +27,8 @@ import {
     Clock,
     Database,
     Loader2,
-    Lightbulb
+    Lightbulb,
+    Sparkles
 } from 'lucide-react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -1007,6 +1008,16 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
 
                 {/* 6. Code Solution */}
                 {/* 6. Code Solution */}
+                {/*
+                    Unified Auth Protection
+
+                    - [/] Plan auth protection strategy for premium features
+                    - [ ] Implement `AuthUnlockModal` for Code Execution (Algo/DS)
+                    - [ ] Implement `AuthUnlockModal` for Design Analysis (System Design)
+                    - [ ] Implement `SignInGate` for System Design (Explain & Tutor tabs)
+                    - [ ] Update Algo/DS Tutor tab to use premium `AuthUnlockModal`
+                    - [ ] Verify auth protection logic across all gated features
+                */}
                 {
                     (() => {
                         // Determine display code based on active approach and selected language
@@ -1169,16 +1180,20 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
     const renderTutorTab = () => (
         <div className="h-full animate-in slide-in-from-bottom-4 duration-300">
             {!isAuthenticated ? (
-                <div className="flex flex-col items-center justify-center h-64 text-center">
-                    <MessageCircle size={48} className="text-slate-400 mb-4" />
-                    <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-2">AI Tutor</h3>
-                    <p className="text-slate-500 dark:text-slate-400 mb-4">Start a conversation to get hints and explanations.</p>
+                <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center p-8 bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
+                    <div className="w-16 h-16 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mb-6 text-indigo-600 dark:text-indigo-400">
+                        <MessageCircle size={32} />
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Unlock AI Tutor</h3>
+                    <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-sm">
+                        Get personalized hints, code reviews, and step-by-step explanations for this problem.
+                    </p>
                     <button
                         onClick={() => openAuthModal('AI Tutor')}
-                        className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors"
+                        className="flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/25 transition-all transform hover:scale-[1.02] active:scale-[0.98]"
                     >
-                        <MessageCircle size={16} />
-                        Start Chat
+                        <Sparkles size={18} />
+                        Unlock with Google
                     </button>
                 </div>
             ) : slug && solution ? (

@@ -23,6 +23,8 @@ import type { DesignSolution } from '../../src/domain/entities/SystemDesign';
 import { Breadcrumb } from './components/Breadcrumb';
 import { useTheme } from '../../../frontend/src/context/useTheme';
 import { useAuth } from '../../../frontend/src/context/AuthContextDefinition';
+import { SignInGate } from '../../../frontend/src/components/SignInGate';
+import { AuthUnlockModal } from '../../../frontend/src/components/AuthUnlockModal';
 
 
 interface Message {
@@ -79,6 +81,14 @@ const SystemDesignPlayground: React.FC<SystemDesignPlaygroundProps> = ({ problem
   const [showAnalysisPanel, setShowAnalysisPanel] = useState(false);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authFeatureName, setAuthFeatureName] = useState('');
+
+  const openAuthModal = (feature: string) => {
+    setAuthFeatureName(feature);
+    setShowAuthModal(true);
+  };
+
   const isResizing = useRef(false);
 
   const startResizing = () => {
@@ -133,10 +143,9 @@ const SystemDesignPlayground: React.FC<SystemDesignPlaygroundProps> = ({ problem
     
     // Auth check
     if (!accessToken) {
-      // Allow user to see the initial welcome message, but require login to chat
-      if (confirm("Please log in to use the AI Assistant.")) {
-         login();
-      }
+      // This should be handled by the SignInGate wrapping the tab, 
+      // but keeping a safety check that triggers the modal if needed.
+      openAuthModal('AI Tutor');
       return;
     }
 
@@ -208,6 +217,12 @@ const SystemDesignPlayground: React.FC<SystemDesignPlaygroundProps> = ({ problem
 
   // Analyze canvas architecture
   const analyzeDesign = useCallback(async () => {
+    // Auth check
+    if (!accessToken) {
+      openAuthModal('Design Analysis');
+      return;
+    }
+
     const textElements = getCanvasTextElements();
     if (textElements.length === 0) {
       setAnalysisFeedback('Draw some components on the canvas first! Add text labels for your architecture components (e.g., "Load Balancer", "Database", "Cache").');
@@ -435,7 +450,8 @@ const SystemDesignPlayground: React.FC<SystemDesignPlaygroundProps> = ({ problem
 
               {activeTab === 'solution' && (
                 <div className="tab-content solution-tab-content">
-                  {loadingSolution && (
+                  <SignInGate feature="System Design Solutions" description="Sign in to unlock professional architecture solutions, trade-off analysis, and video walkthroughs.">
+                    {loadingSolution && (
                     <div className="solution-loading">
                       <div className="solution-spinner" />
                       <p className="solution-loading-text">Loading solution...</p>
@@ -593,12 +609,14 @@ const SystemDesignPlayground: React.FC<SystemDesignPlaygroundProps> = ({ problem
 
                     </div>
                   )}
+                  </SignInGate>
                 </div>
               )}
 
               {activeTab === 'ai' && (
                 <div className="tab-content ai-chat-container">
-                  <div className="ai-messages-list">
+                  <SignInGate feature="AI Tutor" description="Sign in to chat with our AI expert, get personalized architecture reviews, and ask follow-up questions.">
+                    <div className="ai-messages-list">
                     {messages.length === 0 ? (
                       <div className="ai-empty-state">
                         <div className="ai-empty-icon">
@@ -663,7 +681,8 @@ const SystemDesignPlayground: React.FC<SystemDesignPlaygroundProps> = ({ problem
                     <div className="ai-disclaimer">
                       AI can be inaccurate. Check important info.
                     </div>
-                  </div>
+                    </div>
+                  </SignInGate>
                 </div>
               )}
             </div>
@@ -774,6 +793,15 @@ const SystemDesignPlayground: React.FC<SystemDesignPlaygroundProps> = ({ problem
           </div>
         </div>
       </div>
+      <AuthUnlockModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onLogin={() => {
+          setShowAuthModal(false);
+          login();
+        }}
+        featureName={authFeatureName}
+      />
     </div>
   );
 };
