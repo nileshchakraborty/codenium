@@ -1,22 +1,26 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Database, Code as CodeIcon } from 'lucide-react';
+import { Database, Code as CodeIcon } from 'lucide-react';
+import { SharedHeader } from '@shared/components/SharedHeader';
+import { ThemeToggle } from '../components/ThemeToggle';
+import { LoginButton } from '../components/LoginButton';
 
 const CreditsPage: React.FC = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-8">
-            <div className="max-w-3xl mx-auto space-y-12">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 flex flex-col">
+            <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+                <SharedHeader
+                    currentRoute="algo"
+                    onNavigate={(route) => navigate(route)}
+                    ThemeToggleComponent={ThemeToggle}
+                    LoginButtonComponent={LoginButton}
+                />
+            </div>
+            <div className="max-w-3xl mx-auto px-8 pb-12 space-y-12">
                 {/* Header */}
-                <div className="space-y-6">
-                    <button 
-                        onClick={() => navigate('/')}
-                        className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
-                    >
-                        <ArrowLeft size={20} />
-                        Back to Home
-                    </button>
+                <div className="space-y-6 pt-4">
                     <h1 className="text-4xl font-bold tracking-tight">Data Sources & Credits</h1>
                     <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
                         We believe in transparency and giving credit where it's due. The problems and educational content on this platform are sourced from or inspired by the following excellent resources.

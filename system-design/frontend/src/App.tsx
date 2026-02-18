@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './SystemDesign.css';
 import type { Topic, Problem } from './SystemDesignComponents';
-import { 
-  YouTubePlayer, 
-  ProblemCard, 
-  AddProblemModal 
+import {
+  YouTubePlayer,
+  ProblemCard,
+  AddProblemModal
 } from './SystemDesignComponents';
 import SystemDesignPlayground from './SystemDesignPlayground';
-import { SharedHeader } from './components/SharedHeader';
-import { SharedFooter } from './components/SharedFooter';
+import { SharedHeader } from '@shared/components/SharedHeader';
+import { SharedFooter } from '@shared/components/SharedFooter';
 import { ThemeToggle } from '../../../frontend/src/components/ThemeToggle';
+import { LoginButton } from '../../../frontend/src/components/LoginButton';
+
 import { Search, Grid, Layout, Cpu, Database, Network, Shield, Settings, Layers, BookOpen, Plus } from 'lucide-react';
 
 const getTopicIcon = (id: string) => {
@@ -44,11 +47,13 @@ const SystemDesignApp = () => {
     topics: []
   });
 
+  const navigate = useNavigate();
+
   // Navigation handler
   const handleNavigate = (route: '/' | '/system-design') => {
     if (route === '/') {
       // Navigate to main app
-      window.location.href = '/';
+      navigate('/');
     }
     // If route is /system-design, we're already here
   };
@@ -104,11 +109,11 @@ const SystemDesignApp = () => {
   };
 
   const filteredProblems = problems?.filter(p => {
-    const matchesTopic = activeTopic === 'all' || 
+    const matchesTopic = activeTopic === 'all' ||
       p.category?.toLowerCase() === activeTopic.toLowerCase() ||
       p.topics?.some(t => t.toLowerCase() === activeTopic.toLowerCase());
-    
-    const matchesSearch = !searchQuery || 
+
+    const matchesSearch = !searchQuery ||
       p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.topics?.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -118,15 +123,12 @@ const SystemDesignApp = () => {
 
   if (loading) {
     return (
-      <div className="system-design-module">
-        <SharedHeader 
-          currentRoute="system-design"
-          onNavigate={handleNavigate}
-          ThemeToggleComponent={ThemeToggle}
-        />
-        <div className="loading-state">
-          <div className="spinner"></div>
-          <p>Initializing Systems...</p>
+      <div className="system-design-module min-h-screen bg-slate-950 flex flex-col">
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="loading-state">
+            <div className="spinner"></div>
+            <p>Initializing Systems...</p>
+          </div>
         </div>
         <SharedFooter />
       </div>
@@ -135,30 +137,31 @@ const SystemDesignApp = () => {
 
   if (selectedProblem) {
     return (
-      <div className="system-design-module">
-        <SharedHeader 
-          currentRoute="system-design"
-          onNavigate={handleNavigate}
-          ThemeToggleComponent={ThemeToggle}
-        />
-        <SystemDesignPlayground 
-          problem={selectedProblem} 
-          onBack={() => setSelectedProblem(null)} 
-        />
+      <div className="system-design-module min-h-screen bg-slate-950 flex flex-col">
+        <div className="flex-1">
+          <SystemDesignPlayground 
+            problem={selectedProblem} 
+            onBack={() => setSelectedProblem(null)} 
+          />
+        </div>
         <SharedFooter />
       </div>
     );
   }
 
   return (
-    <div className="system-design-module">
+    <div className="system-design-module min-h-screen bg-slate-950 flex flex-col">
       <div className="aurora-container"></div>
-      <SharedHeader 
-        currentRoute="system-design"
-        onNavigate={handleNavigate}
-        ThemeToggleComponent={ThemeToggle}
-      />
-      <div className="app-container fade-in">
+      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <SharedHeader 
+          currentRoute="system-design"
+          onNavigate={handleNavigate}
+          ThemeToggleComponent={ThemeToggle}
+          LoginButtonComponent={LoginButton}
+          // TODO: Add stats once System Design tracks progress
+        />
+      </div>
+      <div className="app-container fade-in flex-1">
         <div className="dashboard-grid">
           <aside className="sidebar slide-right">
             <h3 className="section-title">Knowledge Domains</h3>

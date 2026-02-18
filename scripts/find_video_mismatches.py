@@ -77,9 +77,28 @@ def main():
 
         try:
             resp = requests.get(url, timeout=10)
-            # Raise HTTPError for bad responses (4xx or 5xx)
+            
+            if resp.status_code == 400:
+                print(f"Error: 400 Bad Request. Check if API key is valid/expired.")
+                try:
+                    err_msg = resp.json()['error']['message']
+                    print(f"API Message: {err_msg}")
+                except: pass
+                break
+            elif resp.status_code == 401:
+                print(f"Error: 401 Unauthorized. Ensure 'YouTube Data API v3' is enabled in Google Cloud Console.")
+                try:
+                    err_msg = resp.json()['error']['message']
+                    print(f"API Message: {err_msg}")
+                except: pass
+                break
+            elif resp.status_code == 403:
+                print(f"Error: 403 Forbidden. Quota exceeded or API key restrictions apply.")
+                break
+                
             resp.raise_for_status()
             data = resp.json()
+            
             for item in data.get("items", []):
                 vid = item["id"]
                 snippet = item["snippet"]

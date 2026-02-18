@@ -5,6 +5,7 @@ import type { Solution } from '../types';
 import { SolutionsAPI } from '../models/api';
 import { useProgress } from '../hooks/useProgress';
 import { useAuth } from '../hooks/useAuth';
+// No longer using SharedHeader here for clean look
 
 /**
  * ProblemPage - Wrapper component that renders SolutionModal as a full page
@@ -108,6 +109,7 @@ const ProblemPage: React.FC = () => {
             solution={solution}
             slug={slug || null}
             problemStatus={problemStatus}
+            isPage={true}
         />
     );
 };

@@ -55,6 +55,7 @@ interface SolutionModalProps {
     solution: Solution | null;
     slug: string | null;
     problemStatus?: 'solved' | 'in-progress' | null;
+    isPage?: boolean;
 }
 
 const TABS = {
@@ -72,7 +73,7 @@ const TAB_STYLES = {
 } as const;
 
 /* eslint-disable complexity */
-const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution, slug, problemStatus }) => {
+const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution, slug, problemStatus, isPage = false }) => {
     const { isAuthenticated, login } = useAuth();
     const { isSolved, markSolved, saveDraft, getDraft, clearDraft, sync } = useProgress();
     const { settings, updateSetting } = useEditorSettings();
@@ -1589,7 +1590,10 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
     // ==================== MAIN RENDER ====================
 
     return (
-        <div className="fixed inset-0 z-50 bg-white dark:bg-slate-900 flex flex-col" style={{ width: '100vw', height: '100vh' }}>
+        <div className={isPage
+            ? "flex flex-col w-full h-[calc(100vh-100px)]"
+            : "fixed inset-0 z-50 bg-white dark:bg-slate-900 flex flex-col w-screen h-screen"
+        }>
             <div className="relative w-full h-full flex flex-col overflow-hidden">
 
                 {/* Close Button */}
@@ -1597,7 +1601,7 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                     onClick={onClose}
                     className="absolute top-3 right-3 sm:top-4 sm:right-4 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors z-50"
                 >
-                    <X size={20} className="sm:w-6 sm:h-6" />
+                    <X size={20} />
                 </button>
 
                 {/* Header */}

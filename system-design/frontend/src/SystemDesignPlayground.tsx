@@ -254,7 +254,7 @@ const SystemDesignPlayground: React.FC<SystemDesignPlaygroundProps> = ({ problem
     } finally {
       setAnalysisLoading(false);
     }
-  }, [getCanvasTextElements, problem]);
+  }, [getCanvasTextElements, problem, accessToken]);
 
   // Idle detection: auto-trigger analysis after 30s of no canvas changes
   const handleCanvasChange = useCallback(() => {
@@ -290,13 +290,20 @@ const SystemDesignPlayground: React.FC<SystemDesignPlaygroundProps> = ({ problem
             <span className={`difficulty-badge difficulty-${problem.difficulty}`}>{problem.difficulty}</span>
             <h2 className="playground-title">{problem.title}</h2>
           </div>
-          <div className="nav-actions">
+          <div className="nav-actions flex items-center gap-2">
             <button 
               className="toggle-sidebar-btn" 
               onClick={() => setIsSidebarVisible(!isSidebarVisible)}
               title={isSidebarVisible ? "Hide Panel" : "Show Panel"}
             >
               {isSidebarVisible ? <PanelLeftClose size={20} /> : <PanelLeftOpen size={20} />}
+            </button>
+            <button 
+              className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors" 
+              onClick={onBack}
+              title="Close Problem"
+            >
+              <X size={20} />
             </button>
           </div>
         </nav>

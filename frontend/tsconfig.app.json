@@ -20,8 +20,9 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@system-design/*": ["../system-design/frontend/src/*"]
+      "@system-design/*": ["../system-design/frontend/src/*"],
+      "@shared/*": ["../shared/*"]
     }
   },
-  "include": ["src", "../system-design/frontend/src"]
+  "include": ["src", "../system-design/frontend/src", "../shared"]
 }

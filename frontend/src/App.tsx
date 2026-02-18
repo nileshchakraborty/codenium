@@ -12,7 +12,8 @@ import { useTrackingConsent } from './hooks/useTrackingConsent';
 import { ConsentModal } from './components/ConsentModal';
 import { getAllPlans, getPlanProblems, type ListFilter } from './data/problemLists';
 import { HotSection } from './components/HotSection';
-import CodeniumLogo from './assets/logo.svg';
+import { SharedHeader } from '@shared/components/SharedHeader';
+import { SharedFooter } from '@shared/components/SharedFooter';
 import { Search, Filter, ChevronUp, ChevronDown, Check, Zap, CheckCircle, Pencil } from 'lucide-react';
 
 /**
@@ -285,76 +286,22 @@ function App() {
       />
       <div className={`app max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 ${showDisclosure ? 'blur-sm pointer-events-none select-none' : ''}`}>
         {/* Header */}
-        <header className="mb-6 sm:mb-8 border-b border-slate-200 dark:border-slate-800 pb-4 sm:pb-6">
-          {/* Desktop: Logo + Theme + Stats in one row | Mobile: Stacked */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            {/* Logo */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              <img src={CodeniumLogo} alt="Codenium" className="w-8 h-8 sm:w-10 sm:h-10" />
-              <h1 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-500">
-                Codenium
-              </h1>
-            </div>
-
-            {/* Navigation Links */}
-            <nav className="flex items-center gap-6 ml-8">
-              <button 
-                onClick={() => navigate('/')}
-                className={`text-sm font-semibold pb-1 transition-all ${!isSystemDesign ? 'text-indigo-500 border-b-2 border-indigo-500' : 'text-slate-500 hover:text-indigo-400'}`}
-              >
-                Algo & DS
-              </button>
-              <button 
-                onClick={() => navigate('/system-design')}
-                className={`text-sm font-semibold pb-1 transition-all ${isSystemDesign ? 'text-indigo-500 border-b-2 border-indigo-500' : 'text-slate-500 hover:text-indigo-400'}`}
-              >
-                System Design
-              </button>
-            </nav>
-
-            {/* Controls Row - Login button outside scroll area */}
-            <div className="flex items-center gap-3 sm:gap-4 justify-between lg:justify-end w-full lg:w-auto">
-              {/* Login Button - outside scroll container to prevent dropdown clipping */}
-              <LoginButton />
-
-              {/* Theme Toggle + Stats - scrollable on mobile */}
-              <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto pb-2 lg:pb-0 custom-scrollbar mask-fade-right">
-                <ThemeToggle />
-                <div className="flex flex-col items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 min-w-[60px] sm:min-w-[80px] shadow-sm flex-shrink-0">
-                  <span className="text-base sm:text-xl font-bold text-slate-900 dark:text-white">{stats.easy + stats.medium + stats.hard}</span>
-                  <span className="text-[10px] uppercase text-slate-500 font-bold tracking-wide">Total</span>
-                </div>
-                <div className="flex flex-col items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl min-w-[50px] sm:min-w-[70px] flex-shrink-0">
-                  <span className="text-base sm:text-xl font-bold text-emerald-600 dark:text-emerald-400">{stats.easy}</span>
-                  <span className="text-[10px] uppercase text-slate-500 font-bold tracking-wide">Easy</span>
-                </div>
-                <div className="flex flex-col items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-amber-500/10 border border-amber-500/20 rounded-xl min-w-[50px] sm:min-w-[70px] flex-shrink-0">
-                  <span className="text-base sm:text-xl font-bold text-amber-600 dark:text-amber-400">{stats.medium}</span>
-                  <span className="text-[10px] uppercase text-slate-500 font-bold tracking-wide">Med</span>
-                </div>
-                <div className="flex flex-col items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-rose-500/10 border border-rose-500/20 rounded-xl min-w-[50px] sm:min-w-[70px] flex-shrink-0">
-                  <span className="text-base sm:text-xl font-bold text-rose-600 dark:text-rose-400">{stats.hard}</span>
-                  <span className="text-[10px] uppercase text-slate-500 font-bold tracking-wide">Hard</span>
-                </div>
-
-                {/* Progress Metrics - Only show when authenticated */}
-                {isAuthenticated && (
-                  <div className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-xl flex-shrink-0">
-                    <div className="flex items-center gap-1.5" title="Completed">
-                      <CheckCircle size={14} className="text-emerald-500" />
-                      <span className="text-sm font-bold text-emerald-500">{solvedCount}</span>
-                    </div>
-                    <div className="w-px h-5 bg-slate-300 dark:bg-slate-700" />
-                    <div className="flex items-center gap-1.5" title="In Progress">
-                      <Pencil size={12} className="text-amber-500" />
-                      <span className="text-sm font-bold text-amber-500">{attemptedCount}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </header>
+        {/* Header */}
+        <SharedHeader
+          currentRoute={isSystemDesign ? 'system-design' : 'algo'}
+          onNavigate={(route) => navigate(route)}
+          showStats={true}
+          stats={{
+            total: stats.easy + stats.medium + stats.hard,
+            easy: stats.easy,
+            medium: stats.medium,
+            hard: stats.hard,
+            solved: solvedCount,
+            attempted: attemptedCount
+          }}
+          ThemeToggleComponent={ThemeToggle}
+          LoginButtonComponent={LoginButton}
+        />
 
         {/* Filters */}
         <div className="mb-4 sm:mb-8 flex flex-col gap-3 sm:gap-4">
@@ -438,10 +385,10 @@ function App() {
                 onClick={() => setStatusFilter(status)}
                 className={`px-3 py-1.5 rounded-lg font-medium text-xs transition-all flex items-center gap-1 ${statusFilter === status
                   ? status === 'Solved'
-                    ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
-                    : status === 'In Progress'
-                      ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/25'
-                      : 'bg-slate-800 dark:bg-slate-700 text-white shadow-md'
+                  ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
+                  : status === 'In Progress'
+                    ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/25'
+                    : 'bg-slate-800 dark:bg-slate-700 text-white shadow-md'
                   : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600'
                   }`}
               >
@@ -593,15 +540,7 @@ function App() {
           })}
         </div>
 
-        <footer className="mt-12 text-center text-slate-500 dark:text-slate-600 text-sm pb-8">
-          <p className="mb-2">Built with ❤️ for Visual Learners | Codenium</p>
-          <button 
-            onClick={() => navigate('/credits')}
-            className="text-xs text-slate-400 hover:text-indigo-500 underline transition-colors"
-          >
-            Data Sources & Credits
-          </button>
-        </footer>
+        <SharedFooter />
       </div>
     </div>
   );

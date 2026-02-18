@@ -59,7 +59,7 @@ export const LoginButton: React.FC = () => {
     }
 
     return (
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative flex items-center gap-2 sm:gap-3" ref={dropdownRef}>
             <button
                 onClick={() => setShowDropdown(!showDropdown)}
                 className="flex items-center gap-1.5 sm:gap-2 p-1 sm:p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-all group"
@@ -81,6 +81,17 @@ export const LoginButton: React.FC = () => {
                 </span>
                 <ChevronDown size={14} className="hidden lg:block text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors" />
             </button>
+
+            {/* Mobile/Quick Sign Out Button */}
+            {!showDropdown && (
+                <button
+                    onClick={logout}
+                    className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-white/10 rounded-lg transition-all active:scale-95"
+                >
+                    <LogOut size={14} className="sm:w-4 sm:h-4" />
+                    <span>Sign Out</span>
+                </button>
+            )}
 
             {showDropdown && (
                 <div className="fixed sm:absolute inset-x-2 sm:inset-x-auto top-16 sm:top-auto sm:right-0 sm:mt-2 w-auto sm:w-72 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
