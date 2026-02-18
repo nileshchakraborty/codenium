@@ -13,9 +13,8 @@ export default defineConfig({
       '@system-design': path.resolve(__dirname, '../system-design/frontend/src'),
       '@': path.resolve(__dirname, './src'),
       '@shared': path.resolve(__dirname, '../shared'),
-      react: path.resolve(__dirname, '../node_modules/react'),
-      'react-dom': path.resolve(__dirname, '../node_modules/react-dom'),
     },
+    dedupe: ['react', 'react-dom', 'react-router', 'react-router-dom'],
   },
   server: {
     port: 3000,
