@@ -286,7 +286,7 @@ export class BrowserJSRunner {
         }
 
         // Create a sandboxed execution context
-        let wrappedCode = '';
+        let wrappedCode: string;
 
         if (isClassSolution) {
             wrappedCode = `

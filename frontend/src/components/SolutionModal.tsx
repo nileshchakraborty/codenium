@@ -477,7 +477,7 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
 
         // Check for pre-generated implementation for target language
         const implData = solution.implementations?.[language];
-        let resetCode = '';
+        let resetCode: string;
 
         if (implData?.initialCode) {
             resetCode = implData.initialCode.replace(/\\n/g, '\n');
