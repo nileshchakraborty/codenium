@@ -13,7 +13,7 @@ vi.mock('axios', async (importOriginal) => {
             response: { use: vi.fn() }
         },
         get: vi.fn(),
-        post: vi.fn(),
+        post: vi.fn(() => Promise.resolve({ data: {} })),
         AxiosHeaders: actual.AxiosHeaders
     };
     return {

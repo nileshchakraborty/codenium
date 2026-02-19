@@ -1,3 +1,4 @@
+import React, { isValidElement } from 'react';
 import CodeniumLogo from '../assets/logo.svg';
 
 import { CheckCircle, Pencil } from 'lucide-react';
@@ -14,8 +15,22 @@ interface SharedHeaderProps {
     solved?: number;
     attempted?: number;
   };
-  ThemeToggleComponent?: React.ComponentType;
-  LoginButtonComponent?: React.ComponentType;
+  ThemeToggleComponent?: React.ComponentType | React.ReactNode;
+  LoginButtonComponent?: React.ComponentType | React.ReactNode;
+}
+
+function renderComponent(ComponentOrNode: React.ComponentType | React.ReactNode) {
+  if (!ComponentOrNode) return null;
+  if (isValidElement(ComponentOrNode)) return ComponentOrNode;
+  
+  // If it's a component type (function), render it
+  if (typeof ComponentOrNode === 'function') {
+    const Component = ComponentOrNode as React.ComponentType;
+    return <Component />;
+  }
+  
+  // If it's something else that's valid to render (string, number, etc.)
+  return ComponentOrNode as React.ReactNode;
 }
 
 export function SharedHeader({
@@ -112,10 +127,10 @@ export function SharedHeader({
               </div>
             )}
 
-            <div className="flex items-center gap-2">
-               {ThemeToggleComponent && <ThemeToggleComponent />}
-               {LoginButtonComponent && <LoginButtonComponent />}
-            </div>
+             <div className="flex items-center gap-2">
+                {renderComponent(ThemeToggleComponent)}
+                {renderComponent(LoginButtonComponent)}
+             </div>
           </div>
         </div>
       </div>
