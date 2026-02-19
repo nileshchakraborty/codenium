@@ -9,7 +9,7 @@ ENV VITE_API_URL=/api
 RUN npm run build
 
 # Build Backend
-FROM python:3.11-slim
+FROM python:3.14-slim
 WORKDIR /app
 
 # Install dependencies
