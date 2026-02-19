@@ -16,7 +16,7 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.89.0",
+    "@supabase/supabase-js": "^2.97.0",
     "axios": "^1.13.5",
     "axios-retry": "^4.5.0",
     "cors": "^2.8.5",
