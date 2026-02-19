@@ -1,0 +1,12 @@
+{
+  "watch": ["api", "shared", "lib"],
+  "ext": "ts,json",
+  "ignore": [
+    "api/data/*",
+    "data/*",
+    "*.log",
+    "frontend/*",
+    "system-design/frontend/*"
+  ],
+  "exec": "ts-node api/index.ts"
+}
