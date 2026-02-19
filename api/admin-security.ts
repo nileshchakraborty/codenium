@@ -9,6 +9,7 @@
  */
 
 import * as crypto from 'crypto';
+// @ts-ignore
 import { authenticator } from 'otplib';
 import * as QRCode from 'qrcode';
 import type { Request, Response, NextFunction } from 'express';

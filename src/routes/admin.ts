@@ -98,15 +98,15 @@ router.put('/study-plans/:id', (req: Request, res: Response) => {
 
         const data = readJsonFile(STUDY_PLANS_FILE) as { plans: Record<string, unknown> };
 
-        if (!data.plans[id]) {
+        if (!data.plans[id as string]) {
             res.status(404).json({ error: 'Study plan not found' });
             return;
         }
 
-        data.plans[id] = { ...data.plans[id] as object, ...updates, id };
+        data.plans[id as string] = { ...data.plans[id as string] as object, ...updates, id };
         writeJsonFile(STUDY_PLANS_FILE, data);
 
-        res.json({ success: true, plan: data.plans[id] });
+        res.json({ success: true, plan: data.plans[id as string] });
     } catch (error) {
         res.status(500).json({ error: 'Failed to update study plan' });
     }
@@ -122,12 +122,12 @@ router.delete('/study-plans/:id', (req: Request, res: Response) => {
 
         const data = readJsonFile(STUDY_PLANS_FILE) as { plans: Record<string, unknown> };
 
-        if (!data.plans[id]) {
+        if (!data.plans[id as string]) {
             res.status(404).json({ error: 'Study plan not found' });
             return;
         }
 
-        delete data.plans[id];
+        delete data.plans[id as string];
         writeJsonFile(STUDY_PLANS_FILE, data);
 
         res.json({ success: true, message: `Study plan '${id}' deleted` });
@@ -195,15 +195,15 @@ router.put('/solutions/:slug', (req: Request, res: Response) => {
 
         const data = readJsonFile(SOLUTIONS_FILE) as Record<string, unknown>;
 
-        if (!data[slug]) {
+        if (!data[slug as string]) {
             res.status(404).json({ error: 'Solution not found' });
             return;
         }
 
-        data[slug] = { ...data[slug] as object, ...updates };
+        data[slug as string] = { ...data[slug as string] as object, ...updates };
         writeJsonFile(SOLUTIONS_FILE, data);
 
-        res.json({ success: true, solution: data[slug] });
+        res.json({ success: true, solution: data[slug as string] });
     } catch (error) {
         res.status(500).json({ error: 'Failed to update solution' });
     }

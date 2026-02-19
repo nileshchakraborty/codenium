@@ -480,7 +480,7 @@ app.get('/api/analytics/youtube/:videoId', optionalAuth, async (req: express.Req
 
         if (!user) return res.json({ position: 0 });
 
-        const session = await mongoDBService.getYoutubeSession(user.sub || user.email, videoId);
+        const session = await mongoDBService.getYoutubeSession(user.sub || user.email, videoId as string);
         res.json({ position: session?.last_position || 0 });
     } catch (error) {
         res.json({ position: 0 });
@@ -498,7 +498,7 @@ app.post('/api/analytics/youtube/:videoId/sync', optionalAuth, async (req: expre
 
         await mongoDBService.syncYoutubeSession(
             user.sub || user.email,
-            videoId,
+            videoId as string,
             position,
             total_duration
         );
@@ -657,7 +657,7 @@ app.get('/api/jobs/:jobId', requireAuth, async (req, res) => {
         const { jobId } = req.params;
         const user = (req as any).user;
 
-        const job = jobQueue.getJob(jobId, user.sub);
+        const job = jobQueue.getJob(jobId as string, user.sub);
 
         if (!job) {
             return res.status(404).json({ error: 'Job not found' });
@@ -1527,7 +1527,7 @@ app.get('/api/admin/problem-order', adminSecurity.adminRateLimiter, validateAdmi
 app.get('/api/admin/problem-order/:category', adminSecurity.adminRateLimiter, validateAdmin, (req: express.Request, res: express.Response) => {
     try {
         const session = (req as any).adminSession;
-        const category = decodeURIComponent(req.params.category);
+        const category = decodeURIComponent(req.params.category as string);
         const data = JSON.parse(fs.readFileSync(PROBLEM_ORDER_FILE, 'utf-8'));
         const order = data.orders[category] || [];
         adminSecurity.logActivity('VIEW_PROBLEM_ORDER', `Retrieved problem order for ${category}`, req, session?.email);
@@ -1542,7 +1542,7 @@ app.get('/api/admin/problem-order/:category', adminSecurity.adminRateLimiter, va
 app.put('/api/admin/problem-order/:category', adminSecurity.adminRateLimiter, validateAdmin, (req: express.Request, res: express.Response) => {
     try {
         const session = (req as any).adminSession;
-        const category = decodeURIComponent(req.params.category);
+        const category = decodeURIComponent(req.params.category as string);
         const { order } = req.body;
 
         if (!Array.isArray(order)) {
@@ -1607,7 +1607,7 @@ app.get('/api/admin/problems/history', adminSecurity.adminRateLimiter, validateA
 app.get('/api/admin/problems/history/:slug', adminSecurity.adminRateLimiter, validateAdmin, async (req: express.Request, res: express.Response) => {
     try {
         const { slug } = req.params;
-        const entries = await problemHistoryService.getHistoryForProblem(slug);
+        const entries = await problemHistoryService.getHistoryForProblem(slug as string);
         res.json({ entries });
     } catch (error: any) {
         res.status(500).json({ error: error.message || 'Failed to fetch problem history' });
@@ -1618,7 +1618,7 @@ app.get('/api/admin/problems/history/:slug', adminSecurity.adminRateLimiter, val
 app.get('/api/admin/problems/history/entry/:id', adminSecurity.adminRateLimiter, validateAdmin, async (req: express.Request, res: express.Response) => {
     try {
         const { id } = req.params;
-        const entry = await problemHistoryService.getHistoryEntry(id);
+        const entry = await problemHistoryService.getHistoryEntry(id as string);
 
         if (!entry) {
             return res.status(404).json({ error: 'History entry not found' });
@@ -1695,13 +1695,13 @@ app.put('/api/admin/problems/:slug', adminSecurity.adminRateLimiter, validateAdm
         const { slug } = req.params;
         const newData = req.body;
 
-        const existing = localFileSyncService.getProblem(slug);
+        const existing = localFileSyncService.getProblem(slug as string);
         if (!existing) {
             return res.status(404).json({ error: 'Problem not found' });
         }
 
         // Update with history tracking
-        const historyId = await problemHistoryService.logUpdate(slug, existing, newData, session?.email || 'admin');
+        const historyId = await problemHistoryService.logUpdate(slug as string, existing, newData, session?.email || 'admin');
 
         adminSecurity.logActivity('UPDATE_PROBLEM', `Updated problem ${slug}`, req, session?.email);
         res.json({ success: true, slug, historyId: historyId.toString() });
@@ -1717,13 +1717,13 @@ app.delete('/api/admin/problems/:slug', adminSecurity.adminRateLimiter, validate
         const session = (req as any).adminSession;
         const { slug } = req.params;
 
-        const existing = localFileSyncService.getProblem(slug);
+        const existing = localFileSyncService.getProblem(slug as string);
         if (!existing) {
             return res.status(404).json({ error: 'Problem not found' });
         }
 
         // Delete with history tracking
-        const historyId = await problemHistoryService.logDelete(slug, existing, session?.email || 'admin');
+        const historyId = await problemHistoryService.logDelete(slug as string, existing, session?.email || 'admin');
 
         adminSecurity.logActivity('DELETE_PROBLEM', `Deleted problem ${slug}`, req, session?.email);
         res.json({ success: true, slug, historyId: historyId.toString() });
@@ -1933,17 +1933,17 @@ app.put('/api/admin/study-plans/:id', adminSecurity.adminRateLimiter, validateAd
         const updates = req.body;
 
         const data = JSON.parse(fs.readFileSync(STUDY_PLANS_FILE, 'utf-8'));
-        if (!data.plans[id]) {
+        if (!data.plans[id as string]) {
             res.status(404).json({ error: 'Plan not found' });
             return;
         }
 
-        data.plans[id] = { ...data.plans[id], ...updates, id };
+        data.plans[id as string] = { ...data.plans[id as string], ...updates, id };
         fs.writeFileSync(STUDY_PLANS_FILE, JSON.stringify(data, null, 2));
 
         const session = (req as any).adminSession;
         adminSecurity.logActivity('UPDATE_STUDY_PLAN', `Updated study plan '${id}'`, req, session?.email);
-        res.json({ success: true, plan: data.plans[id] });
+        res.json({ success: true, plan: data.plans[id as string] });
     } catch (error) {
         res.status(500).json({ error: 'Failed to update study plan' });
     }
@@ -1955,13 +1955,13 @@ app.delete('/api/admin/study-plans/:id', adminSecurity.adminRateLimiter, validat
         const { id } = req.params;
 
         const data = JSON.parse(fs.readFileSync(STUDY_PLANS_FILE, 'utf-8'));
-        if (!data.plans[id]) {
+        if (!data.plans[id as string]) {
             res.status(404).json({ error: 'Plan not found' });
             return;
         }
 
-        const planName = data.plans[id]?.name || id;
-        delete data.plans[id];
+        const planName = data.plans[id as string]?.name || id;
+        delete data.plans[id as string];
         fs.writeFileSync(STUDY_PLANS_FILE, JSON.stringify(data, null, 2));
 
         const session = (req as any).adminSession;

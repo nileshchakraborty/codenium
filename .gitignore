@@ -138,3 +138,6 @@ api_clean.txt
 
 # Scripts with credentials
 scripts/find_video_mismatches.py
+
+# Public assets (build output)
+public/assets/
