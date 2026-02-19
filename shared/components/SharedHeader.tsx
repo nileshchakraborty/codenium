@@ -46,34 +46,39 @@ export function SharedHeader({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex items-center justify-between gap-4">
           {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="relative group">
+          {/* Logo */}
+          <div 
+            className="flex items-center gap-3 cursor-pointer group" 
+            onClick={() => onNavigate('/')}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === 'Enter' && onNavigate('/')}
+          >
+            <div className="relative">
               <div className="absolute -inset-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full opacity-20 group-hover:opacity-40 blur-md transition-opacity" />
               <img src={CodeniumLogo} alt="Codenium" className="relative w-9 h-9 sm:w-10 sm:h-10 transform group-hover:scale-105 transition-transform duration-300" />
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-500 tracking-tight">
+            <h1 
+              className="text-xl sm:text-2xl font-extrabold tracking-tight"
+              style={{
+                background: 'linear-gradient(to right, #6366f1, #a855f7)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                color: 'transparent',
+                display: 'inline-block',
+                filter: 'drop-shadow(0 0 1px rgba(168, 85, 247, 0.3))'
+              }}
+            >
               Codenium
             </h1>
           </div>
 
-          {/* Center Navigation - Desktop */}
-          <nav className="flex items-center p-1 bg-slate-100/80 dark:bg-slate-800/50 rounded-full border border-slate-200/60 dark:border-white/10 z-50 backdrop-blur-md">
-            <button 
-              onClick={() => onNavigate('/')}
-              className={`relative px-8 py-3 text-sm font-bold rounded-full transition-all duration-300 cursor-pointer ${currentRoute === 'algo' ? 'bg-white dark:bg-indigo-600/90 text-indigo-600 dark:text-white shadow-[0_4px_12px_rgba(0,0,0,0.1)] ring-1 ring-black/5' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-white/5'}`}
-            >
-              Algo & DS
-            </button>
-            <button 
-              onClick={() => onNavigate('/system-design')}
-              className={`relative px-8 py-3 text-sm font-bold rounded-full transition-all duration-300 cursor-pointer ${currentRoute === 'system-design' ? 'bg-white dark:bg-indigo-600/90 text-indigo-600 dark:text-white shadow-[0_4px_12px_rgba(0,0,0,0.1)] ring-1 ring-black/5' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-white/5'}`}
-            >
-              System Design
-            </button>
-          </nav>
+
 
           {/* Mobile Navigation - Compact */}
-          <nav className="md:hidden flex items-center p-1 bg-slate-100/80 dark:bg-slate-900/50 rounded-full border border-slate-200 dark:border-white/5 backdrop-blur-md">
+          {/* Center Mode Toggle - Compact Style for All Screens */}
+          <nav className="flex items-center p-1 bg-slate-100/80 dark:bg-slate-900/50 rounded-full border border-slate-200 dark:border-white/5 backdrop-blur-md">
             <button 
               onClick={() => onNavigate('/')}
               className={`px-4 py-2 text-xs font-semibold rounded-full transition-all ${currentRoute === 'algo' ? 'bg-white dark:bg-indigo-600 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 dark:text-slate-400'}`}
