@@ -46,7 +46,7 @@ export class BrowserJSRunner {
         const results: TestResult[] = [];
 
         // Transpile code if needed (e.g. TypeScript -> JavaScript)
-        let executableCode = userCode;
+        let executableCode: string;
         try {
             executableCode = Transpiler.transpile(userCode, language);
         } catch (error: unknown) {
@@ -286,7 +286,6 @@ export class BrowserJSRunner {
         }
 
         // Create a sandboxed execution context
-        const args = Object.values(input);
         let wrappedCode = '';
 
         if (isClassSolution) {
@@ -305,11 +304,11 @@ export class BrowserJSRunner {
         try {
             // Use Function constructor for safer eval
             const executor = new Function('args', wrappedCode);
-            const result = executor(args);
+            const result = executor(Object.values(input));
             return { result, funcName };
         } catch (error: unknown) {
             const errMsg = error instanceof Error ? error.message : String(error);
-            throw new Error(`Execution error: ${errMsg}`);
+            throw new Error(`Execution error: ${errMsg}`, { cause: error });
         }
     }
 

@@ -18,7 +18,7 @@ export class ComplexityAnalyzer {
         // Simple heuristics based on common patterns
         // This is an estimation and not a full AST analysis
 
-        let timeComplexity = 'O(1)';
+        let timeComplexity: string;
         let spaceComplexity = 'O(1)';
         const explanation: string[] = [];
 

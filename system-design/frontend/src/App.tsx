@@ -9,7 +9,6 @@ import {
 } from './SystemDesignComponents';
 import SystemDesignPlayground from './SystemDesignPlayground';
 import { SharedHeader } from '@shared/components/SharedHeader';
-import { SharedFooter } from '@shared/components/SharedFooter';
 import { ThemeToggle } from '../../../frontend/src/components/ThemeToggle';
 import { LoginButton } from '../../../frontend/src/components/LoginButton';
 
@@ -130,7 +129,6 @@ const SystemDesignApp = () => {
             <p>Initializing Systems...</p>
           </div>
         </div>
-        <SharedFooter />
       </div>
     );
   }
@@ -144,7 +142,6 @@ const SystemDesignApp = () => {
             onBack={() => setSelectedProblem(null)} 
           />
         </div>
-        <SharedFooter />
       </div>
     );
   }
@@ -257,7 +254,6 @@ const SystemDesignApp = () => {
           topics={topics}
         />
       </div>
-      <SharedFooter />
     </div>
   );
 };

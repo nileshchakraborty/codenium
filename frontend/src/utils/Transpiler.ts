@@ -19,7 +19,7 @@ export class Transpiler {
         } catch (e) {
             console.error("Transpilation failed:", e);
             // Re-throw with user-friendly message
-            throw new Error(`TypeScript compilation failed: ${e instanceof Error ? e.message : String(e)}`);
+            throw new Error(`TypeScript compilation failed: ${e instanceof Error ? e.message : String(e)}`, { cause: e });
         }
     }
 }
