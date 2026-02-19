@@ -5,6 +5,10 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
     open-pull-requests-limit: 10
 
   # Frontend dependencies
@@ -12,6 +16,10 @@ updates:
     directory: "/frontend"
     schedule:
       interval: "weekly"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
     open-pull-requests-limit: 10
 
   # API Node dependencies
@@ -19,6 +27,10 @@ updates:
     directory: "/api"
     schedule:
       interval: "weekly"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
     open-pull-requests-limit: 10
 
   # System Design Frontend dependencies
@@ -26,6 +38,10 @@ updates:
     directory: "/system-design/frontend"
     schedule:
       interval: "weekly"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
     open-pull-requests-limit: 10
 
   # API Python dependencies
@@ -33,6 +49,10 @@ updates:
     directory: "/api"
     schedule:
       interval: "weekly"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
     open-pull-requests-limit: 10
 
   # Script dependencies
@@ -40,6 +60,10 @@ updates:
     directory: "/scripts"
     schedule:
       interval: "weekly"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
     open-pull-requests-limit: 10
 
   # Docker
@@ -47,4 +71,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
     open-pull-requests-limit: 10
