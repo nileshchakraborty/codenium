@@ -156,10 +156,24 @@ app.use(express.json({ limit: '10mb' }));
 
 // --- RATE LIMITING ---
 // Apply general rate limiter to all API routes
-app.use('/api/', generalLimiter);
+app.use('/api/', (req, res, next) => {
+    try {
+        return (generalLimiter as any)(req, res, next);
+    } catch (error) {
+        console.error('[RATE_LIMIT] General limiter failed, skipping limiter for request:', error);
+        return next();
+    }
+});
 
 // Additional strict limiter for AI endpoints
-app.use('/api/ai/', aiLimiter);
+app.use('/api/ai/', (req, res, next) => {
+    try {
+        return (aiLimiter as any)(req, res, next);
+    } catch (error) {
+        console.error('[RATE_LIMIT] AI limiter failed, skipping limiter for request:', error);
+        return next();
+    }
+});
 
 // --- AUTH MIDDLEWARE ---
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
