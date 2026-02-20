@@ -38,15 +38,6 @@ export class GoRunner {
                     funcName = funcMatch[1];
                 }
 
-                const imports = `
-import (
-    "encoding/json"
-    "fmt"
-    "reflect"
-    "strings"
-    "time"
-)
-`;
                 // Add imports if missing? No, Go is strict. 
                 // We rely on user providing imports or we implement a smart injector later.
                 // For now: Do NOT inject imports into output file to avoid unused import errors.

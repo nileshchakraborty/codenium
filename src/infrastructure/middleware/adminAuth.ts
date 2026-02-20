@@ -8,13 +8,10 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
-import crypto from 'crypto';
 
 // Store valid tokens (in production, use Redis or database)
 const validTokens: Map<string, { userId: string; createdAt: number; expiresAt: number }> = new Map();
 
-// Secret for token validation (match frontend)
-const ADMIN_SECRET = 'CODENIUM_ADMIN_2024';
 
 /**
  * Check if request is from localhost

@@ -11,4 +11,6 @@ if (!supabaseUrl || !supabaseKey) {
     console.warn('⚠️ Supabase credentials not found. DB layer will be disabled.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = (supabaseUrl && supabaseKey) 
+    ? createClient(supabaseUrl, supabaseKey)
+    : null as any; // Cast as any to avoid type errors in consumers that expect a client

@@ -30,13 +30,17 @@ export class FileProblemRepository implements ProblemRepository {
             path.join(__dirname, '..', '..', '..', '..', 'api', 'data', filename),
             path.join(__dirname, 'data', filename),
             path.join('/var/task/api/data', filename),
-            path.join('/var/task', filename)
+            path.join('/var/task', filename),
+            // Vercel output relative paths
+            path.join(process.cwd(), '.next', 'server', 'chunks', 'api', 'data', filename),
+            path.join(process.cwd(), '..', 'api', 'data', filename)
         ];
 
+        console.log(`[FileProblemRepository] Searching for ${filename}...`);
         for (const p of candidates) {
             try {
                 if (fs.existsSync(p)) {
-                    console.log(`[FileProblemRepository] Found ${filename} at ${p}`);
+                    console.log(`[FileProblemRepository] Found ${filename} at ${p} ✅`);
                     return p;
                 }
             } catch (e) {
@@ -44,7 +48,7 @@ export class FileProblemRepository implements ProblemRepository {
             }
         }
 
-        console.error(`[FileProblemRepository] Could not find ${filename} in any candidate:`, candidates);
+        console.error(`[FileProblemRepository] CRITICAL: Could not find ${filename} in any candidate:`, candidates);
         return candidates[0]; // Return first candidate as default
     }
 

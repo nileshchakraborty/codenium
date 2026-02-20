@@ -80,7 +80,7 @@ export class TieredProblemRepository implements ProblemRepository {
                 // Reconstruct categories structure
                 const categoriesMap: Record<string, Problem[]> = {};
 
-                rows.forEach(row => {
+                rows.forEach((row: any) => {
                     const cat = row.category || 'General';
                     if (!categoriesMap[cat]) categoriesMap[cat] = [];
 

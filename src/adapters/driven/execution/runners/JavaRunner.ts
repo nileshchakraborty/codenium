@@ -58,7 +58,7 @@ export class JavaRunner {
                 const methodName = match[1];
 
                 // 3. Generate Main.java
-                const testCalls = testCases.map((tc, index) => {
+                const testCalls = testCases.map((tc, _index) => {
                     // Parse input: assumes input is a list of args? or similar to JS runner.
                     // If input is "[[2,7,11,15], 9]", we need to parse it as an array to spread it?
                     // But here tc.input is a string.
@@ -101,37 +101,9 @@ export class JavaRunner {
                     `;
                 }).join('\n');
 
-                const mainCode = `
-import java.util.Arrays;
-
-public class Main {
-    public static void main(String[] args) {
-        Solution sol = new Solution();
-        System.out.println("{ \\"success\\": true, \\"results\\": [");
-        ${testCalls.split('\n').join('\n        Boolean comma' + (testCalls ? ' = true;' : ''))} 
-        // Hacky way to join commas? Simplify: just print objects and let TS wrapper parse lines?
-        // Let's print individual lines and wrap them in TS.
-    }
-    
-    // Helper to generic compare
-    public static boolean compare(Object actual, String expected) {
-        String actStr = String.valueOf(actual);
-        if (actual instanceof int[]) actStr = Arrays.toString((int[])actual).replaceAll(" ", "");
-        if (actual instanceof Object[]) actStr = Arrays.deepToString((Object[])actual).replaceAll(" ", "");
-        
-        // Normalize
-        String expStr = expected.replaceAll(" ", "");
-        actStr = actStr.replaceAll(" ", "");
-        
-        return actStr.equals(expStr);
-    }
-}
-`;
                 // Revised Main code to just print lines that JS can aggregate
                 const mainCodeSimple = `
 import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
@@ -190,7 +162,7 @@ public class Main {
                 runProc.stdout.on('data', d => output += d.toString());
                 runProc.stderr.on('data', d => output += d.toString()); // Capture stderr too
 
-                runProc.on('close', (code) => {
+                runProc.on('close', (_code) => {
                     clearTimeout(id);
                     // Extract JSON lines between markers
                     const lines = output.split('\n');

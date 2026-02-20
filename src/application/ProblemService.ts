@@ -1,14 +1,12 @@
 import { ProblemRepository } from '../domain/ports/ProblemRepository';
 import { AIService } from '../domain/ports/AIService';
 import { ExecutionService } from '../domain/ports/ExecutionService';
-import { ToolRegistry } from '../domain/mcp/ToolRegistry';
 
 export class ProblemService {
     constructor(
         private problemRepo: ProblemRepository,
         private aiService: AIService,
-        private executionService: ExecutionService,
-        private toolRegistry: ToolRegistry
+        private executionService: ExecutionService
     ) { }
 
     async getAllProblems() {
@@ -32,7 +30,7 @@ export class ProblemService {
         return this.aiService.explainSolution(code, title);
     }
 
-    async chatWithTutor(slug: string, history: any[], message: string, code?: string) {
+    async chatWithTutor(slug: string, history: any[], message: string, _code?: string) {
         // 1. Get Problem Context
         const problem = await this.problemRepo.getProblemBySlug(slug);
         const title = problem ? problem.title : "Unknown Problem";

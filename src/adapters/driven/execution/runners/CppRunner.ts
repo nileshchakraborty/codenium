@@ -62,7 +62,7 @@ int main() {
     cout << "---BEGIN_RESULTS---" << endl;
     
     // Test Cases
-    ${testCases.map((tc, i) => generateCppCall(code, tc.input, tc.output)).join('\n')}
+    ${testCases.map((tc, _i) => generateCppCall(code, tc.input, tc.output)).join('\n')}
     
     cout << "---END_RESULTS---" << endl;
     return 0;
@@ -100,7 +100,7 @@ int main() {
                 runProc.stdout.on('data', d => output += d.toString());
                 runProc.stderr.on('data', d => output += d.toString());
 
-                runProc.on('close', (code) => {
+                runProc.on('close', (_code) => {
                     clearTimeout(id);
                     const lines = output.split('\n');
                     const results = [];

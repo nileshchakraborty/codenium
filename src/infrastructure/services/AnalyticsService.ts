@@ -1,5 +1,4 @@
-import { Collection } from 'mongodb';
-import { mongoDBService, ActivityEvent, UserProgress, YouTubeSession } from '../database/MongoDBService';
+import { mongoDBService } from '../database/MongoDBService';
 
 export interface DashboardMetrics {
     totalUsers: number;

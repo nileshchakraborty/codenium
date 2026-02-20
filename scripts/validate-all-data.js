@@ -21,7 +21,7 @@ function main() {
         process.exit(1);
     }
 
-    const solutions = solutionsData.solutions;
+    const solutions = solutionsData;
     const report = {
         missingFields: [],
         brokenLinks: [],

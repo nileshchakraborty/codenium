@@ -28,7 +28,7 @@ export class RustRunner {
                 }
                 const funcName = funcMatch[1];
 
-                const testCalls = testCases.map((tc, i) => {
+                const testCalls = testCases.map((tc, _i) => {
                     return generateRustCall(funcName, tc.input, tc.output);
                 }).join('\n');
 

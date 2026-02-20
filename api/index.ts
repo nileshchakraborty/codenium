@@ -22,6 +22,17 @@ log('[STARTUP] __dirname:', __dirname);
 log('[STARTUP] NODE_ENV:', process.env.NODE_ENV);
 log('============================================');
 
+// --- GLOBAL ERROR HANDLERS ---
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('CRITICAL: Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+    console.error('CRITICAL: Uncaught Exception:', error);
+    // On Vercel, it's better to log and let the function retry/fail gracefully 
+    // rather than calling process.exit(1) which might kill the container instance permanently
+});
+
 // Check critical paths
 const rootDir = process.cwd();
 const criticalPaths = [
@@ -38,8 +49,14 @@ criticalPaths.forEach(({ name, path: p }) => {
 // List contents of CWD
 try {
     log('[STARTUP] CWD Contents:', fs.readdirSync(process.cwd()).join(', '));
+    // Check for common Vercel paths
+    const vercelDataPath = '/var/task/api/data';
+    if (fs.existsSync(vercelDataPath)) {
+        log(`[STARTUP] Vercel data path exists: ${vercelDataPath}`);
+        log(`[STARTUP] Vercel data contents:`, fs.readdirSync(vercelDataPath).join(', '));
+    }
 } catch (e) {
-    log('[STARTUP] Failed to read CWD:', e);
+    log('[STARTUP] Failed to read directories:', e);
 }
 
 // --- MIDDLEWARE & SERVICES ---
@@ -188,8 +205,7 @@ new MCPTools(toolRegistry, executionService, problemRepo);
 const problemService = new ProblemService(
     problemRepo,
     aiService,
-    executionService,
-    toolRegistry
+    executionService
 );
 
 // --- HTTP ADAPTER (Driving) ---
