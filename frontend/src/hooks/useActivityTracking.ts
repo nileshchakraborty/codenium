@@ -4,8 +4,9 @@ import { useTrackingConsent } from './useTrackingConsent';
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
-if (!API_BASE && import.meta.env.PROD) {
-    console.warn('Frontend Warning: VITE_API_URL is not set in production. Activity tracking may fail if not served from the same origin.');
+// Only warn if API_BASE is set to a different origin, or if we definitely expect it but it's missing
+if (!API_BASE && import.meta.env.PROD && typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    console.warn('Frontend Warning: VITE_API_URL is not set. Using relative paths.');
 }
 
 /**

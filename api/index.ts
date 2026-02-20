@@ -214,6 +214,48 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'healthy', architecture: 'hexagonal', check: 'vercel-native' });
 });
 
+app.get('/api/diag', async (req, res) => {
+    const diag: any = {
+        timestamp: new Date().toISOString(),
+        env: {
+            NODE_ENV: process.env.NODE_ENV,
+            VERCEL: process.env.VERCEL,
+            PORT: process.env.PORT,
+            HAS_SUPABASE_URL: !!process.env.SUPABASE_URL,
+            HAS_MONGODB_URI: !!process.env.MONGODB_URI,
+        },
+        cwd: process.cwd(),
+        dirname: __dirname,
+        filesystem: {}
+    };
+
+    const pathsToCheck = [
+        'api/data',
+        'data',
+        '/var/task/api/data',
+        'api/data/problems.json',
+        'api/data/solutions.json',
+    ];
+
+    for (const p of pathsToCheck) {
+        const fullPath = path.isAbsolute(p) ? p : path.join(process.cwd(), p);
+        try {
+            if (fs.existsSync(fullPath)) {
+                const stats = fs.statSync(fullPath);
+                diag.filesystem[p] = stats.isDirectory() 
+                    ? { type: 'directory', contents: fs.readdirSync(fullPath).slice(0, 10) }
+                    : { type: 'file', size: stats.size };
+            } else {
+                diag.filesystem[p] = 'NOT_FOUND';
+            }
+        } catch (e: any) {
+            diag.filesystem[p] = `ERROR: ${e.message}`;
+        }
+    }
+
+    res.json(diag);
+});
+
 // --- SYSTEM DESIGN ENDPOINTS ---
 import { FileSystemDesignRepository } from '../src/adapters/driven/fs/FileSystemDesignRepository';
 const systemDesignRepo = new FileSystemDesignRepository();

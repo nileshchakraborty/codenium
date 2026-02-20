@@ -210,7 +210,7 @@ class MongoDBService {
                 console.error('[MongoDB] Connection failed:', error);
                 this.client = null;
                 this.db = null;
-                throw error;
+                // Don't rethrow - we want the service to stayed "disconnected" but not crash the process
             } finally {
                 this.connecting = null;
             }
@@ -357,15 +357,19 @@ class MongoDBService {
         problemSlug: string,
         field: 'practice_count' | 'compile_count' | 'solve_attempts'
     ): Promise<void> {
-        const collection = await this.userProgress();
-        await collection.updateOne(
-            { user_id: userId, problem_slug: problemSlug },
-            {
-                $inc: { [field]: 1 },
-                $set: { last_activity: new Date() },
-            },
-            { upsert: true }
-        );
+        try {
+            const collection = await this.userProgress();
+            await collection.updateOne(
+                { user_id: userId, problem_slug: problemSlug },
+                {
+                    $inc: { [field]: 1 },
+                    $set: { last_activity: new Date() },
+                },
+                { upsert: true }
+            );
+        } catch (error) {
+            console.error('[MongoDB] Failed to increment progress:', error);
+        }
     }
 
     /**
