@@ -60,6 +60,9 @@ jobs:
       - name: Run Backend Tests
         run: make test
 
+      - name: Install Frontend dependencies
+        run: cd frontend && npm install
+
       - name: Run Frontend Tests and Coverage
         run: cd frontend && npm run coverage
 
