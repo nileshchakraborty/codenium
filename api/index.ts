@@ -39,7 +39,7 @@ const criticalPaths = [
     { name: 'api/data', path: path.join(rootDir, 'api', 'data') },
     { name: 'api/_lib', path: path.join(rootDir, 'api', '_lib') },
     { name: 'src', path: path.join(rootDir, 'src') },
-    { name: 'api/index.ts', path: path.join(rootDir, 'api', 'index.ts') },
+    { name: '/var/task/api/data', path: '/var/task/api/data' },
 ];
 log('[STARTUP] Checking critical paths:');
 criticalPaths.forEach(({ name, path: p }) => {
