@@ -73,6 +73,11 @@ export class TieredProblemRepository implements ProblemRepository {
         }
 
         // FALLBACK: Supabase (if file not available)
+        if (!supabase) {
+            console.warn('[TieredRepo] Supabase client not initialized, skipping DB fetch');
+            return { categories: [] };
+        }
+
         try {
             const { data: rows, error } = await supabase.from('problems').select('*');
 
@@ -165,6 +170,8 @@ export class TieredProblemRepository implements ProblemRepository {
         if (cached) return cached;
 
         // L4: Supabase
+        if (!supabase) return this.fileRepo.getSolution(slug);
+
         try {
             const { data, error } = await supabase
                 .from('solutions')
@@ -196,14 +203,18 @@ export class TieredProblemRepository implements ProblemRepository {
         await redisService.set(cacheKey, solution, CACHE_TTL);
 
         // Update L4: Supabase
-        const row = {
-            slug,
-            code: solution.code,
-            language: solution.language || 'python',
-            data: solution
-        };
-        const { error } = await supabase.from('solutions').upsert(row);
-        if (error) console.error('Failed to save to Supabase:', error);
+        if (supabase) {
+            const row = {
+                slug,
+                code: solution.code,
+                language: solution.language || 'python',
+                data: solution
+            };
+            const { error } = await supabase.from('solutions').upsert(row);
+            if (error) console.error('Failed to save to Supabase:', error);
+        } else {
+            console.warn('[TieredRepo] Supabase client not initialized, skipping DB save');
+        }
 
         // Update L3: File (Async)
         this.fileRepo.saveSolution(slug, solution).catch(e => console.error('File save failed', e));
