@@ -29,4 +29,13 @@ window.ResizeObserver = class ResizeObserver {
     disconnect() { }
 };
 
+// Mock fetch to prevent "Invalid URL" errors from relative urls being called in tests
+global.fetch = vi.fn(() =>
+    Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({}),
+        text: () => Promise.resolve(''),
+    } as Response)
+);
+
 Element.prototype.scrollIntoView = vi.fn();
