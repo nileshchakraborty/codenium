@@ -30,7 +30,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          rm -rf node_modules package-lock.json
+          rm -rf node_modules package-lock.json ../node_modules ../package-lock.json
           npm install
         working-directory: frontend
 
