@@ -14,6 +14,44 @@ const log = (...args: any[]) => {
     if (DEBUG_LOGS) console.log(...args);
 };
 
+const getErrorMessage = (error: unknown): string => {
+    if (error instanceof Error) return error.message;
+    if (typeof error === 'string') return error;
+    try {
+        return JSON.stringify(error);
+    } catch {
+        return 'Unknown error';
+    }
+};
+
+const withTimeout = <T>(promise: Promise<T>, timeoutMs: number, fallback: T): Promise<T> => {
+    return new Promise((resolve) => {
+        let settled = false;
+        const timer = setTimeout(() => {
+            if (!settled) {
+                settled = true;
+                resolve(fallback);
+            }
+        }, timeoutMs);
+
+        promise
+            .then((value) => {
+                if (!settled) {
+                    settled = true;
+                    clearTimeout(timer);
+                    resolve(value);
+                }
+            })
+            .catch(() => {
+                if (!settled) {
+                    settled = true;
+                    clearTimeout(timer);
+                    resolve(fallback);
+                }
+            });
+    });
+};
+
 log('============================================');
 log('[STARTUP] API Server Initializing...');
 log('[STARTUP] Node Version:', process.version);
@@ -187,13 +225,32 @@ console.log(`Selecting AI Provider: ${aiProvider}`);
 import { AIService } from '../src/domain/ports/AIService';
 
 let aiService: AIService;
-if (aiProvider === 'openai') {
-    if (!process.env.OPENAI_API_KEY) {
-        console.warn("WARNING: AI_PROVIDER is 'openai' but OPENAI_API_KEY is missing!");
+const unavailableAIService: AIService = {
+    async generateHint() { return { error: 'AI service unavailable' }; },
+    async explainSolution() { return { error: 'AI service unavailable' }; },
+    async answerQuestion() { return { error: 'AI service unavailable' }; },
+    async generateSolution() { return { error: 'AI service unavailable' }; },
+    async analyzeDesign() { return { error: 'AI service unavailable' }; },
+};
+
+try {
+    if (aiProvider === 'openai') {
+        if (!process.env.OPENAI_API_KEY) {
+            console.warn("WARNING: AI_PROVIDER is 'openai' but OPENAI_API_KEY is missing!");
+        }
+        aiService = new OpenAIService();
+    } else {
+        aiService = new OllamaService();
     }
-    aiService = new OpenAIService();
-} else {
-    aiService = new OllamaService();
+} catch (error) {
+    console.error(`[STARTUP] Failed to initialize '${aiProvider}' AI service:`, error);
+    try {
+        console.warn('[STARTUP] Falling back to OllamaService for API continuity.');
+        aiService = new OllamaService();
+    } catch (fallbackError) {
+        console.error('[STARTUP] Failed to initialize Ollama fallback:', fallbackError);
+        aiService = unavailableAIService;
+    }
 }
 
 const toolRegistry = new ToolRegistry();
@@ -384,9 +441,19 @@ app.get('/api/problems', async (req, res) => {
         const problems = await problemService.getAllProblems();
         cacheService.set(cacheKey, problems, 3600); // Cache for 1 hour (static content)
         res.json(problems);
-    } catch (e: any) {
-        console.error("Error fetching problems:", e);
-        res.status(500).json({ error: e.message });
+    } catch (error) {
+        console.error('Error fetching problems from primary repository:', error);
+        try {
+            const fallbackRepo = new FileProblemRepository();
+            const fallbackProblems = await fallbackRepo.getAllProblems();
+            if (fallbackProblems && Array.isArray(fallbackProblems.categories)) {
+                console.warn('[api/problems] Served file fallback due primary failure');
+                return res.json(fallbackProblems);
+            }
+        } catch (fallbackError) {
+            console.error('[api/problems] File fallback failed:', fallbackError);
+        }
+        res.status(500).json({ error: getErrorMessage(error) || 'Failed to load problems' });
     }
 });
 
@@ -480,6 +547,7 @@ app.post('/api/events/log', optionalAuth, async (req: express.Request, res: expr
     try {
         const { event_type, metadata } = req.body;
         const user = (req as any).user;
+        const metadataObj = (metadata && typeof metadata === 'object') ? metadata : {};
 
         if (!event_type) {
             return res.status(400).json({ error: 'event_type is required' });
@@ -492,43 +560,69 @@ app.post('/api/events/log', optionalAuth, async (req: express.Request, res: expr
         console.log(`[EVENT_LOG] Received ${event_type} from IP: ${ip} (Hash: ${ip_hash.substring(0, 8)}...)`);
 
         // Non-blocking city lookup for analytics
-        const geo = await geoLocationService.getGeoLocation(ip);
+        const geo = await withTimeout(
+            geoLocationService.getGeoLocation(ip),
+            1200,
+            { ip_hash, geo_city: 'Unknown', geo_country: 'XX' }
+        );
 
         // Record for recommendation engine too
-        if (event_type === 'view_solution' && metadata?.slug) {
-            recommendationStore.recordView(metadata.slug, metadata.category);
-        } else if (event_type === 'solve_problem' && metadata?.slug) {
-            recommendationStore.recordSolve(metadata.slug, metadata.category);
+        if (event_type === 'view_solution' && (metadataObj as any).slug) {
+            recommendationStore.recordView((metadataObj as any).slug, (metadataObj as any).category);
+        } else if (event_type === 'solve_problem' && (metadataObj as any).slug) {
+            recommendationStore.recordSolve((metadataObj as any).slug, (metadataObj as any).category);
         }
 
-        // Increment persistent counters in MongoDB
-        if (user && metadata?.slug) {
-            log(`[EVENT_LOG] Recording user progress for ${user.email || user.sub}: ${metadata.slug}`);
+        const persistenceTasks: Array<Promise<unknown>> = [];
+
+        // Increment persistent counters in MongoDB (best effort with timeout)
+        if (user && (metadataObj as any).slug) {
+            log(`[EVENT_LOG] Recording user progress for ${user.email || user.sub}: ${(metadataObj as any).slug}`);
             if (event_type === 'practice_run') {
-                await mongoDBService.incrementProgress(user.sub || user.email, metadata.slug, 'compile_count');
+                persistenceTasks.push(
+                    withTimeout(
+                        mongoDBService.incrementProgress(user.sub || user.email, (metadataObj as any).slug, 'compile_count'),
+                        1200,
+                        undefined
+                    )
+                );
             } else if (event_type === 'solve_problem') {
-                await mongoDBService.incrementProgress(user.sub || user.email, metadata.slug, 'solve_attempts');
+                persistenceTasks.push(
+                    withTimeout(
+                        mongoDBService.incrementProgress(user.sub || user.email, (metadataObj as any).slug, 'solve_attempts'),
+                        1200,
+                        undefined
+                    )
+                );
             }
         }
 
         log(`[EVENT_LOG] Persisting event to MongoDB: ${event_type} for ${user?.email || 'anonymous'}`);
-        await mongoDBService.logEvent({
-            user_id: user?.sub || user?.email || 'anonymous',
-            session_id: (req.headers['x-session-id'] as string) || 'unknown',
-            ip_hash,
-            event_type: event_type as any,
-            problem_slug: metadata?.slug || undefined,
-            geo_city: geo.geo_city,
-            geo_country: geo.geo_country,
-            metadata: {
-                ...metadata,
-                userAgent: req.headers['user-agent']
-            }
-        });
+        persistenceTasks.push(
+            withTimeout(
+                mongoDBService.logEvent({
+                    user_id: user?.sub || user?.email || 'anonymous',
+                    session_id: (req.headers['x-session-id'] as string) || 'unknown',
+                    ip_hash,
+                    event_type: event_type as any,
+                    problem_slug: (metadataObj as any).slug || undefined,
+                    geo_city: geo.geo_city,
+                    geo_country: geo.geo_country,
+                    metadata: {
+                        ...(metadataObj as Record<string, unknown>),
+                        userAgent: req.headers['user-agent']
+                    }
+                }),
+                1200,
+                undefined
+            )
+        );
+
+        await Promise.allSettled(persistenceTasks);
 
         res.json({ success: true });
     } catch (error: any) {
-        log('❌ [EVENT_LOG] Critical Error:', error.message);
+        log('❌ [EVENT_LOG] Critical Error:', getErrorMessage(error));
         if (DEBUG_LOGS) console.error('Full event log error stack:', error);
         
         // Return 200 even on some failures to prevent UI disruption, 
@@ -536,7 +630,7 @@ app.post('/api/events/log', optionalAuth, async (req: express.Request, res: expr
         res.json({ 
             success: true, 
             warning: 'Log entry failed internally', 
-            error_code: error.code || 'UNKNOWN_ERROR'
+            error_code: error?.code || 'UNKNOWN_ERROR'
         });
     }
 });
