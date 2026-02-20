@@ -4,6 +4,10 @@ import { useTrackingConsent } from './useTrackingConsent';
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
+if (!API_BASE && import.meta.env.PROD) {
+    console.warn('Frontend Warning: VITE_API_URL is not set in production. Activity tracking may fail if not served from the same origin.');
+}
+
 /**
  * useActivityTracking - Hook for logging user activities and managing session state
  * Supports:

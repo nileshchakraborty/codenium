@@ -23,11 +23,12 @@ log('[STARTUP] NODE_ENV:', process.env.NODE_ENV);
 log('============================================');
 
 // Check critical paths
+const rootDir = process.cwd();
 const criticalPaths = [
-    { name: 'api/data', path: path.join(process.cwd(), 'api', 'data') },
-    { name: 'api/_lib', path: path.join(process.cwd(), 'api', '_lib') },
-    { name: 'src', path: path.join(process.cwd(), 'src') },
-    { name: '/var/task/api/data', path: '/var/task/api/data' },
+    { name: 'api/data', path: path.join(rootDir, 'api', 'data') },
+    { name: 'api/_lib', path: path.join(rootDir, 'api', '_lib') },
+    { name: 'src', path: path.join(rootDir, 'src') },
+    { name: 'api/index.ts', path: path.join(rootDir, 'api', 'index.ts') },
 ];
 log('[STARTUP] Checking critical paths:');
 criticalPaths.forEach(({ name, path: p }) => {
@@ -429,6 +430,8 @@ app.post('/api/events/log', optionalAuth, async (req: express.Request, res: expr
         // PII-compliant IP handling
         const ip = geoLocationService.getClientIP(req);
         const ip_hash = geoLocationService.hashIP(ip);
+        
+        console.log(`[EVENT_LOG] Received ${event_type} from IP: ${ip} (Hash: ${ip_hash.substring(0, 8)}...)`);
 
         // Non-blocking city lookup for analytics
         const geo = await geoLocationService.getGeoLocation(ip);
@@ -442,6 +445,7 @@ app.post('/api/events/log', optionalAuth, async (req: express.Request, res: expr
 
         // Increment persistent counters in MongoDB
         if (user && metadata?.slug) {
+            log(`[EVENT_LOG] Recording user progress for ${user.email || user.sub}: ${metadata.slug}`);
             if (event_type === 'practice_run') {
                 await mongoDBService.incrementProgress(user.sub || user.email, metadata.slug, 'compile_count');
             } else if (event_type === 'solve_problem') {
@@ -449,11 +453,12 @@ app.post('/api/events/log', optionalAuth, async (req: express.Request, res: expr
             }
         }
 
+        log(`[EVENT_LOG] Persisting event to MongoDB: ${event_type} for ${user?.email || 'anonymous'}`);
         await mongoDBService.logEvent({
             user_id: user?.sub || user?.email || 'anonymous',
             session_id: (req.headers['x-session-id'] as string) || 'unknown',
             ip_hash,
-            event_type,
+            event_type: event_type as any,
             problem_slug: metadata?.slug || undefined,
             geo_city: geo.geo_city,
             geo_country: geo.geo_country,
@@ -465,10 +470,16 @@ app.post('/api/events/log', optionalAuth, async (req: express.Request, res: expr
 
         res.json({ success: true });
     } catch (error: any) {
-        console.error('Event log error:', error);
-        // Silently fail or return success to prevent UX disruption, 
-        // but log to console for server-side monitoring
-        res.json({ success: true, warning: 'Log entry failed' });
+        log('❌ [EVENT_LOG] Critical Error:', error.message);
+        if (DEBUG_LOGS) console.error('Full event log error stack:', error);
+        
+        // Return 200 even on some failures to prevent UI disruption, 
+        // but include identifying info in the response for debugging
+        res.json({ 
+            success: true, 
+            warning: 'Log entry failed internally', 
+            error_code: error.code || 'UNKNOWN_ERROR'
+        });
     }
 });
 

@@ -44,24 +44,37 @@ class RecommendationStoreService {
 
     constructor() {
         // Find data directory - works for both local dev and Vercel
+        const rootDir = process.cwd();
         const possiblePaths = [
-            path.join(process.cwd(), 'api', 'data', 'recommendation_stats.json'),
+            path.join(rootDir, 'api', 'data', 'recommendation_stats.json'),
             path.join(__dirname, '..', '..', '..', 'api', 'data', 'recommendation_stats.json'),
-            '/var/task/api/data/recommendation_stats.json',  // Vercel serverless
+            path.join('/tmp', 'recommendation_stats.json'), // Guaranteed writable on Vercel
         ];
 
-        this.dataPath = possiblePaths[0];  // Default to first option
+        this.dataPath = possiblePaths[0]; // Default
 
-        // Try to find existing data or writable path
+        // Try to find a writable path
         for (const p of possiblePaths) {
-            const dir = path.dirname(p);
-            if (fs.existsSync(dir)) {
+            try {
+                const dir = path.dirname(p);
+                if (!fs.existsSync(dir)) {
+                    fs.mkdirSync(dir, { recursive: true });
+                }
+                
+                // Test writability
+                const testFile = path.join(dir, '.write-test');
+                fs.writeFileSync(testFile, 'test');
+                fs.unlinkSync(testFile);
+                
                 this.dataPath = p;
                 break;
+            } catch (e) {
+                // Not writable or other issue, try next
+                continue;
             }
         }
 
-        console.log('[RecommendationStore] Data path:', this.dataPath);
+        console.log('[RecommendationStore] Resolved Data path:', this.dataPath);
         this.load();
     }
 
