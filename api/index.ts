@@ -155,12 +155,29 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
 // --- RATE LIMITING ---
-// Apply general rate limiter to all API routes
+// Import backgroundLimiter for high-frequency async/background routes
+import { backgroundLimiter } from '../src/infrastructure/middleware/RateLimiter';
+
+// Background async routes — fire-and-forget; must never 429 the user
+// (sync, activity queue, recommendations, stats, consent, event logging)
+const BACKGROUND_ROUTES = [
+    '/api/progress/sync',
+    '/api/sync/activity',
+    '/api/stats/interaction',
+    '/api/recommendations',
+    '/api/consent/',
+    '/api/events/',
+    '/api/user/login-event',
+    '/api/user/session-end',
+];
+
 app.use('/api/', (req, res, next) => {
     try {
-        return (generalLimiter as any)(req, res, next);
+        const isBackground = BACKGROUND_ROUTES.some(p => req.path.startsWith(p.replace('/api', '')));
+        const limiter = isBackground ? backgroundLimiter : generalLimiter;
+        return (limiter as any)(req, res, next);
     } catch (error) {
-        console.error('[RATE_LIMIT] General limiter failed, skipping limiter for request:', error);
+        console.error('[RATE_LIMIT] Limiter failed, skipping for request:', error);
         return next();
     }
 });
@@ -174,6 +191,7 @@ app.use('/api/ai/', (req, res, next) => {
         return next();
     }
 });
+
 
 // --- AUTH MIDDLEWARE ---
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
