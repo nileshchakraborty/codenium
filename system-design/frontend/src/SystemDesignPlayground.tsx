@@ -25,6 +25,7 @@ import { useTheme } from '../../../frontend/src/context/useTheme';
 import { useAuth } from '../../../frontend/src/context/AuthContextDefinition';
 import { SignInGate } from '../../../frontend/src/components/SignInGate';
 import { AuthUnlockModal } from '../../../frontend/src/components/AuthUnlockModal';
+import { JobService } from '../../../frontend/src/services/JobService';
 
 
 interface Message {
@@ -157,26 +158,17 @@ const SystemDesignPlayground: React.FC<SystemDesignPlaygroundProps> = ({ problem
     try {
       const history = messages.map(m => ({ role: m.role, content: m.content }));
       
-      const res = await fetch('/api/system-design/ai/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
-        body: JSON.stringify({
-          slug: problem.slug,
-          message: userMsg,
-          history: history
-        })
+      const res = await JobService.submitAndPoll<{ response?: string; error?: string }>('system_design_chat', {
+        slug: problem.slug,
+        message: userMsg,
+        history: history
       });
-
-      const data = await res.json();
       
-      if (!res.ok) {
-         throw new Error(data.error || 'Failed to fetch response');
+      if (res.error) {
+         throw new Error(res.error);
       }
 
-      setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: res.response || '' }]);
     } catch (err: unknown) {
       console.error('AI Chat Error:', err);
       let errorMessage = "Sorry, I encountered an error. Please try again.";

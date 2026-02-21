@@ -390,40 +390,44 @@ app.get('/api/system-design/solutions/:slug', async (req, res) => {
     }
 });
 
+async function handleSystemDesignChat(slug: string, message: string, history: any[]) {
+    const problem = await systemDesignRepo.getProblemBySlug(slug);
+    const solution = await systemDesignRepo.getSolution(slug);
+    
+    const title = problem ? problem.title : slug;
+    
+    let contextParts = [];
+    if (problem) {
+        contextParts.push(`Description: ${problem.description}`);
+        if (problem.functionalRequirements?.length) {
+            contextParts.push(`Functional Requirements: ${problem.functionalRequirements.join(', ')}`);
+        }
+        if (problem.nonFunctionalRequirements?.length) {
+            contextParts.push(`Non-Functional Requirements: ${problem.nonFunctionalRequirements.join(', ')}`);
+        }
+        if (problem.constraints) {
+            contextParts.push(`Constraints: ${JSON.stringify(problem.constraints)}`);
+        }
+    }
+    
+    if (solution) {
+        contextParts.push(`High-level Intuition: ${solution.intuition.join(' ')}`);
+        contextParts.push(`Key Insight: ${solution.keyInsight}`);
+        if (solution.expectedArchitectureSummary) {
+            contextParts.push(`Architecture Summary: ${solution.expectedArchitectureSummary}`);
+        }
+    }
+
+    const desc = contextParts.length > 0 ? contextParts.join('\n\n') : "System Design Problem";
+    const systemPrompt = "You are a System Design Expert and Tutor. Help the user design a scalable system. Focus on requirements, high-level architecture, data models, and API design. Be Socratic but helpful. Guide them through the thought process rather than giving immediate answers. Reference specific requirements or constraints from the provided context.";
+
+    return aiService.answerQuestion(title, desc, history || [], message, systemPrompt);
+}
+
 app.post('/api/system-design/ai/chat', requireAuth, async (req, res) => {
     try {
         const { slug, message, history } = req.body;
-        const problem = await systemDesignRepo.getProblemBySlug(slug);
-        const solution = await systemDesignRepo.getSolution(slug);
-        
-        const title = problem ? problem.title : slug;
-        
-        let contextParts = [];
-        if (problem) {
-            contextParts.push(`Description: ${problem.description}`);
-            if (problem.functionalRequirements?.length) {
-                contextParts.push(`Functional Requirements: ${problem.functionalRequirements.join(', ')}`);
-            }
-            if (problem.nonFunctionalRequirements?.length) {
-                contextParts.push(`Non-Functional Requirements: ${problem.nonFunctionalRequirements.join(', ')}`);
-            }
-            if (problem.constraints) {
-                contextParts.push(`Constraints: ${JSON.stringify(problem.constraints)}`);
-            }
-        }
-        
-        if (solution) {
-            contextParts.push(`High-level Intuition: ${solution.intuition.join(' ')}`);
-            contextParts.push(`Key Insight: ${solution.keyInsight}`);
-            if (solution.expectedArchitectureSummary) {
-                contextParts.push(`Architecture Summary: ${solution.expectedArchitectureSummary}`);
-            }
-        }
-
-        const desc = contextParts.length > 0 ? contextParts.join('\n\n') : "System Design Problem";
-        const systemPrompt = "You are a System Design Expert and Tutor. Help the user design a scalable system. Focus on requirements, high-level architecture, data models, and API design. Be Socratic but helpful. Guide them through the thought process rather than giving immediate answers. Reference specific requirements or constraints from the provided context.";
-
-        const result = await aiService.answerQuestion(title, desc, history || [], message, systemPrompt);
+        const result = await handleSystemDesignChat(slug, message, history);
         res.json(result);
     } catch (e: any) {
         res.status(500).json({ error: e.message });
@@ -800,6 +804,15 @@ jobQueue.registerProcessor('generate', async (job: Job) => {
     return await problemService.generateSolution(slug);
 });
 
+jobQueue.registerProcessor('system_design_chat', async (job: Job) => {
+    const { slug, message, history } = job.payload as {
+        slug: string;
+        message: string;
+        history?: any[];
+    };
+    return await handleSystemDesignChat(slug, message, history || []);
+});
+
 // Submit a new job
 app.post('/api/jobs/submit', requireAuth, async (req, res) => {
     try {
@@ -810,7 +823,7 @@ app.post('/api/jobs/submit', requireAuth, async (req, res) => {
             return res.status(400).json({ error: 'Missing type or payload' });
         }
 
-        const validTypes: JobType[] = ['execute', 'ai_tutor', 'ai_hint', 'ai_explain', 'generate'];
+        const validTypes: JobType[] = ['execute', 'ai_tutor', 'ai_hint', 'ai_explain', 'generate', 'system_design_chat'];
         if (!validTypes.includes(type)) {
             return res.status(400).json({ error: `Invalid job type: ${type}` });
         }
