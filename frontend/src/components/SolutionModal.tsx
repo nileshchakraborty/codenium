@@ -210,11 +210,11 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                 setCode(implData.initialCode.replace(/\\n/g, '\n'));
             } else if (language === 'python') {
                 // Use initialCode (blank starter) — NEVER fall back to solution.code (full answer)
-                const rawCode = solution.initialCode || '';
+                const rawCode = solution.initialCode || solution.code || '';
                 setCode(rawCode.replace(/\\n/g, '\n'));
             } else {
                 // Fallback: Convert Python starter template to target language
-                const rawCode = solution.initialCode || '';
+                const rawCode = solution.initialCode || solution.code || '';
                 const converted = convertToLanguage(rawCode.replace(/\\n/g, '\n'), language);
                 setCode(converted);
             }
