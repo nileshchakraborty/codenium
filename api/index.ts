@@ -563,6 +563,7 @@ app.post('/api/stats/interaction', (req, res) => {
 import { mongoDBService } from '../src/infrastructure/database/MongoDBService';
 import { geoLocationService } from '../src/infrastructure/services/GeoLocationService';
 import { supabaseActivityService } from '../src/infrastructure/database/SupabaseActivityService';
+import { supabaseProgressService } from '../src/infrastructure/database/SupabaseProgressService';
 
 // POST /api/events/log - Generic event logger
 app.post('/api/events/log', optionalAuth, async (req: express.Request, res: express.Response) => {
@@ -937,7 +938,16 @@ app.get('/api/jobs/stats', requireAuth, async (req, res) => {
 app.get('/api/progress', requireAuth, async (req, res) => {
     try {
         const user = (req as any).user;
-        const progress = progressStore.get(user.sub);
+        let progress = progressStore.get(user.sub);
+
+        // Fallback: Check Supabase if not in memory
+        if (!progress) {
+            console.log(`[PROGRESS] Cache miss for ${user.sub}, checking Supabase...`);
+            progress = await supabaseProgressService.getProgress(user.sub);
+            if (progress) {
+                progressStore.set(user.sub, progress);
+            }
+        }
 
         if (!progress) {
             return res.json({
@@ -967,6 +977,11 @@ app.post('/api/progress', requireAuth, async (req, res) => {
 
         progressStore.set(user.sub, clientProgress);
 
+        // Sync to Supabase (non-blocking)
+        supabaseProgressService.saveProgress(user.sub, clientProgress).catch(err => {
+            console.error('[SupabaseProgressSync] Background save failed:', err);
+        });
+
         res.json({
             success: true,
             lastSyncedAt: Date.now()
@@ -989,6 +1004,11 @@ app.post('/api/progress/sync', requireAuth, async (req, res) => {
 
         // Merge and return combined progress
         const mergedProgress = progressStore.merge(user.sub, clientProgress);
+
+        // Sync to Supabase (non-blocking)
+        supabaseProgressService.saveProgress(user.sub, mergedProgress).catch(err => {
+            console.error('[SupabaseProgressSync] Background sync failed:', err);
+        });
 
         res.json(mergedProgress);
     } catch (e: any) {
