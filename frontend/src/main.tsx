@@ -9,7 +9,9 @@ import ProblemPage from './components/ProblemPage.tsx'
 import AdminPage from './pages/AdminPage.tsx'
 import CategoryOrderPage from './pages/CategoryOrderPage.tsx'
 import ProblemOrderPage from './pages/ProblemOrderPage.tsx'
-import CreditsPage from './pages/CreditsPage.tsx'
+import CreditsPage from './pages/CreditsPage.tsx';
+import PrivacyPage from './pages/PrivacyPage.tsx';
+import TermsPage from './pages/TermsPage.tsx';
 import SystemDesignApp from '@system-design/App.tsx'
 import { ThemeProvider } from './context/ThemeContext'
 import { AuthProvider } from './context/AuthContext'
@@ -36,6 +38,8 @@ createRoot(document.getElementById('root')!).render(
               <Route path="/admin/problem-order" element={<ProblemOrderPage />} />
               <Route path="/system-design" element={<SystemDesignApp />} />
               <Route path="/credits" element={<CreditsPage />} />
+              <Route path="/privacy" element={<PrivacyPage />} />
+              <Route path="/terms" element={<TermsPage />} />
               {/* Redirect /admin to /access-admin */}
               <Route path="/admin" element={<Navigate to="/access-admin" replace />} />
             </Routes>

@@ -21,13 +21,13 @@ export function SharedFooter() {
             </a>
             <div className="h-4 w-px bg-slate-200 dark:bg-white/10 hidden sm:block" />
             <a 
-              href="#" 
+              href="/privacy" 
               className="text-sm text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 transition-colors font-medium"
             >
               Privacy
             </a>
             <a 
-              href="#" 
+              href="/terms" 
               className="text-sm text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 transition-colors font-medium"
             >
               Terms
