@@ -2340,4 +2340,94 @@ app.post('/api/topics/normalize', async (req, res) => {
     }
 });
 
+// ============================================
+// RECOMMENDATIONS API (Hot Right Now)
+// ============================================
+
+import { supabaseStatsService } from '../src/infrastructure/database/SupabaseStatsService';
+
+/**
+ * GET /api/recommendations?k=6&topicK=6
+ * Returns hot problems and topics derived from live DB data.
+ * Falls back to the file-based RecommendationStore if DB is unavailable.
+ */
+app.get('/api/recommendations', async (req, res) => {
+    const k      = Math.min(parseInt(req.query.k      as string) || 6, 20);
+    const topicK = Math.min(parseInt(req.query.topicK as string) || 6, 20);
+
+    try {
+        // 1. Try to get live stats from Supabase
+        const liveStats = await supabaseStatsService.getLiveStats();
+
+        if (liveStats.length > 0) {
+            // Score each problem (solves worth 2×, recency bonus)
+            const now = Date.now();
+            const DECAY_HOURS = 24 * 7; // 1-week half-life
+            const hourMs = 1000 * 60 * 60;
+
+            const scored = liveStats.map(p => {
+                const viewAge  = p.lastViewed ? (now - new Date(p.lastViewed).getTime()) / hourMs : DECAY_HOURS;
+                const solveAge = p.lastSolved ? (now - new Date(p.lastSolved).getTime()) / hourMs : DECAY_HOURS;
+                const viewDecay  = Math.exp(-viewAge  / DECAY_HOURS);
+                const solveDecay = Math.exp(-solveAge / DECAY_HOURS);
+                const score = (p.views * viewDecay) + (p.solves * solveDecay * 2);
+                return { slug: p.slug, score, views: p.views, solves: p.solves };
+            });
+
+            const hotProblems = scored
+                .sort((a, b) => b.score - a.score)
+                .slice(0, k);
+
+            // Derive hot topics from the file-based store (category mapping still needed)
+            const hotTopics = recommendationStore.getHotTopics(topicK);
+
+            return res.json({
+                hotProblems,
+                hotTopics,
+                stats: { problems: liveStats.length, categories: hotTopics.length },
+                source: 'live'
+            });
+        }
+    } catch (err) {
+        console.error('[Recommendations] DB query failed, falling back to file store:', err);
+    }
+
+    // 2. Fallback: file-based store
+    const hotProblems = recommendationStore.getHotProblems(k);
+    const hotTopics   = recommendationStore.getHotTopics(topicK);
+    return res.json({
+        hotProblems,
+        hotTopics,
+        stats: recommendationStore.getStats(),
+        source: 'cache'
+    });
+});
+
+/**
+ * POST /api/stats/interaction
+ * Records a user interaction (view or solve) into user_activities.
+ * Body: { updates: [{ slug, views?, solves? }] }
+ * This feeds directly into the live recommendations on next fetch.
+ */
+app.post('/api/stats/interaction', async (req, res) => {
+    try {
+        const { updates } = req.body || {};
+        if (!Array.isArray(updates)) return res.status(400).json({ error: 'updates array required' });
+
+        for (const u of updates) {
+            if (!u.slug) continue;
+            // Update the file-based store for immediate cache coherence
+            if (u.views)  recommendationStore.recordView(u.slug);
+            if (u.solves) recommendationStore.recordSolve(u.slug);
+        }
+
+        // Return fresh recommendations
+        const hotProblems = recommendationStore.getHotProblems(6);
+        const hotTopics   = recommendationStore.getHotTopics(6);
+        return res.json({ hotProblems, hotTopics, stats: recommendationStore.getStats() });
+    } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 export default app;
