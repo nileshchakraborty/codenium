@@ -1204,7 +1204,7 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
     const renderPlaygroundTab = () => (
         <ResizablePanelGroup direction="vertical" className="h-full min-h-[400px]">
             {/* Code Editor */}
-            <ResizablePanel defaultSize={70} minSize={20} className="bg-white dark:bg-[#1e1e1e] border-b border-slate-200 dark:border-slate-800 relative group flex flex-col">
+            <ResizablePanel defaultSize={78} minSize={20} className="bg-white dark:bg-[#1e1e1e] border-b border-slate-200 dark:border-slate-800 relative group flex flex-col">
                 <div className="flex-none px-4 py-2 bg-slate-50 dark:bg-[#252526] border-b border-slate-200 dark:border-[#333333] text-xs text-slate-500 dark:text-slate-400 font-mono flex justify-between items-center z-10">
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
@@ -1303,7 +1303,7 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
             </ResizableHandle>
 
             {/* Run Button Bar & Test Output */}
-            <ResizablePanel defaultSize={30} minSize={10} className="flex flex-col bg-white dark:bg-[#1e1e1e] text-slate-700 dark:text-slate-300">
+            <ResizablePanel defaultSize={22} minSize={10} maxSize={50} className="flex flex-col bg-white dark:bg-[#1e1e1e] text-slate-700 dark:text-slate-300">
                 {/* Tabs Header */}
                 <div className="flex items-center px-4 bg-slate-50 dark:bg-[#252526] border-b border-slate-200 dark:border-[#333] h-10 shrink-0">
                     <div className="flex items-center gap-6 h-full">
