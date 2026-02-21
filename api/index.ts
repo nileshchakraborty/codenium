@@ -191,17 +191,21 @@ const optionalAuth = async (req: express.Request, _res: express.Response, next: 
             if (userInfoResponse.ok) {
                 const userInfo = await userInfoResponse.json();
                 (req as any).user = userInfo;
-                
-                // Sync user metadata + geo to Supabase (non-blocking)
-                const ip = geoLocationService.getClientIP(req as any);
-                geoLocationService.getGeoLocation(ip).then(geo => {
-                    supabaseUserService.syncUser(userInfo, { city: geo.geo_city, country: geo.geo_country }).catch(err => {
-                        console.error('[SupabaseUserSync] Background sync failed:', err);
-                    });
-                }).catch(() => {
-                    supabaseUserService.syncUser(userInfo).catch(err => {
-                        console.error('[SupabaseUserSync] Background sync failed:', err);
-                    });
+
+                // Sync user profile, then log geo location (both non-blocking)
+                supabaseUserService.syncUser(userInfo).then(() => {
+                    const ip = geoLocationService.getClientIP(req as any);
+                    return geoLocationService.getGeoLocation(ip);
+                }).then(geo => {
+                    if (geo && (req as any).user?.sub) {
+                        supabaseUserService.logLocation((req as any).user.sub, {
+                            ip_hash:    geo.ip_hash,
+                            city:       geo.geo_city,
+                            country:    geo.geo_country
+                        });
+                    }
+                }).catch(err => {
+                    console.error('[SupabaseUserSync] Background sync failed:', err);
                 });
             }
         } catch (error) {
@@ -229,20 +233,23 @@ const requireAuth = async (req: express.Request, res: express.Response, next: ex
         }
         const userInfo = await userInfoResponse.json();
         (req as any).user = userInfo;
-        
-        // Sync user metadata + geo to Supabase (non-blocking)
-        const ip = geoLocationService.getClientIP(req as any);
-        geoLocationService.getGeoLocation(ip).then(geo => {
-            supabaseUserService.syncUser(userInfo, { city: geo.geo_city, country: geo.geo_country }).catch(err => {
-                console.error('[SupabaseUserSync] Background sync failed:', err);
-            });
-        }).catch(() => {
-            // If geo lookup fails, fall back to syncing without geo
-            supabaseUserService.syncUser(userInfo).catch(err => {
-                console.error('[SupabaseUserSync] Background sync failed:', err);
-            });
+
+        // Sync user profile, then log geo location (both non-blocking)
+        supabaseUserService.syncUser(userInfo).then(() => {
+            const ip = geoLocationService.getClientIP(req as any);
+            return geoLocationService.getGeoLocation(ip);
+        }).then(geo => {
+            if (geo && userInfo.sub) {
+                supabaseUserService.logLocation(userInfo.sub, {
+                    ip_hash:    geo.ip_hash,
+                    city:       geo.geo_city,
+                    country:    geo.geo_country
+                });
+            }
+        }).catch(err => {
+            console.error('[SupabaseUserSync] Background sync failed:', err);
         });
-        
+
         next();
     } catch (error) {
         console.error('Auth verification error:', error);
