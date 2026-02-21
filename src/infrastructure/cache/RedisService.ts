@@ -69,9 +69,9 @@ class RedisService {
                 } else {
                     await this.client.set(key, serialized);
                 }
-            });
+            }, async () => { }); // Fallback: no-op on circuit open
         } catch (e) {
-            // Ignore write errors
+            // Ignore write errors (Redis unavailable / circuit open)
         }
     }
 
@@ -81,7 +81,7 @@ class RedisService {
             await this.breaker.execute(async () => {
                 if (!this.client) throw new Error('No client');
                 await this.client.del(key);
-            });
+            }, async () => { }); // Fallback: no-op on circuit open
         } catch (e) { }
     }
 }

@@ -16,10 +16,11 @@ export interface ActivityEvent {
     event_type:
     | 'page_view' | 'problem_open' | 'problem_solve'
     | 'code_run' | 'code_submit'
-    | 'hint_view' | 'solution_view'
+    | 'hint_view' | 'solution_view' | 'view_solution'
     | 'video_start' | 'video_progress' | 'video_complete'
     | 'tab_switch' | 'login' | 'logout'
-    | 'app_search' | 'filter_change' | 'view_tab' | 'practice_run';
+    | 'app_search' | 'filter_change' | 'view_tab' | 'practice_run'
+    | 'solve_problem';
     problem_slug?: string;
     metadata: {
         language?: string;
