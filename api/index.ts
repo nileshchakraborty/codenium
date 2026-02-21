@@ -191,6 +191,11 @@ const optionalAuth = async (req: express.Request, _res: express.Response, next: 
             if (userInfoResponse.ok) {
                 const userInfo = await userInfoResponse.json();
                 (req as any).user = userInfo;
+                
+                // Sync user metadata to Supabase (non-blocking)
+                supabaseUserService.syncUser(userInfo).catch(err => {
+                    console.error('[SupabaseUserSync] Background sync failed:', err);
+                });
             }
         } catch (error) {
             // Token invalid, continue without user
@@ -217,6 +222,12 @@ const requireAuth = async (req: express.Request, res: express.Response, next: ex
         }
         const userInfo = await userInfoResponse.json();
         (req as any).user = userInfo;
+        
+        // Sync user metadata to Supabase (non-blocking)
+        supabaseUserService.syncUser(userInfo).catch(err => {
+            console.error('[SupabaseUserSync] Background sync failed:', err);
+        });
+        
         next();
     } catch (error) {
         console.error('Auth verification error:', error);
@@ -564,6 +575,7 @@ import { mongoDBService } from '../src/infrastructure/database/MongoDBService';
 import { geoLocationService } from '../src/infrastructure/services/GeoLocationService';
 import { supabaseActivityService } from '../src/infrastructure/database/SupabaseActivityService';
 import { supabaseProgressService } from '../src/infrastructure/database/SupabaseProgressService';
+import { supabaseUserService } from '../src/infrastructure/database/SupabaseUserService';
 
 // POST /api/events/log - Generic event logger
 app.post('/api/events/log', optionalAuth, async (req: express.Request, res: express.Response) => {
