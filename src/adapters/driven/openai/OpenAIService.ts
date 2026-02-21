@@ -23,7 +23,7 @@ export class OpenAIService implements AIService {
             apiKey: process.env.OPENAI_API_KEY || 'dummy-key',
             ...(baseURL && { baseURL }),
             maxRetries: 5, // Resilience: Increase default retries from 2 to 5
-            timeout: 30000, // Resilience: 30s timeout to avoid hanging requests
+            timeout: 60000, // Resilience: 60s timeout to avoid hanging requests
         });
     }
 
