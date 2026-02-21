@@ -12,6 +12,16 @@ import {
 
 import { AuthContext } from './AuthContextDefinition';
 
+const API_BASE = import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_URL || '/api');
+
+/** Fire-and-forget: log a geo location row for the current session. */
+function callLoginEvent(token: string): void {
+    fetch(`${API_BASE}/user/login-event`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+    }).catch(() => { /* silently ignore — non-critical */ });
+}
+
 // Inner provider (needs to be inside GoogleOAuthProvider)
 const AuthProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
@@ -30,10 +40,12 @@ const AuthProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
                 if (tokenExpiry && parseInt(tokenExpiry, 10) > Date.now()) {
                     setUser(JSON.parse(savedUser));
                     setAccessToken(savedToken);
+                    callLoginEvent(savedToken);  // ← record geo on app load
                 } else if (!tokenExpiry) {
                     // Legacy: no expiry stored, assume valid for now
                     setUser(JSON.parse(savedUser));
                     setAccessToken(savedToken);
+                    callLoginEvent(savedToken);  // ← record geo on app load
                 } else {
                     // Token expired, clear storage
                     localStorage.removeItem(TOKEN_KEY);
@@ -73,6 +85,7 @@ const AuthProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
                 localStorage.setItem('codenium_token_expiry', String(Date.now() + 3600 * 1000));
                 setUser(userData);
                 setAccessToken(tokenResponse.access_token);
+                callLoginEvent(tokenResponse.access_token);  // ← record geo on explicit login
             } catch (error) {
                 console.error('Error fetching user info:', error);
             }

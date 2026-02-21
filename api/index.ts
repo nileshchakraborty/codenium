@@ -192,19 +192,8 @@ const optionalAuth = async (req: express.Request, _res: express.Response, next: 
                 const userInfo = await userInfoResponse.json();
                 (req as any).user = userInfo;
 
-                // Sync user profile, then log geo location (both non-blocking)
-                supabaseUserService.syncUser(userInfo).then(() => {
-                    const ip = geoLocationService.getClientIP(req as any);
-                    return geoLocationService.getGeoLocation(ip);
-                }).then(geo => {
-                    if (geo && (req as any).user?.sub) {
-                        supabaseUserService.logLocation((req as any).user.sub, {
-                            ip_hash:    geo.ip_hash,
-                            city:       geo.geo_city,
-                            country:    geo.geo_country
-                        });
-                    }
-                }).catch(err => {
+                // Sync user profile to Supabase (non-blocking)
+                supabaseUserService.syncUser(userInfo).catch(err => {
                     console.error('[SupabaseUserSync] Background sync failed:', err);
                 });
             }
@@ -234,19 +223,8 @@ const requireAuth = async (req: express.Request, res: express.Response, next: ex
         const userInfo = await userInfoResponse.json();
         (req as any).user = userInfo;
 
-        // Sync user profile, then log geo location (both non-blocking)
-        supabaseUserService.syncUser(userInfo).then(() => {
-            const ip = geoLocationService.getClientIP(req as any);
-            return geoLocationService.getGeoLocation(ip);
-        }).then(geo => {
-            if (geo && userInfo.sub) {
-                supabaseUserService.logLocation(userInfo.sub, {
-                    ip_hash:    geo.ip_hash,
-                    city:       geo.geo_city,
-                    country:    geo.geo_country
-                });
-            }
-        }).catch(err => {
+        // Sync user profile to Supabase (non-blocking)
+        supabaseUserService.syncUser(userInfo).catch(err => {
             console.error('[SupabaseUserSync] Background sync failed:', err);
         });
 
@@ -1071,6 +1049,27 @@ const userConsentStore = new Map<string, {
     consent_accepted_at: string | null;
     consent_version: string;
 }>();
+
+// POST /api/user/login-event - Record geo location on app load / explicit login
+// Called ONCE per session from the frontend, not on every request.
+app.post('/api/user/login-event', requireAuth, async (req, res) => {
+    try {
+        const user = (req as any).user;
+        const ip = geoLocationService.getClientIP(req);
+        geoLocationService.getGeoLocation(ip).then(geo => {
+            supabaseUserService.logLocation(user.sub, {
+                ip_hash:    geo.ip_hash,
+                city:       geo.geo_city,
+                country:    geo.geo_country
+            });
+        }).catch(err => {
+            console.error('[LoginEvent] Geo log failed:', err);
+        });
+        res.json({ success: true });
+    } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
+});
 
 // GET /api/user/consent - Get user's consent status
 app.get('/api/user/consent', requireAuth, async (req, res) => {

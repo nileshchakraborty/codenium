@@ -209,12 +209,12 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
             if (implData?.initialCode) {
                 setCode(implData.initialCode.replace(/\\n/g, '\n'));
             } else if (language === 'python') {
-                // Fallback for Python (should ideally be in implementations map too now)
-                const rawCode = solution.initialCode || solution.code || '';
+                // Use initialCode (blank starter) — NEVER fall back to solution.code (full answer)
+                const rawCode = solution.initialCode || '';
                 setCode(rawCode.replace(/\\n/g, '\n'));
             } else {
-                // Fallback: Convert Python template to target language (legacy path)
-                const rawCode = solution.initialCode || solution.code || '';
+                // Fallback: Convert Python starter template to target language
+                const rawCode = solution.initialCode || '';
                 const converted = convertToLanguage(rawCode.replace(/\\n/g, '\n'), language);
                 setCode(converted);
             }
@@ -391,7 +391,6 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                         if (slug) {
                             markSolved(slug, code);
                             setIsProblemSolved(true);
-                            sync();
                         }
                         setOutput('');
                         setActiveBottomTab('result');
@@ -399,6 +398,9 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
                         setOutput('Some test cases failed. Check logs for details.');
                         setActiveBottomTab('logs');
                     }
+
+                    // Push progress to server after every code run (non-blocking)
+                    void sync().catch(err => console.error('[SyncService] Background sync:', err));
                 }
             } else {
                 // Execution failed or crash
