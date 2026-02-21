@@ -1685,7 +1685,7 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
 
                             {/* RIGHT SIDE - Code Panel */}
                             <ResizablePanel defaultSize={66} minSize={30} className="bg-slate-50 dark:bg-slate-950">
-                                <div className="flex flex-col h-full p-4 overflow-hidden">
+                                <div className="flex flex-col h-full overflow-hidden">
                                     {renderPlaygroundTab()}
                                 </div>
                             </ResizablePanel>
