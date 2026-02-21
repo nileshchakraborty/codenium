@@ -109,6 +109,45 @@ export class SupabaseUserService {
       return { success: false, error: err };
     }
   }
+  /**
+   * Open a session row in user_sessions on login / app load.
+   */
+  async logSession(googleId: string, opts: {
+    session_id: string;
+    device?: string | null;
+    ip_hash?: string;
+    geo_city?: string;
+    geo_country?: string;
+  }): Promise<void> {
+    if (!supabase || !googleId) return;
+    try {
+      await supabase.from('user_sessions').upsert({
+        google_id:   googleId,
+        session_id:  opts.session_id,
+        started_at:  new Date().toISOString(),
+        device:      opts.device ?? null,
+        ip_hash:     opts.ip_hash,
+        geo_city:    opts.geo_city,
+        geo_country: opts.geo_country
+      }, { onConflict: 'session_id' });
+    } catch (err) {
+      console.error('[SupabaseUserService] Session log error:', err);
+    }
+  }
+
+  /**
+   * Mark a session as ended with its duration.
+   */
+  async closeSession(session_id: string, duration_s?: number): Promise<void> {
+    if (!supabase || !session_id) return;
+    try {
+      await supabase.from('user_sessions')
+        .update({ ended_at: new Date().toISOString(), duration_s: duration_s ?? null })
+        .eq('session_id', session_id);
+    } catch (err) {
+      console.error('[SupabaseUserService] Session close error:', err);
+    }
+  }
 }
 
 export const supabaseUserService = new SupabaseUserService();

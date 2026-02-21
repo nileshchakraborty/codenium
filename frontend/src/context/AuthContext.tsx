@@ -14,12 +14,44 @@ import { AuthContext } from './AuthContextDefinition';
 
 const API_BASE = import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_URL || '/api');
 
-/** Fire-and-forget: log a geo location row for the current session. */
+/** Unique ID for the current browser session (regenerated on every page load). */
+const SESSION_ID = crypto.randomUUID();
+const SESSION_START = Date.now();
+
+/** Register a beforeunload handler to mark the session as ended.
+ *  Uses fetch with keepalive:true — survives page unload AND supports
+ *  Authorization headers (unlike sendBeacon which cannot). */
+let _sessionEndHandler: (() => void) | null = null;
+function registerSessionEnd(token: string): void {
+    // Remove any previous handler (e.g. token refresh called callLoginEvent again)
+    if (_sessionEndHandler) {
+        window.removeEventListener('beforeunload', _sessionEndHandler);
+    }
+    _sessionEndHandler = () => {
+        const duration_s = Math.round((Date.now() - SESSION_START) / 1000);
+        // keepalive: true lets the browser complete the request even after unload
+        fetch(`${API_BASE}/user/session-end`, {
+            method:    'POST',
+            keepalive: true,
+            headers:   { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body:      JSON.stringify({ session_id: SESSION_ID, duration_s })
+        });
+        // No .catch() — after unload there's no context to handle it
+    };
+    window.addEventListener('beforeunload', _sessionEndHandler);
+}
+
+/** Fire-and-forget: log geo + create session row for the current app session. */
 function callLoginEvent(token: string): void {
     fetch(`${API_BASE}/user/login-event`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            session_id: SESSION_ID,
+            device:     navigator.userAgent.slice(0, 200)
+        })
     }).catch(() => { /* silently ignore — non-critical */ });
+    registerSessionEnd(token);
 }
 
 // Inner provider (needs to be inside GoogleOAuthProvider)

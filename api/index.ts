@@ -1050,21 +1050,50 @@ const userConsentStore = new Map<string, {
     consent_version: string;
 }>();
 
-// POST /api/user/login-event - Record geo location on app load / explicit login
-// Called ONCE per session from the frontend, not on every request.
+// POST /api/user/login-event - Record geo location + open a user session on app load / explicit login
+// Called ONCE per session from the frontend. Body: { session_id: string, device?: string }
 app.post('/api/user/login-event', requireAuth, async (req, res) => {
     try {
         const user = (req as any).user;
+        const { session_id, device } = req.body || {};
         const ip = geoLocationService.getClientIP(req);
-        geoLocationService.getGeoLocation(ip).then(geo => {
+
+        geoLocationService.getGeoLocation(ip).then(async geo => {
+            // Log geo location row
             supabaseUserService.logLocation(user.sub, {
                 ip_hash:    geo.ip_hash,
                 city:       geo.geo_city,
                 country:    geo.geo_country
             });
+
+            // Create user_sessions row if session_id provided
+            if (session_id) {
+                await supabaseUserService.logSession(user.sub, {
+                    session_id,
+                    device:      device || null,
+                    ip_hash:     geo.ip_hash,
+                    geo_city:    geo.geo_city,
+                    geo_country: geo.geo_country
+                });
+            }
         }).catch(err => {
-            console.error('[LoginEvent] Geo log failed:', err);
+            console.error('[LoginEvent] Geo/session log failed:', err);
         });
+
+        res.json({ success: true });
+    } catch (e: any) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// POST /api/user/session-end - Close a session on tab/browser close (via sendBeacon)
+// Body: { session_id: string, duration_s: number }
+app.post('/api/user/session-end', requireAuth, async (req, res) => {
+    try {
+        const { session_id, duration_s } = req.body || {};
+        if (session_id) {
+            await supabaseUserService.closeSession(session_id, duration_s);
+        }
         res.json({ success: true });
     } catch (e: any) {
         res.status(500).json({ error: e.message });
