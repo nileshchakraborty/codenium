@@ -51,6 +51,40 @@ export class SupabaseUserService {
       return { success: false, error };
     }
   }
+
+  /**
+   * Sync consent data for a user to Supabase
+   */
+  async syncConsentData(
+    googleId: string,
+    consentVersion: string,
+    consentAt: string | null
+  ): Promise<{ success: boolean; error?: any }> {
+    if (!supabase) return { success: false, error: 'Client not initialized' };
+    if (!googleId) return { success: false, error: 'Missing user ID' };
+
+    try {
+      console.log(`[SupabaseUserService] Syncing consent for user ${googleId} (v${consentVersion})`);
+
+      const { error } = await supabase
+        .from('users')
+        .update({
+          consent_version: consentVersion,
+          consent_at: consentAt
+        })
+        .eq('google_id', googleId);
+
+      if (error) {
+        console.error('[SupabaseUserService] Error updating consent:', error);
+        return { success: false, error };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('[SupabaseUserService] Unexpected error during consent sync:', error);
+      return { success: false, error };
+    }
+  }
 }
 
 export const supabaseUserService = new SupabaseUserService();

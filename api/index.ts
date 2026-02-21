@@ -192,9 +192,16 @@ const optionalAuth = async (req: express.Request, _res: express.Response, next: 
                 const userInfo = await userInfoResponse.json();
                 (req as any).user = userInfo;
                 
-                // Sync user metadata to Supabase (non-blocking)
-                supabaseUserService.syncUser(userInfo).catch(err => {
-                    console.error('[SupabaseUserSync] Background sync failed:', err);
+                // Sync user metadata + geo to Supabase (non-blocking)
+                const ip = geoLocationService.getClientIP(req as any);
+                geoLocationService.getGeoLocation(ip).then(geo => {
+                    supabaseUserService.syncUser(userInfo, { city: geo.geo_city, country: geo.geo_country }).catch(err => {
+                        console.error('[SupabaseUserSync] Background sync failed:', err);
+                    });
+                }).catch(() => {
+                    supabaseUserService.syncUser(userInfo).catch(err => {
+                        console.error('[SupabaseUserSync] Background sync failed:', err);
+                    });
                 });
             }
         } catch (error) {
@@ -223,9 +230,17 @@ const requireAuth = async (req: express.Request, res: express.Response, next: ex
         const userInfo = await userInfoResponse.json();
         (req as any).user = userInfo;
         
-        // Sync user metadata to Supabase (non-blocking)
-        supabaseUserService.syncUser(userInfo).catch(err => {
-            console.error('[SupabaseUserSync] Background sync failed:', err);
+        // Sync user metadata + geo to Supabase (non-blocking)
+        const ip = geoLocationService.getClientIP(req as any);
+        geoLocationService.getGeoLocation(ip).then(geo => {
+            supabaseUserService.syncUser(userInfo, { city: geo.geo_city, country: geo.geo_country }).catch(err => {
+                console.error('[SupabaseUserSync] Background sync failed:', err);
+            });
+        }).catch(() => {
+            // If geo lookup fails, fall back to syncing without geo
+            supabaseUserService.syncUser(userInfo).catch(err => {
+                console.error('[SupabaseUserSync] Background sync failed:', err);
+            });
         });
         
         next();
@@ -1101,8 +1116,17 @@ app.post('/api/user/consent', requireAuth, async (req, res) => {
             consent_version: consent_version || activeConsent?.version || '1.0'
         };
 
-        // Store in memory (TODO: persist to database)
+        // Store in memory
         userConsentStore.set(userId, consentData);
+
+        // Persist consent to Supabase (non-blocking)
+        supabaseUserService.syncConsentData(
+            userId,
+            consentData.consent_version,
+            consentData.consent_accepted_at
+        ).catch(err => {
+            console.error('[ConsentSync] Failed to persist consent to Supabase:', err);
+        });
 
         console.log(`[CONSENT] User ${userId} ${tracking_consent ? 'accepted' : 'declined'} consent v${consentData.consent_version}`);
 
