@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
 // https://vite.dev/config/
@@ -7,7 +8,7 @@ import path from 'path'
 export default defineConfig({
   base: '/',
   envDir: '..', // Load .env from root directory
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
       '@system-design': path.resolve(__dirname, '../system-design/frontend/src'),
