@@ -9,9 +9,79 @@
  */
 
 import * as crypto from 'crypto';
-// @ts-ignore
-import { authenticator } from 'otplib';
-import * as QRCode from 'qrcode';
+
+// ============================================
+// Native TOTP Implementation (RFC 6238)
+// Replaces otplib to avoid @scure/base ESM crash on Vercel
+// ============================================
+
+const BASE32_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+
+function base32Decode(encoded: string): Buffer {
+    const str = encoded.toUpperCase().replace(/=+$/, '');
+    let bits = 0;
+    let value = 0;
+    let index = 0;
+    const output = Buffer.alloc(Math.floor((str.length * 5) / 8));
+    for (let i = 0; i < str.length; i++) {
+        const charIndex = BASE32_CHARS.indexOf(str[i]);
+        if (charIndex < 0) continue;
+        value = (value << 5) | charIndex;
+        bits += 5;
+        if (bits >= 8) {
+            output[index++] = (value >>> (bits - 8)) & 0xff;
+            bits -= 8;
+        }
+    }
+    return output.slice(0, index);
+}
+
+function base32Encode(buffer: Buffer): string {
+    let result = '';
+    let bits = 0;
+    let value = 0;
+    for (const byte of buffer) {
+        value = (value << 8) | byte;
+        bits += 8;
+        while (bits >= 5) {
+            result += BASE32_CHARS[(value >>> (bits - 5)) & 0x1f];
+            bits -= 5;
+        }
+    }
+    if (bits > 0) result += BASE32_CHARS[(value << (5 - bits)) & 0x1f];
+    return result;
+}
+
+const authenticator = {
+    generateSecret(): string {
+        return base32Encode(crypto.randomBytes(20));
+    },
+    keyuri(email: string, issuer: string, secret: string): string {
+        return `otpauth://totp/${encodeURIComponent(issuer)}:${encodeURIComponent(email)}?secret=${secret}&issuer=${encodeURIComponent(issuer)}&algorithm=SHA1&digits=6&period=30`;
+    },
+    verify({ token, secret }: { token: string; secret: string }): boolean {
+        const key = base32Decode(secret);
+        const now = Math.floor(Date.now() / 1000);
+        // Check current window and ±1 window for clock drift
+        for (const offset of [-1, 0, 1]) {
+            const counter = Math.floor((now + offset * 30) / 30);
+            const buf = Buffer.alloc(8);
+            buf.writeBigUInt64BE(BigInt(counter));
+            const hmac = crypto.createHmac('sha1', key).update(buf).digest();
+            const offset2 = hmac[hmac.length - 1] & 0xf;
+            const code = ((hmac.readUInt32BE(offset2) & 0x7fffffff) % 1_000_000)
+                .toString().padStart(6, '0');
+            if (code === token) return true;
+        }
+        return false;
+    }
+};
+
+// QR code via Google Charts API (no npm dependency needed)
+async function generateQRCodeDataURL(text: string): Promise<string> {
+    const url = `https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=${encodeURIComponent(text)}&choe=UTF-8`;
+    return url; // Return URL directly; frontend can render as <img src=...>
+}
 import type { Request, Response, NextFunction } from 'express';
 import { supabase } from '../src/infrastructure/db/SupabaseClient';
 
@@ -261,7 +331,7 @@ export async function getTotpQRCode(email: string): Promise<string | null> {
 
     const otpauth = authenticator.keyuri(email, TOTP_ISSUER, record.secret);
     try {
-        return await QRCode.toDataURL(otpauth);
+        return await generateQRCodeDataURL(otpauth);
     } catch {
         return null;
     }
