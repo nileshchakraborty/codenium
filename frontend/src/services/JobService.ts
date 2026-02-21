@@ -22,7 +22,7 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-export type JobType = 'execute' | 'ai_tutor' | 'ai_hint' | 'ai_explain' | 'generate' | 'system_design_chat';
+export type JobType = 'execute' | 'ai_tutor' | 'ai_hint' | 'ai_explain' | 'generate' | 'system_design_chat' | 'system_design_analyze';
 export type JobStatus = 'pending' | 'processing' | 'completed' | 'failed';
 
 export interface JobResult {

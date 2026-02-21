@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useAuth } from './useAuth';
 import { useTrackingConsent } from './useTrackingConsent';
+import { activityQueueService } from '../services/ActivityQueueService';
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
@@ -29,6 +30,9 @@ export function useActivityTracking() {
         if (hasConsent === false) return;
 
         try {
+            // New offline-first persistent logging
+            activityQueueService.enqueue(eventType, metadata);
+
             const headers: Record<string, string> = { 'Content-Type': 'application/json' };
             if (accessToken) {
                 headers['Authorization'] = `Bearer ${accessToken}`;

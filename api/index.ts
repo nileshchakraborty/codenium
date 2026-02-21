@@ -434,9 +434,12 @@ app.post('/api/system-design/ai/chat', requireAuth, async (req, res) => {
     }
 });
 
-app.post('/api/system-design/analyze', async (req, res) => {
+app.post('/api/system-design/analyze', requireAuth, async (req, res) => {
     try {
         const { canvasElements, problemTitle, problemDescription, expectedComponents } = req.body;
+        // Keep the legacy direct endpoint for compatibility if needed, 
+        // but it's better to refactor it to also submit a job if we want full consistency.
+        // However, the frontend will be updated to use /api/jobs/submit directly.
         const result = await aiService.analyzeDesign(problemTitle, problemDescription, canvasElements, expectedComponents);
         res.json(result);
     } catch (e: any) {
@@ -559,6 +562,7 @@ app.post('/api/stats/interaction', (req, res) => {
 
 import { mongoDBService } from '../src/infrastructure/database/MongoDBService';
 import { geoLocationService } from '../src/infrastructure/services/GeoLocationService';
+import { supabaseActivityService } from '../src/infrastructure/database/SupabaseActivityService';
 
 // POST /api/events/log - Generic event logger
 app.post('/api/events/log', optionalAuth, async (req: express.Request, res: express.Response) => {
@@ -650,6 +654,37 @@ app.post('/api/events/log', optionalAuth, async (req: express.Request, res: expr
             warning: 'Log entry failed internally', 
             error_code: error?.code || 'UNKNOWN_ERROR'
         });
+    }
+});
+
+// POST /api/sync/activity - Batch sync activity to Supabase
+app.post('/api/sync/activity', requireAuth, async (req: express.Request, res: express.Response) => {
+    try {
+        const { events } = req.body;
+        const user = (req as any).user;
+
+        if (!events || !Array.isArray(events)) {
+            return res.status(400).json({ error: 'events array is required' });
+        }
+
+        // Map events to Supabase format and ensure user_id is the authenticated user
+        const formattedEvents = events.map(e => ({
+            user_id: user.sub || user.email,
+            event_type: e.event_type,
+            metadata: e.metadata || {},
+            created_at: e.created_at
+        }));
+
+        const result = await supabaseActivityService.logBatch(formattedEvents);
+        
+        if (!result.success) {
+            return res.status(500).json({ error: 'Sync failed', details: result.error });
+        }
+
+        res.json({ success: true, count: result.count });
+    } catch (error: any) {
+        console.error('[SYNC_ACTIVITY] Error:', error);
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -813,6 +848,16 @@ jobQueue.registerProcessor('system_design_chat', async (job: Job) => {
     return await handleSystemDesignChat(slug, message, history || []);
 });
 
+jobQueue.registerProcessor('system_design_analyze', async (job: Job) => {
+    const { canvasElements, problemTitle, problemDescription, expectedComponents } = job.payload as {
+        canvasElements: string[];
+        problemTitle: string;
+        problemDescription: string;
+        expectedComponents: string[];
+    };
+    return await aiService.analyzeDesign(problemTitle, problemDescription, canvasElements, expectedComponents);
+});
+
 // Submit a new job
 app.post('/api/jobs/submit', requireAuth, async (req, res) => {
     try {
@@ -823,7 +868,7 @@ app.post('/api/jobs/submit', requireAuth, async (req, res) => {
             return res.status(400).json({ error: 'Missing type or payload' });
         }
 
-        const validTypes: JobType[] = ['execute', 'ai_tutor', 'ai_hint', 'ai_explain', 'generate', 'system_design_chat'];
+        const validTypes: JobType[] = ['execute', 'ai_tutor', 'ai_hint', 'ai_explain', 'generate', 'system_design_chat', 'system_design_analyze'];
         if (!validTypes.includes(type)) {
             return res.status(400).json({ error: `Invalid job type: ${type}` });
         }

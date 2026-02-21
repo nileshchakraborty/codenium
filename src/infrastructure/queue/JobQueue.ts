@@ -12,7 +12,7 @@ import crypto from 'crypto';
 // Use Node.js built-in crypto.randomUUID() instead of uuid package (ESM-only)
 const uuidv4 = (): string => crypto.randomUUID();
 
-export type JobType = 'execute' | 'ai_tutor' | 'ai_hint' | 'ai_explain' | 'generate' | 'system_design_chat';
+export type JobType = 'execute' | 'ai_tutor' | 'ai_hint' | 'ai_explain' | 'generate' | 'system_design_chat' | 'system_design_analyze';
 export type JobStatus = 'pending' | 'processing' | 'completed' | 'failed';
 
 export interface Job {

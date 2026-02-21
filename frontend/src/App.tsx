@@ -15,6 +15,7 @@ import { HotSection } from './components/HotSection';
 import { SharedHeader } from '@shared/components/SharedHeader';
 import { SharedFooter } from '@shared/components/SharedFooter';
 import { Search, Filter, ChevronUp, ChevronDown, Check, Zap, CheckCircle, Pencil } from 'lucide-react';
+import { activityQueueService } from './services/ActivityQueueService';
 
 /**
  * Static category order defining the learning flow progression.
@@ -139,6 +140,12 @@ function App() {
   const searchEngine = useMemo(() => {
     return new SearchEngine(allProblems, p => p.title);
   }, [allProblems]);
+
+  // Activity Sync Lifecycle
+  useEffect(() => {
+    activityQueueService.start();
+    return () => activityQueueService.stop();
+  }, []);
 
   const searchResults = useMemo(() => {
     const query = problems.filter.search;

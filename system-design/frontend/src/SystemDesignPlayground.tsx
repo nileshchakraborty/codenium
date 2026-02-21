@@ -225,24 +225,21 @@ const SystemDesignPlayground: React.FC<SystemDesignPlaygroundProps> = ({ problem
     setAnalysisLoading(true);
     setShowAnalysisPanel(true);
     try {
-      const res = await fetch('/api/system-design/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          canvasElements: textElements,
-          problemTitle: problem.title,
-          problemDescription: problem.description,
-          expectedComponents: problem.expectedComponents,
-        }),
+      const res = await JobService.submitAndPoll<{ content?: string; error?: string }>('system_design_analyze', {
+        canvasElements: textElements,
+        problemTitle: problem.title,
+        problemDescription: problem.description,
+        expectedComponents: problem.expectedComponents,
       });
-      if (res.ok) {
-        const data = await res.json();
-        setAnalysisFeedback(data.content || 'No feedback available.');
-      } else {
-        setAnalysisFeedback('AI analysis is currently unavailable. Please check your AI configuration.');
+
+      if (res.error) {
+         throw new Error(res.error);
       }
-    } catch {
-      setAnalysisFeedback('Could not connect to the AI service. Ensure the AI provider is accessible.');
+      
+      setAnalysisFeedback(res.content || 'No feedback available.');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Could not connect to the AI service. Ensure the AI provider is accessible.';
+      setAnalysisFeedback(errorMessage);
     } finally {
       setAnalysisLoading(false);
     }
