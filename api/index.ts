@@ -675,13 +675,12 @@ app.post('/api/sync/activity', requireAuth, async (req: express.Request, res: ex
             created_at: e.created_at
         }));
 
-        const result = await supabaseActivityService.logBatch(formattedEvents);
-        
-        if (!result.success) {
-            return res.status(500).json({ error: 'Sync failed', details: result.error });
-        }
+        // Fire and forget - non-blocking sync
+        supabaseActivityService.logBatch(formattedEvents).catch(err => {
+            console.error('[SYNC_ACTIVITY] Background sync failed:', err);
+        });
 
-        res.json({ success: true, count: result.count });
+        res.json({ success: true, count: formattedEvents.length });
     } catch (error: any) {
         console.error('[SYNC_ACTIVITY] Error:', error);
         res.status(500).json({ error: error.message });
