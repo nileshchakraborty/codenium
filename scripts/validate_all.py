@@ -6,11 +6,12 @@ import shutil
 # Add api to path
 try:
     from api._lib.runner import execute_code as execute_python
+    from api._lib.node_runner_wrapper import execute_node_code
 except ImportError:
-    sys.path.append(os.path.join(os.getcwd(), 'api'))
+    if os.path.join(os.getcwd(), 'api') not in sys.path:
+        sys.path.append(os.path.join(os.getcwd(), 'api'))
     from _lib.runner import execute_code as execute_python
-
-from api._lib.node_runner_wrapper import execute_node_code
+    from _lib.node_runner_wrapper import execute_node_code
 
 SOLUTIONS_FILE = "data/solutions.json"
 

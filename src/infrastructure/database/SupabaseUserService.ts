@@ -35,9 +35,6 @@ export class SupabaseUserService {
         .from('users')
         .upsert({
           google_id:  userInfo.sub,
-          email:      userInfo.email,
-          name:       userInfo.name,
-          picture:    userInfo.picture,
           last_login: new Date().toISOString()
         }, { onConflict: 'google_id' });
 

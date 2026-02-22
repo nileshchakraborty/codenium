@@ -208,7 +208,7 @@ const optionalAuth = async (req: express.Request, _res: express.Response, next: 
             });
             if (userInfoResponse.ok) {
                 const userInfo = await userInfoResponse.json();
-                (req as any).user = userInfo;
+                (req as any).user = { sub: userInfo.sub };
 
                 // Sync user profile to Supabase (non-blocking)
                 supabaseUserService.syncUser(userInfo).catch(err => {
@@ -239,7 +239,7 @@ const requireAuth = async (req: express.Request, res: express.Response, next: ex
             return res.status(401).json({ error: 'Invalid or expired token', code: 'INVALID_TOKEN' });
         }
         const userInfo = await userInfoResponse.json();
-        (req as any).user = userInfo;
+        (req as any).user = { sub: userInfo.sub };
 
         // Sync user profile to Supabase (non-blocking)
         supabaseUserService.syncUser(userInfo).catch(err => {
@@ -630,11 +630,11 @@ app.post('/api/events/log', optionalAuth, async (req: express.Request, res: expr
 
         // Increment persistent counters in MongoDB (best effort with timeout)
         if (user && (metadataObj as any).slug) {
-            log(`[EVENT_LOG] Recording user progress for ${user.email || user.sub}: ${(metadataObj as any).slug}`);
+            log(`[EVENT_LOG] Recording user progress for ${user.sub}: ${(metadataObj as any).slug}`);
             if (event_type === 'practice_run') {
                 persistenceTasks.push(
                     withTimeout(
-                        mongoDBService.incrementProgress(user.sub || user.email, (metadataObj as any).slug, 'compile_count'),
+                        mongoDBService.incrementProgress(user.sub, (metadataObj as any).slug, 'compile_count'),
                         1200,
                         undefined
                     )
@@ -642,7 +642,7 @@ app.post('/api/events/log', optionalAuth, async (req: express.Request, res: expr
             } else if (event_type === 'solve_problem') {
                 persistenceTasks.push(
                     withTimeout(
-                        mongoDBService.incrementProgress(user.sub || user.email, (metadataObj as any).slug, 'solve_attempts'),
+                        mongoDBService.incrementProgress(user.sub, (metadataObj as any).slug, 'solve_attempts'),
                         1200,
                         undefined
                     )
@@ -650,11 +650,11 @@ app.post('/api/events/log', optionalAuth, async (req: express.Request, res: expr
             }
         }
 
-        log(`[EVENT_LOG] Persisting event to MongoDB: ${event_type} for ${user?.email || 'anonymous'}`);
+        log(`[EVENT_LOG] Persisting event to MongoDB: ${event_type} for ${user?.sub || 'anonymous'}`);
         persistenceTasks.push(
             withTimeout(
                 mongoDBService.logEvent({
-                    user_id: user?.sub || user?.email || 'anonymous',
+                    user_id: user?.sub || 'anonymous',
                     session_id: (req.headers['x-session-id'] as string) || 'unknown',
                     ip_hash,
                     event_type: event_type as any,
