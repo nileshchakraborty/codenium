@@ -137,6 +137,7 @@ const AuthProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
                 console.warn('Login popup was closed before completion.');
             }
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
     const login = useCallback(() => {
