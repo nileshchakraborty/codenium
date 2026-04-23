@@ -98,6 +98,8 @@ const AuthProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
     }, []);
 
     const googleLogin = useGoogleLogin({
+        flow: 'implicit',
+        ux_mode: 'redirect',
         onSuccess: async (tokenResponse: { access_token: string }) => {
             console.log('Google login success, fetching user info...');
             try {
