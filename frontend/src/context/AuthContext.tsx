@@ -100,7 +100,8 @@ const AuthProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
     const googleLogin = useGoogleLogin({
         flow: 'implicit',
         ux_mode: 'redirect',
-        onSuccess: async (tokenResponse: { access_token: string }) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        onSuccess: async (tokenResponse: any) => {
             console.log('Google login success, fetching user info...');
             try {
                 // Get user info from Google
@@ -128,6 +129,7 @@ const AuthProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
                 console.error('Error fetching user info:', error);
             }
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onError: (error: any) => {
             console.error('Google login failed:', error);
             // Some versions of the library return details in the error object
@@ -135,12 +137,13 @@ const AuthProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
                 console.warn('Login popup was closed before completion.');
             }
         }
-    });
+    } as any);
 
     const login = useCallback(() => {
         console.log('Login triggered...');
         
         // Check if google script is loaded (it might be blocked by ad-blockers)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if (!(window as any).google?.accounts?.id && !(window as any).google?.accounts?.oauth2) {
             console.error('Google accounts script not found. It may be blocked by an ad-blocker or tracking protection.');
             alert('Google Sign-In script could not be loaded. Please disable your ad-blocker and refresh the page.');

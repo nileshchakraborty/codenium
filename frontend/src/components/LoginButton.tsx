@@ -60,6 +60,7 @@ export const LoginButton: React.FC = () => {
                             if (credentialResponse.credential) {
                                 try {
                                     // For ID token, we decode locally and store
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     const decoded: any = jwtDecode(credentialResponse.credential);
                                     const userData = {
                                         email: decoded.email,
