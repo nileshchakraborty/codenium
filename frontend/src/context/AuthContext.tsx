@@ -12,10 +12,12 @@ import {
 
 import { AuthContext } from './AuthContextDefinition';
 
-const API_BASE = import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_URL || '/api');
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 /** Unique ID for the current browser session (regenerated on every page load). */
-const SESSION_ID = crypto.randomUUID();
+const SESSION_ID = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') 
+    ? crypto.randomUUID() 
+    : `session-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 const SESSION_START = Date.now();
 
 /** Register a beforeunload handler to mark the session as ended.
@@ -30,7 +32,7 @@ function registerSessionEnd(token: string): void {
     _sessionEndHandler = () => {
         const duration_s = Math.round((Date.now() - SESSION_START) / 1000);
         // keepalive: true lets the browser complete the request even after unload
-        fetch(`${API_BASE}/user/session-end`, {
+        fetch(`${API_BASE}/api/user/session-end`, {
             method:    'POST',
             keepalive: true,
             headers:   { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -43,7 +45,7 @@ function registerSessionEnd(token: string): void {
 
 /** Fire-and-forget: log geo + create session row for the current app session. */
 function callLoginEvent(token: string): void {
-    fetch(`${API_BASE}/user/login-event`, {
+    fetch(`${API_BASE}/api/user/login-event`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -97,12 +99,14 @@ const AuthProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
 
     const googleLogin = useGoogleLogin({
         onSuccess: async (tokenResponse: { access_token: string }) => {
+            console.log('Google login success, fetching user info...');
             try {
                 // Get user info from Google
                 const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
                     headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
                 });
                 const userInfo = await userInfoResponse.json();
+                console.log('User info fetched:', userInfo.email);
 
                 const userData: User = {
                     email: userInfo.email,
@@ -122,13 +126,29 @@ const AuthProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
                 console.error('Error fetching user info:', error);
             }
         },
-        onError: (error: unknown) => {
+        onError: (error: any) => {
             console.error('Google login failed:', error);
+            // Some versions of the library return details in the error object
+            if (error?.error === 'popup_closed_by_user') {
+                console.warn('Login popup was closed before completion.');
+            }
         }
     });
 
     const login = useCallback(() => {
-        googleLogin();
+        console.log('Login triggered...');
+        
+        // Check if google script is loaded (it might be blocked by ad-blockers)
+        if (!(window as any).google?.accounts?.id && !(window as any).google?.accounts?.oauth2) {
+            console.error('Google accounts script not found. It may be blocked by an ad-blocker or tracking protection.');
+            alert('Google Sign-In script could not be loaded. Please disable your ad-blocker and refresh the page.');
+        }
+
+        try {
+            googleLogin();
+        } catch (err) {
+            console.error('Failed to execute googleLogin:', err);
+        }
     }, [googleLogin]);
 
     const logout = useCallback(() => {
@@ -156,6 +176,8 @@ const AuthProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
 // Main provider with Google OAuth wrapper
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+    
+    console.log('AuthProvider initializing with Client ID:', clientId ? `${clientId.substring(0, 10)}...` : 'MISSING');
 
     if (!clientId) {
         console.warn('VITE_GOOGLE_CLIENT_ID is not set. Auth will be disabled.');

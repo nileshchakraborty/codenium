@@ -141,8 +141,8 @@ export class SupabaseProgressService {
       if (pe) { console.error('[SupabaseProgressService] Fetch error:', pe); return null; }
 
       const solvedProblems: SolvedProblem[] = (progressRows ?? [])
-        .filter((r: ProblemProgressRow) => r.status === 'solved')
-        .map((r: ProblemProgressRow) => ({
+        .filter((r: any) => r.status === 'solved')
+        .map((r: any) => ({
           slug:        r.problem_slug,
           timestamp:   new Date(r.solved_at ?? r.last_activity).getTime(),
           code:        r.last_code ?? '',
@@ -151,8 +151,8 @@ export class SupabaseProgressService {
         }));
 
       const attemptedProblems = (progressRows ?? [])
-        .filter((r: ProblemProgressRow) => r.status === 'attempted')
-        .map((r: ProblemProgressRow) => ({ slug: r.problem_slug, openedAt: new Date(r.first_seen_at).getTime() }));
+        .filter((r: any) => r.status === 'attempted')
+        .map((r: any) => ({ slug: r.problem_slug, openedAt: new Date(r.first_seen_at).getTime() }));
 
       const drafts: Record<string, { code: string; updatedAt: number }> = {};
       for (const d of draftRows ?? []) {

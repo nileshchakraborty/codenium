@@ -39,7 +39,10 @@ export function SignInGate({ feature, description, children }: SignInGateProps) 
                 </p>
 
                 <button
-                    onClick={() => login()}
+                    onClick={() => {
+                        console.log('SignInGate login button clicked');
+                        login();
+                    }}
                     className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-medium shadow-lg shadow-purple-500/25 transition-all hover:shadow-xl hover:shadow-purple-500/30 hover:-translate-y-0.5"
                 >
                     <LogIn size={18} />

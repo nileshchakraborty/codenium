@@ -194,30 +194,54 @@ app.use('/api/ai/', (req, res, next) => {
 
 
 // --- AUTH MIDDLEWARE ---
+
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+/**
+ * Verify Google token (supports both access tokens and ID tokens)
+ */
+async function verifyGoogleToken(token: string) {
+    try {
+        // Try as Access Token first (current frontend implementation)
+        const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: { Authorization: `Bearer ${token}` }
+        } as any);
+        
+        if (userInfoResponse.ok) {
+            return await userInfoResponse.json();
+        }
+
+        // Fallback to ID Token verification if fetch fails
+        // (Better for future-proofing if we switch to ID tokens)
+        const ticket = await googleClient.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        return ticket.getPayload();
+    } catch (error) {
+        console.error('[AUTH] Google verification failed:', error);
+        return null;
+    }
+}
 
 // Optional auth middleware - adds user info if token is valid, but doesn't block
 const optionalAuth = async (req: express.Request, _res: express.Response, next: express.NextFunction) => {
     const authHeader = req.headers.authorization;
     if (authHeader?.startsWith('Bearer ')) {
         const token = authHeader.substring(7);
-        try {
-            // For Google OAuth access tokens, verify by fetching userinfo
-            const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-                headers: { Authorization: `Bearer ${token}` }
+        const userInfo = await verifyGoogleToken(token);
+        if (userInfo) {
+            (req as any).user = { 
+                sub: userInfo.sub,
+                email: userInfo.email,
+                name: userInfo.name,
+                picture: userInfo.picture
+            };
+            
+            // Sync user profile to Supabase (non-blocking)
+            supabaseUserService.syncUser(userInfo).catch(err => {
+                console.error('[SupabaseUserSync] Background sync failed:', err);
             });
-            if (userInfoResponse.ok) {
-                const userInfo = await userInfoResponse.json();
-                (req as any).user = { sub: userInfo.sub };
-
-                // Sync user profile to Supabase (non-blocking)
-                supabaseUserService.syncUser(userInfo).catch(err => {
-                    console.error('[SupabaseUserSync] Background sync failed:', err);
-                });
-            }
-        } catch (error) {
-            // Token invalid, continue without user
-            console.log('Auth token verification failed:', error);
         }
     }
     next();
@@ -231,26 +255,25 @@ const requireAuth = async (req: express.Request, res: express.Response, next: ex
     }
 
     const token = authHeader.substring(7);
-    try {
-        const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        if (!userInfoResponse.ok) {
-            return res.status(401).json({ error: 'Invalid or expired token', code: 'INVALID_TOKEN' });
-        }
-        const userInfo = await userInfoResponse.json();
-        (req as any).user = { sub: userInfo.sub };
-
-        // Sync user profile to Supabase (non-blocking)
-        supabaseUserService.syncUser(userInfo).catch(err => {
-            console.error('[SupabaseUserSync] Background sync failed:', err);
-        });
-
-        next();
-    } catch (error) {
-        console.error('Auth verification error:', error);
-        return res.status(401).json({ error: 'Authentication failed', code: 'AUTH_FAILED' });
+    const userInfo = await verifyGoogleToken(token);
+    
+    if (!userInfo) {
+        return res.status(401).json({ error: 'Invalid or expired token', code: 'INVALID_TOKEN' });
     }
+
+    (req as any).user = { 
+        sub: userInfo.sub,
+        email: userInfo.email,
+        name: userInfo.name,
+        picture: userInfo.picture
+    };
+
+    // Sync user profile to Supabase (non-blocking)
+    supabaseUserService.syncUser(userInfo).catch(err => {
+        console.error('[SupabaseUserSync] Background sync failed:', err);
+    });
+
+    next();
 };
 
 // --- COMPOSITION ROOT ---
@@ -1432,7 +1455,7 @@ app.post('/api/admin/auth/google', adminSecurity.adminRateLimiter, async (req: e
         // Verify Google token
         const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
             headers: { Authorization: `Bearer ${googleToken}` }
-        });
+        } as any);
 
         if (!userInfoResponse.ok) {
             res.status(401).json({ error: 'Invalid Google token', code: 'GOOGLE_TOKEN_INVALID' });

@@ -3,6 +3,21 @@ import CodeniumLogo from '../assets/logo.svg';
 
 import { CheckCircle, Pencil } from 'lucide-react';
 
+function renderComponent(ComponentOrNode: React.ComponentType<any> | React.ReactNode) {
+  if (!ComponentOrNode) return null;
+  
+  if (isValidElement(ComponentOrNode)) return ComponentOrNode;
+  
+  // If it's a component type (function), render it
+  if (typeof ComponentOrNode === 'function') {
+    const Component = ComponentOrNode as React.ComponentType<any>;
+    return <Component />;
+  }
+  
+  // If it's something else that's valid to render (string, number, etc.)
+  return ComponentOrNode as React.ReactNode;
+}
+
 interface SharedHeaderProps {
   currentRoute: 'algo' | 'system-design';
   onNavigate: (route: '/' | '/system-design') => void;
@@ -15,22 +30,8 @@ interface SharedHeaderProps {
     solved?: number;
     attempted?: number;
   };
-  ThemeToggleComponent?: React.ComponentType | React.ReactNode;
-  LoginButtonComponent?: React.ComponentType | React.ReactNode;
-}
-
-function renderComponent(ComponentOrNode: React.ComponentType | React.ReactNode) {
-  if (!ComponentOrNode) return null;
-  if (isValidElement(ComponentOrNode)) return ComponentOrNode;
-  
-  // If it's a component type (function), render it
-  if (typeof ComponentOrNode === 'function') {
-    const Component = ComponentOrNode as React.ComponentType;
-    return <Component />;
-  }
-  
-  // If it's something else that's valid to render (string, number, etc.)
-  return ComponentOrNode as React.ReactNode;
+  ThemeToggleComponent?: React.ComponentType<any> | React.ReactNode;
+  LoginButtonComponent?: React.ComponentType<any> | React.ReactNode;
 }
 
 export function SharedHeader({
@@ -45,7 +46,6 @@ export function SharedHeader({
     <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 dark:bg-slate-950/80 border-b border-slate-200/50 dark:border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex items-center justify-between gap-4">
-          {/* Logo */}
           {/* Logo */}
           <div 
             className="flex items-center gap-3 cursor-pointer group" 
@@ -74,20 +74,17 @@ export function SharedHeader({
             </h1>
           </div>
 
-
-
-          {/* Mobile Navigation - Compact */}
           {/* Center Mode Toggle - Compact Style for All Screens */}
           <nav className="flex items-center p-1 bg-slate-100/80 dark:bg-slate-900/50 rounded-full border border-slate-200 dark:border-white/5 backdrop-blur-md">
             <button 
               onClick={() => onNavigate('/')}
-              className={`px-4 py-2 text-xs font-semibold rounded-full transition-all ${currentRoute === 'algo' ? 'bg-white dark:bg-indigo-600 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 dark:text-slate-400'}`}
+              className={`px-4 py-2 text-xs font-semibold rounded-full transition-all ${currentRoute === 'algo' ? 'bg-white dark:bg-indigo-600 text-slate-900 dark:white shadow-sm' : 'text-slate-500 dark:text-slate-400'}`}
             >
               Algo
             </button>
             <button 
               onClick={() => onNavigate('/system-design')}
-              className={`px-4 py-2 text-xs font-semibold rounded-full transition-all ${currentRoute === 'system-design' ? 'bg-white dark:bg-indigo-600 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 dark:text-slate-400'}`}
+              className={`px-4 py-2 text-xs font-semibold rounded-full transition-all ${currentRoute === 'system-design' ? 'bg-white dark:bg-indigo-600 text-slate-900 dark:white shadow-sm' : 'text-slate-500 dark:text-slate-400'}`}
             >
               Systems
             </button>

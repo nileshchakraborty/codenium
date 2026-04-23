@@ -141,3 +141,5 @@ scripts/find_video_mismatches.py
 
 # Public assets (build output)
 public/assets/
+.vercel
+.env*.local

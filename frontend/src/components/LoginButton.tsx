@@ -5,8 +5,11 @@
  */
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { LogIn, LogOut, User, ChevronDown, RotateCcw, Trash2, AlertTriangle } from 'lucide-react';
+import { LogIn, LogOut, User, ChevronDown, RotateCcw, Trash2, AlertTriangle, RefreshCw } from 'lucide-react';
 import { SyncService } from '../services/SyncService';
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
+import { USER_KEY, TOKEN_KEY } from '../utils/auth';
 
 export const LoginButton: React.FC = () => {
     const { user, isAuthenticated, isLoading, login, logout } = useAuth();
@@ -30,31 +33,70 @@ export const LoginButton: React.FC = () => {
         SyncService.resetStats();
         setConfirmAction(null);
         setShowDropdown(false);
-        // Event is dispatched by SyncService.saveLocalProgress - no reload needed
     };
 
     const handleResetAll = () => {
         SyncService.resetAll();
         setConfirmAction(null);
         setShowDropdown(false);
-        // Event is dispatched by SyncService.saveLocalProgress - no reload needed
     };
 
     if (isLoading) {
         return (
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-slate-200 dark:bg-slate-700 animate-pulse" />
+            <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10">
+                <RefreshCw size={16} className="animate-spin text-indigo-500" />
+            </div>
         );
     }
 
     if (!isAuthenticated) {
         return (
-            <button
-                onClick={login}
-                className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 rounded-lg shadow-md shadow-indigo-500/25 hover:shadow-lg hover:shadow-indigo-500/30 transition-all active:scale-95"
-            >
-                <LogIn size={14} className="sm:w-4 sm:h-4" />
-                <span>Sign In</span>
-            </button>
+            <div className="flex items-center gap-2">
+                {/* Standard official button as fallback/alternative if custom one fails */}
+                <div className="hidden sm:block scale-90 origin-right transition-all hover:scale-95">
+                    <GoogleLogin 
+                        onSuccess={credentialResponse => {
+                            console.log('Official Google Login Success');
+                            if (credentialResponse.credential) {
+                                try {
+                                    // For ID token, we decode locally and store
+                                    const decoded: any = jwtDecode(credentialResponse.credential);
+                                    const userData = {
+                                        email: decoded.email,
+                                        name: decoded.name,
+                                        picture: decoded.picture,
+                                        sub: decoded.sub
+                                    };
+                                    localStorage.setItem(TOKEN_KEY, credentialResponse.credential);
+                                    localStorage.setItem(USER_KEY, JSON.stringify(userData));
+                                    localStorage.setItem('codenium_token_expiry', String((decoded.exp * 1000)));
+                                    window.location.reload(); // Force reload to refresh context
+                                } catch (err) {
+                                    console.error('Error decoding ID token:', err);
+                                }
+                            }
+                        }}
+                        onError={() => {
+                            console.error('Official Google Login Failed');
+                        }}
+                        theme="outline"
+                        shape="pill"
+                        size="medium"
+                        text="signin_with"
+                    />
+                </div>
+
+                <button
+                    onClick={() => {
+                        console.log('Custom Sign In button clicked');
+                        login();
+                    }}
+                    className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 rounded-lg shadow-md shadow-indigo-500/25 hover:shadow-lg hover:shadow-indigo-500/30 transition-all active:scale-95"
+                >
+                    <LogIn size={14} className="sm:w-4 sm:h-4" />
+                    <span>Sign In</span>
+                </button>
+            </div>
         );
     }
 
@@ -75,14 +117,12 @@ export const LoginButton: React.FC = () => {
                         <User size={14} className="sm:w-4 sm:h-4" />
                     </div>
                 )}
-                {/* Show name on larger screens */}
                 <span className="hidden lg:block text-sm font-medium text-slate-700 dark:text-slate-300 max-w-[100px] truncate">
                     {user?.name?.split(' ')[0]}
                 </span>
                 <ChevronDown size={14} className="hidden lg:block text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors" />
             </button>
 
-            {/* Mobile/Quick Sign Out Button */}
             {!showDropdown && (
                 <button
                     onClick={logout}
@@ -95,17 +135,13 @@ export const LoginButton: React.FC = () => {
 
             {showDropdown && (
                 <div className="fixed sm:absolute inset-x-2 sm:inset-x-auto top-16 sm:top-auto sm:right-0 sm:mt-2 w-auto sm:w-72 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                    {/* User Info */}
                     <div className="p-3 sm:p-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800">
                         <p className="font-semibold text-sm sm:text-base text-slate-800 dark:text-white truncate">{user?.name}</p>
                         <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 truncate">{user?.email}</p>
                     </div>
 
-                    {/* Settings Section */}
                     <div className="p-2 border-b border-slate-200 dark:border-slate-700">
                         <p className="px-2 py-1 text-[10px] font-bold uppercase text-slate-400 tracking-wider">Settings</p>
-
-                        {/* Reset Stats Button */}
                         {confirmAction === 'resetStats' ? (
                             <div className="p-2 bg-amber-50 dark:bg-amber-900/20 rounded-lg mx-1 my-1">
                                 <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 mb-2">
@@ -140,7 +176,6 @@ export const LoginButton: React.FC = () => {
                             </button>
                         )}
 
-                        {/* Clear All Data Button */}
                         {confirmAction === 'resetAll' ? (
                             <div className="p-2 bg-red-50 dark:bg-red-900/20 rounded-lg mx-1 my-1">
                                 <div className="flex items-center gap-2 text-red-600 dark:text-red-400 mb-2">
@@ -176,7 +211,6 @@ export const LoginButton: React.FC = () => {
                         )}
                     </div>
 
-                    {/* Sign Out */}
                     <button
                         onClick={() => {
                             logout();
@@ -192,6 +226,3 @@ export const LoginButton: React.FC = () => {
         </div>
     );
 };
-
-export default LoginButton;
-
