@@ -1,5 +1,5 @@
 # Build Frontend
-FROM node:25-alpine as builder
+FROM node:26-alpine as builder
 WORKDIR /app_ui
 COPY frontend/package*.json ./
 RUN npm install
