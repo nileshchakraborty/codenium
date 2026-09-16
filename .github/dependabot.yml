@@ -6,9 +6,13 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      dependencies:
+      minor-and-patch:
+        applies-to: "version-updates"
         patterns:
           - "*"
+        update-types:
+          - "minor"
+          - "patch"
     open-pull-requests-limit: 10
 
   # Frontend dependencies
@@ -17,9 +21,13 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      dependencies:
+      minor-and-patch:
+        applies-to: "version-updates"
         patterns:
           - "*"
+        update-types:
+          - "minor"
+          - "patch"
     open-pull-requests-limit: 10
 
   # API Node dependencies
@@ -28,9 +36,13 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      dependencies:
+      minor-and-patch:
+        applies-to: "version-updates"
         patterns:
           - "*"
+        update-types:
+          - "minor"
+          - "patch"
     open-pull-requests-limit: 10
 
   # System Design Frontend dependencies
@@ -39,9 +51,13 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      dependencies:
+      minor-and-patch:
+        applies-to: "version-updates"
         patterns:
           - "*"
+        update-types:
+          - "minor"
+          - "patch"
     open-pull-requests-limit: 10
 
   # API Python dependencies
@@ -50,9 +66,13 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      dependencies:
+      minor-and-patch:
+        applies-to: "version-updates"
         patterns:
           - "*"
+        update-types:
+          - "minor"
+          - "patch"
     open-pull-requests-limit: 10
 
   # Script dependencies
@@ -61,9 +81,13 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      dependencies:
+      minor-and-patch:
+        applies-to: "version-updates"
         patterns:
           - "*"
+        update-types:
+          - "minor"
+          - "patch"
     open-pull-requests-limit: 10
 
   # Docker
@@ -72,7 +96,11 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      dependencies:
+      minor-and-patch:
+        applies-to: "version-updates"
         patterns:
           - "*"
+        update-types:
+          - "minor"
+          - "patch"
     open-pull-requests-limit: 10
