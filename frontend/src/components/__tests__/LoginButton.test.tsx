@@ -18,6 +18,12 @@ vi.mock('../../hooks/useAuth', () => ({
     useAuth: vi.fn()
 }));
 
+// The official button owns its provider integration. These unit tests exercise
+// LoginButton's rendering and the custom sign-in action in isolation.
+vi.mock('@react-oauth/google', () => ({
+    GoogleLogin: () => <div data-testid="google-login" />
+}));
+
 const mockUser = {
     name: 'Test User',
     email: 'test@example.com',
@@ -45,10 +51,10 @@ describe('LoginButton', () => {
 
     it('renders loading state', () => {
         setup(false, true);
-        // Should show pulse div (checking by class or just absence of button text)
+        // Should show the loading spinner and no sign-in action.
         expect(screen.queryByText('Sign In')).not.toBeInTheDocument();
-        const pulse = document.querySelector('.animate-pulse');
-        expect(pulse).toBeInTheDocument();
+        const spinner = document.querySelector('.animate-spin');
+        expect(spinner).toBeInTheDocument();
     });
 
     it('renders login button when logged out and handles click', () => {
