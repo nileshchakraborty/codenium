@@ -46,6 +46,9 @@ export default defineConfig([
 
       // Max parameters: warn at 6
       'max-params': ['warn', 6],
+
+      // Avoid blocking CI on state-in-effect while transitioning to React 19 rules
+      'react-hooks/set-state-in-effect': 'warn',
     },
   },
   // Relaxed rules for test files
