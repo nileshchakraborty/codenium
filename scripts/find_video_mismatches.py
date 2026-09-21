@@ -15,8 +15,9 @@ load_dotenv()
 
 
 API_KEY = os.getenv('YOUTUBE_API_KEY')
-if not API_KEY:
-    print("Error: YOUTUBE_API_KEY environment variable not set.")
+if not API_KEY or API_KEY == "REPLACE_WITH_YOUR_YOUTUBE_API_KEY":
+    print("Error: YOUTUBE_API_KEY is not set or still contains a placeholder.")
+    print("Please set YOUTUBE_API_KEY=<your-key> in your .env file or environment.")
     exit(1)
 
 SOLUTIONS_FILE = "api/data/solutions.json"

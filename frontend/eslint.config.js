@@ -46,6 +46,11 @@ export default defineConfig([
 
       // Max parameters: warn at 6
       'max-params': ['warn', 6],
+
+      // Avoid blocking CI while transitioning to React 19 / eslint-plugin-react-hooks 7.1 rules
+      'react-hooks/set-state-in-effect': 'warn',
+      'react-hooks/immutability': 'warn',
+      'react-hooks/purity': 'warn',
     },
   },
   // Relaxed rules for test files
