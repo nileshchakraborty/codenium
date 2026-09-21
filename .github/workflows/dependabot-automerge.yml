@@ -9,22 +9,84 @@ permissions:
   pull-requests: write
 
 jobs:
-  enable-automerge:
-    name: Enable auto-merge
-    if: >-
-      github.event.pull_request.user.login == 'dependabot[bot]' &&
-      github.repository == 'nileshchakraborty/codenium' &&
-      !github.event.pull_request.draft
+  # ── Close superseded Dependabot PRs ────────────────────────────────────────
+  # When Dependabot opens a newer PR for the same package/group it marks older
+  # ones as conflicting but does not close them automatically. This job finds
+  # any open Dependabot PR that targets the same package(s) at a lower version
+  # than the current PR and closes it with an explanation comment.
+  close-superseded:
+    name: Close superseded Dependabot PRs
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
     runs-on: ubuntu-latest
 
     steps:
       - name: Read Dependabot metadata
         id: metadata
-        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
+        uses: dependabot/fetch-metadata@d7267f35f69b71e65d74b60c00da9e5f5f3fd25 # v2.3.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Enable auto-merge for patch and minor updates
+      - name: Close older PRs for the same dependency
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CURRENT_PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          DEP_NAMES: ${{ steps.metadata.outputs.dependency-names }}
+        run: |
+          # Collect all open Dependabot PRs except this one
+          open_prs=$(gh pr list \
+            --repo "$REPO" \
+            --author "dependabot[bot]" \
+            --state open \
+            --json number,title,headRefName \
+            --jq '.[] | select(.number != (env.CURRENT_PR | tonumber)) | "\(.number) \(.headRefName) \(.title)"')
+
+          # For each dependency in this PR, close older PRs that touch it
+          while IFS= read -r dep; do
+            # Normalise: lowercase, strip org scope for matching
+            dep_slug=$(echo "$dep" | tr '[:upper:]' '[:lower:]' | sed 's|.*/||')
+            while IFS=' ' read -r num branch title; do
+              branch_lower=$(echo "$branch" | tr '[:upper:]' '[:lower:]')
+              if echo "$branch_lower" | grep -qF "$dep_slug"; then
+                echo "Closing PR #$num ($title) — superseded by #$CURRENT_PR"
+                gh pr close "$num" \
+                  --repo "$REPO" \
+                  --comment "Superseded by #$CURRENT_PR which updates the same package(s) to a newer version. Closing to keep the PR list clean."
+              fi
+            done <<< "$open_prs"
+          done <<< "$DEP_NAMES"
+
+  # ── Auto-merge patch and minor updates ─────────────────────────────────────
+  # Approves and enables squash auto-merge for Dependabot PRs that are:
+  #   - patch or minor version updates (not major)
+  #   - not drafts
+  # The merge only happens once all required status checks pass (CI/Vercel).
+  auto-merge:
+    name: Approve and enable auto-merge
+    if: >-
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
+      !github.event.pull_request.draft
+    runs-on: ubuntu-latest
+    # Run after close-superseded so we don't race on the PR list
+    needs: [close-superseded]
+
+    steps:
+      - name: Read Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@d7267f35f69b71e65d74b60c00da9e5f5f3fd25 # v2.3.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Approve PR (patch / minor)
+        if: >-
+          steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+          steps.metadata.outputs.update-type == 'version-update:semver-minor'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: gh pr review --approve "$PR_URL"
+
+      - name: Enable squash auto-merge (patch / minor)
         if: >-
           steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
           steps.metadata.outputs.update-type == 'version-update:semver-minor'
@@ -32,3 +94,12 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
         run: gh pr merge --auto --squash "$PR_URL"
+
+      - name: Comment on major version updates
+        if: steps.metadata.outputs.update-type == 'version-update:semver-major'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          gh pr comment "$PR_URL" --body \
+            "⚠️ **Major version update** — this PR was not auto-merged because major bumps may contain breaking changes. Please review the changelog and update any affected code before merging manually."
