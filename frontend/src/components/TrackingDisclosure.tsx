@@ -27,13 +27,6 @@ export default function TrackingDisclosure({ onAccept, onDecline, isOpen }: Trac
     const [consentContent, setConsentContent] = useState<ConsentContent | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    // Fetch consent content from server
-    useEffect(() => {
-        if (isOpen) {
-            fetchConsentContent();
-        }
-    }, [isOpen]);
-
     const fetchConsentContent = async () => {
         setIsLoading(true);
         setError(null);
@@ -58,6 +51,13 @@ export default function TrackingDisclosure({ onAccept, onDecline, isOpen }: Trac
             setIsLoading(false);
         }
     };
+
+    // Fetch consent content from server
+    useEffect(() => {
+        if (isOpen) {
+            fetchConsentContent();
+        }
+    }, [isOpen]);
 
     const handleAccept = async () => {
         if (!consentContent) return;
