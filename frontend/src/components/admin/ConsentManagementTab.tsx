@@ -280,7 +280,7 @@ export const ConsentManagementTab: React.FC<Props> = ({ adminToken }) => {
                                     )}
                                     <span className="text-slate-500 text-xs flex items-center gap-1">
                                         <Calendar size={12} />
-                                        {new Date(consent.created_at || Date.now()).toLocaleDateString()}
+                                        {consent.created_at ? new Date(consent.created_at).toLocaleDateString() : 'Unknown date'}
                                     </span>
                                 </div>
                                 <h4 className="text-slate-200 font-medium mb-1">{consent.title}</h4>

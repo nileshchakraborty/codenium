@@ -81,6 +81,7 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
     const { theme: appTheme } = useTheme();
 
     const [activeTab, setActiveTab] = useState<TabType>(TABS.PROBLEM);
+    const [speakingSection, setSpeakingSection] = useState<string | null>(null);
     const [activeApproach, setActiveApproach] = useState<'bruteforce' | 'optimal'>('optimal');
     const [language, setLanguage] = useState<'python' | 'javascript' | 'typescript' | 'java' | 'go' | 'rust' | 'cpp'>('python');
     const [code, setCode] = useState(solution?.code || '');
@@ -428,8 +429,6 @@ const SolutionModal: React.FC<SolutionModalProps> = ({ isOpen, onClose, solution
         setAuthFeatureName(feature);
         setShowAuthModal(true);
     };
-
-    const [speakingSection, setSpeakingSection] = useState<string | null>(null);
 
     // Editor Settings
     const [showSettingsModal, setShowSettingsModal] = useState(false);
