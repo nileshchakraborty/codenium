@@ -14,6 +14,14 @@ export default defineConfig({
       '@system-design': path.resolve(__dirname, '../system-design/frontend/src'),
       '@': path.resolve(__dirname, './src'),
       '@shared': path.resolve(__dirname, '../shared'),
+      'monaco-editor/esm/vs/editor/editor.api': path.resolve(
+        __dirname,
+        'node_modules/monaco-editor/esm/vs/editor/editor.api.js',
+      ),
+      'monaco-editor/esm/vs/editor/common/commands/shiftCommand': path.resolve(
+        __dirname,
+        'node_modules/monaco-editor/esm/vs/editor/common/commands/shiftCommand.js',
+      ),
     },
     dedupe: ['react', 'react-dom', 'react-router', 'react-router-dom'],
   },
