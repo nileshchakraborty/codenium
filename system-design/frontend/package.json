@@ -24,8 +24,8 @@
     "lucide-react": "^0.577.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "react-resizable-panels": "^4.14.2",
-    "react-syntax-highlighter": "^16.1.1",
+    "react-resizable-panels": "^4.14.4",
+    "react-syntax-highlighter": "^16.1.2",
     "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
@@ -42,8 +42,8 @@
     "postcss": "^8.5.29",
     "tailwindcss": "^4.2.0",
     "typescript": "~6.0.2",
-    "typescript-eslint": "^8.71.1",
-    "vite": "^8.3.2"
+    "typescript-eslint": "^8.71.2",
+    "vite": "^8.3.4"
   },
   "optionalDependencies": {
     "lightningcss-linux-x64-gnu": "^1.33.0"
