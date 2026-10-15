@@ -16,13 +16,13 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.117.2",
+    "@supabase/supabase-js": "^2.117.3",
     "axios": "^1.20.0",
     "axios-retry": "^4.5.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "express-rate-limit": "^8.7.0",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.1",
     "google-auth-library": "^10.9.1",
     "ioredis": "^5.11.1",
     "mongodb": "^7.7.0",
