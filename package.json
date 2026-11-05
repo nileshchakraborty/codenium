@@ -17,20 +17,20 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",
-    "axios": "^1.20.0",
+    "axios": "^1.21.0",
     "axios-retry": "^4.5.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.3.0",
-    "express-rate-limit": "^8.7.1",
+    "express-rate-limit": "^8.7.3",
     "google-auth-library": "^10.9.1",
     "ioredis": "^5.11.1",
-    "mongodb": "^7.7.0",
+    "mongodb": "^7.8.0",
     "node-cache": "^5.1.2",
     "openai": "^6.49.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "react-router": "7.18.4",
+    "react-router": "7.18.5",
     "uuid": "^13.0.2"
   },
   "devDependencies": {
@@ -45,7 +45,7 @@
     "husky": "^9.1.7",
     "monaco-editor": "^0.55.1",
     "nodemon": "^3.1.14",
-    "react-router-dom": "^7.18.4",
+    "react-router-dom": "^7.18.5",
     "ts-node": "^10.9.2",
     "typescript": "~6.0.2",
     "vitest": "^4.1.11"
